@@ -1,51 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Plus,
-  FileText,
-  BookOpen,
-} from "lucide-react";
+import { FileText, BookOpen } from "lucide-react";
+import Link from "next/link";
 
 import { overallMetrics } from "@/lib/overall-metrics";
 import { donations } from "@/lib/donations";
 import { teams } from "@/lib/teams";
 
-export default function ActivityMonitor() {
-  const [activeSection, setActiveSection] = useState("dashboard");
+export default function PublicDashboard() {
   const recentDonations = donations.slice(0, 5);
   const recentActiveTeams = teams.slice(0, 5);
-
-  if (activeSection !== "dashboard") {
-    return (
-      <div className="container-alt">
-        <div className="wrapper-narrow">
-          <div className="header">
-            <h1 className="title">Arkana Dashboard</h1>
-          </div>
-
-          <Card className="card card--center">
-            <CardContent>
-              <div className="section-space">
-                <div className="icon-bubble">
-                  <Plus className="icon-xxl" />
-                </div>
-                <h2 className="subtitle">
-                  {activeSection === "new-activity" && "Registrar Doações"} {/* Formulário Login */}
-                  {activeSection === "reports" && "Ver Relatórios"} {/* Mudar total: redirecionar para página de relatórios */}
-                </h2>
-              </div>
-              <Button className="btn-back" onClick={() => setActiveSection("dashboard")}>
-                ← Voltar ao Dashboard
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="container">
@@ -115,22 +81,20 @@ export default function ActivityMonitor() {
         <Card className="card-quick">
           <CardContent className="card-content--no-x">
             <div className="quick-grid">
-              <Button
-                key={1}
+              <Link
                 className="btn-qa activity-name"
-                onClick={() => setActiveSection("new-activity")}
+                href="/sign-in"
               >
                 <BookOpen className="qa-icon" />
                 <span>Registrar Doações</span>
-              </Button>
-              <Button
-                key={2}
+              </Link>
+              <Link
                 className="btn-qa-alt activity-name"
-                onClick={() => setActiveSection("reports")}
+                href="/complete-reports"
               >
                 <FileText className="qa-icon" />
                 <span>Ver Relatórios</span>
-              </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>

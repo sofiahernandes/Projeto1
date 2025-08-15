@@ -18,7 +18,7 @@ body {
   color: oklch(0.145 0 0);
 }
 
-.wrapper       { 
+.wrapper { 
   max-width: 80rem; 
   margin: 0 auto; 
 }
@@ -226,6 +226,8 @@ body {
 .activity-name { 
   flex: 1; 
   color: #111827; 
+  text-decoration: none;
+  padding: 1rem 0;
 }
 
 .activity-team { 
