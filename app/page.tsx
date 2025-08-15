@@ -7,31 +7,30 @@ import Link from "next/link";
 
 import { overallMetrics } from "@/lib/overall-metrics";
 import { donations } from "@/lib/donations";
-import { teams } from "@/lib/teams";
 
 export default function PublicDashboard() {
   const recentDonations = donations.slice(0, 5);
-  const recentActiveTeams = teams.slice(0, 5);
+  const biggestDonations = donations.slice(0, 5);
 
   return (
-    <div className="container">
-      <div className="header">
-        <h1 className="title">Arkana Dashboard</h1>
+    <div className="min-h-screen bg-gray-50 px-6 pt-6 pb-4">
+      <div className="flex justify-center w-full pb-4">
+          <h1 className="font-light text-slate-600 text-sm">Arkana Dashboard</h1>
       </div>
 
-      <div className="wrapper">
-        {/* Cards de Estatísticas */}
-        <div className="stats-grid">
+      <div className="max-w-7xl mx-auto">
+        {/* Catões de Estatísticas */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           {overallMetrics.map((metric, index) => (
-            <Card key={index} className="stat-card">
-              <CardContent className="card-content-px6">
-                <div className="stat-content">
-                  <div className="stat-icon">
-                    <metric.icon className="icon-md icon-green" />
+            <Card key={index} className="h-22 justify-center hover:shadow-md hover:border-[#dbdaaf] transition-shadow cursor-pointer shadow-sm">
+              <CardContent className="px-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+                    <metric.icon className={"w-6 h-6 text-[#537B2F]"} />
                   </div>
                   <div>
-                    <p className="stat-label">{metric.label}</p>
-                    <p className="stat-value">{metric.value}</p>
+                    <p className="text-sm text-gray-600">{metric.label}</p>
+                    <p className="text-2xl text-gray-900 font-semibold">{metric.value}</p>
                   </div>
                 </div>
               </CardContent>
@@ -40,20 +39,25 @@ export default function PublicDashboard() {
         </div>
 
         {/* Dashboard */}
-        <div className="two-col-grid">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Contribuições Recentes */}
-          <Card className="card-default">
-            <CardContent className="card-content-px6 card-content-pb">
-              <h2 className="section-title">Contribuições Recentes</h2>
+          <Card className="shadow-sm">
+            <CardContent className="px-6">
+              <h2 className="text-lg text-center font-semibold text-gray-900 pb-3">Contribuições Recentes</h2>
               <div>
                 {recentDonations.map((activity, index) => (
-                  <div key={index} className="activity-item">
-                    <div className="activity-icon-box">
-                      <activity.icon className="icon-sm" />
+                  <div
+                    key={index}
+                    className="flex items-center gap-4 p-2 rounded-lg hover:bg-[#dbdaaf]/20 cursor-pointer transition-colors"
+                  >
+                    <div className="w-6 h-6 rounded-3xl flex items-center justify-center text-white">
+                      <activity.icon className={"w-4 h-4 text-[#537B2F]"} />
                     </div>
-                    <div className="activity-name">{activity.name}</div>
-                    <p className="activity-team">{activity.team}</p>
-                    <span className="activity-time">{activity.time}</span>
+                    <div className="flex-1">
+                      <p className="text-gray-900">{activity.name}</p>
+                    </div>
+                    <p className="text-sm text-gray-600">{activity.team}</p>
+                    <span className="text-sm text-gray-500">{activity.date}</span>
                   </div>
                 ))}
               </div>
@@ -61,15 +65,19 @@ export default function PublicDashboard() {
           </Card>
 
           {/* Times Recentemente Ativos */}
-          <Card className="card-default">
-            <CardContent className="card-content-px6">
-              <h2 className="section-title">Maiores Doações</h2>
+          <Card className="shadow-sm">
+            <CardContent className="px-6">
+              <h2 className="text-lg text-center font-semibold text-gray-900 pb-3">Maiores Doações</h2>
               <div>
-                {recentActiveTeams.map((team, index) => (
-                  <div key={index} className="activity-item">
-                    <div className="activity-name">{team.name}</div>
-                    <p className="activity-team">{team.activities} logs</p>
-                    <span className="activity-amount">R${team.amount}</span>
+                {biggestDonations.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-4 p-2 rounded-lg hover:bg-[#dbdaaf]/20 cursor-pointer transition-colors"
+                  >
+                    <div className="flex-1">
+                      <p className="text-gray-900">{item.team}</p>
+                    </div>
+                    <span className="text-[#537B2F] text-md">R${item.ammount}</span>
                   </div>
                 ))}
               </div>
@@ -78,23 +86,21 @@ export default function PublicDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <Card className="card-quick">
-          <CardContent className="card-content--no-x">
-            <div className="quick-grid">
-              <Link
-                className="btn-qa activity-name"
-                href="/sign-in"
-              >
-                <BookOpen className="qa-icon" />
-                <span>Registrar Doações</span>
-              </Link>
-              <Link
-                className="btn-qa-alt activity-name"
-                href="/complete-reports"
-              >
-                <FileText className="qa-icon" />
-                <span>Ver Relatórios</span>
-              </Link>
+        <Card className="bg-slate-50 shadow-none border-none">
+          <CardContent className="px-0">
+            <div className="grid grid-cols-2 gap-4">
+              <Button className="h-18 flex-col gap-2 hover:bg-[#dbdaaf]/20 hover:border-[#dbdaaf] transition-colors bg-white">
+                <Link href="/sign-in" className="flex flex-col gap-2 items-center">
+                  <BookOpen className="w-6 h-6 text-gray-600" />
+                  <span className="text-sm text-gray-900 font-medium">Registrar Doações</span>
+                </Link>
+              </Button>
+              <Button className="h-18 gap-2 bg-[#dbdaaf]/30 hover:bg-[#dbdaaf]/60 border-[#dbdaaf] transition-colors">
+                <Link href="/complete-reports" className="flex flex-col gap-2 items-center">
+                  <FileText className="w-6 h-6 text-gray-600" />
+                  <span className="text-sm text-gray-900 font-medium">Ver Relatórios</span>
+                </Link>
+              </Button>
             </div>
           </CardContent>
         </Card>
