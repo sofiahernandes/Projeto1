@@ -9,8 +9,8 @@ import { overallMetrics } from "@/lib/overall-metrics";
 import { donations } from "@/lib/donations";
 
 export default function PublicDashboard() {
-  const recentDonations = donations.slice(0, 5);
-  const biggestDonations = donations.slice(0, 5);
+  const recentDonations = donations.slice(0, 6);
+  const biggestDonations = donations.slice(0, 6);
 
   return (
     <div className="min-h-screen bg-gray-50 px-6 pt-6 pb-4">
@@ -20,16 +20,16 @@ export default function PublicDashboard() {
 
       <div className="max-w-7xl mx-auto">
         {/* Catões de Estatísticas */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
           {overallMetrics.map((metric, index) => (
-            <Card key={index} className="h-22 justify-center hover:shadow-md hover:border-[#dbdaaf] transition-shadow cursor-pointer shadow-sm">
+            <Card key={index} className="h-22 justify-center bg-[#85963A]/40 shadow-sm overflow-hidden">
               <CardContent className="px-6">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center">
                     <metric.icon className={"w-6 h-6 text-[#537B2F]"} />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">{metric.label}</p>
+                    <p className="text-sm text-gray-900">{metric.label}</p>
                     <p className="text-2xl text-gray-900 font-semibold">{metric.value}</p>
                   </div>
                 </div>
@@ -89,13 +89,13 @@ export default function PublicDashboard() {
         <Card className="bg-slate-50 shadow-none border-none">
           <CardContent className="px-0">
             <div className="grid grid-cols-2 gap-4">
-              <Button className="h-18 flex-col gap-2 hover:bg-[#dbdaaf]/20 hover:border-[#dbdaaf] transition-colors bg-white">
+              <Button className="overflow-hidden h-18 flex-col gap-2 hover:bg-[#85963A]/20 hover:border-[#6f6e26]/60 border border-[#6f6e26]/40 transition-colors bg-white">
                 <Link href="/sign-in" className="flex flex-col gap-2 items-center">
                   <BookOpen className="w-6 h-6 text-gray-600" />
                   <span className="text-sm text-gray-900 font-medium">Registrar Doações</span>
                 </Link>
               </Button>
-              <Button className="h-18 gap-2 bg-[#dbdaaf]/30 hover:bg-[#dbdaaf]/60 border-[#dbdaaf] transition-colors">
+              <Button className="overflow-hidden h-18 gap-2 bg-[#85963A]/30 hover:bg-[#85963A]/60 border border-[#6f6e26]/40 transition-colors">
                 <Link href="/complete-reports" className="flex flex-col gap-2 items-center">
                   <FileText className="w-6 h-6 text-gray-600" />
                   <span className="text-sm text-gray-900 font-medium">Ver Relatórios</span>
