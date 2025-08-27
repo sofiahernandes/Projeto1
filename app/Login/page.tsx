@@ -1,4 +1,3 @@
-'use client'
 import React from "react";
 import CustomInputs from "./components/CustomInputs";
 
