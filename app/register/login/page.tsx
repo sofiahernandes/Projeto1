@@ -68,11 +68,10 @@ export default function Login() {
                 senha={senha}
                 setSenha={setSenha}
               />
-              <button
-                type="submit"
-                className="border-transparent bg-primary text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-[#354F52] rounded-lg"
-              >
-                Entrar
+              <button type="submit" className="border-transparent bg-primary text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-[#354F52] rounded-lg">
+                 <Link href="/donate-page"> 
+                  <span > Entrar </span>
+                 </Link> 
               </button>
             </form>
           </section>
