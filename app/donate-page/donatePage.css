@@ -1,27 +1,18 @@
-* {
-  box-sizing: border-box;
-}
-
-body {
-  font-family: "Oranienbaum", serif;
-  margin: 0;
-  padding: 0;
-  background: #f8f9fa;
+.container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 }
 
 .page-container {
-  background-color: #2a4b47;
-  min-height: calc(100vh);
-  margin: auto;
+  max-width: 900px;
   padding: 20px;
   justify-content: center;
-  transition: margin-left 0.3s ease; 
-  margin-left: 0;
+  transition: margin-left 0.3s ease;
 }
 
-.page-container.shifted 
-{
-  margin-left: 250px; /* mesmo tamanho do aside */
+.page-container.shifted {
+  margin-left: 300px; /* mesmo tamanho do aside */
 }
 
 header {
@@ -30,36 +21,31 @@ header {
   align-items: center;
   position: relative;
   color: rgb(242, 238, 238);
-  margin-bottom: 20px;
-  transition: margin-left 0.3s ease; 
-
-}
-
-.page-title {
-  font-size: 2rem;
-  justify-self: center;
+  margin: 20px 0;
 }
 
 /*Aba de cadastrar doações */
 .card-area {
   background: #f5f5f5;
+  border: 1px solid #ccc;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: margin-left 0.3s ease; 
-  margin-left: 0;
+  transition: margin-left 0.3s ease;
+  margin: 0;
 }
 
 .card-area h2 {
-  font-size: 30px;
+  font-size: 25px;
   justify-self: center;
   font-weight: 600;
+  margin-bottom: 20px;
 }
+
 .donation-details {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
-
 }
 
 .donation-details div {
@@ -73,37 +59,22 @@ header {
   font-weight: bold;
 }
 
-.donation-details input {
-  padding: 10px;
-  margin: 0;
-  margin-right: 10px;
-  border: 1px solid #ccc;
-  background-color: #ffffff;
-  border-radius: 6px;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-input[type="date"] {
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 10px;
-}
-
 input[type="file"]::file-selector-button {
   background: #207960;
   color: white;
   border: none;
   padding: 8px;
   border-radius: 6px;
-  margin-right: 10px; 
+  margin-right: 10px;
   cursor: pointer;
 }
 
+input[type="file"]::file-selector-button:hover {
+  color: #49c749;
+}
 
 .donation-details button {
-  grid-column: 1 / -1; /* isso faz o botão ficar no meio das duas colunas 1fr1r*/
+  grid-column: 1 / -1; /* isso faz o botão ficar no meio das duas colunas 1fr1r */
   margin: auto;
   padding: 12px;
   background: #1d7a66;
@@ -115,37 +86,46 @@ input[type="file"]::file-selector-button {
   transition: background 0.2s ease-in;
 }
 
-button:hover {
-  background: #354f52;
+#calendar button:hover {
+  background-color: #ccc;
+  color: #000;
 }
 
-/*Menu lateral */
+button:hover {
+  color: #49c749;
+}
+
+/* Menu lateral */
 
 .open-menu {
-  margin-top: 20px;
   background: none;
   border: none;
   font-size: 1.2rem;
+  font-weight: 800;
   cursor: pointer;
-  color: white;
-  position: absolute;
-  left: 1rem
+  color: #207960;
+  position: fixed;
+  left: 1.2rem;
+  top: 1.2rem;
 }
-.hidden{
+
+.hidden {
   display: none;
 }
 
 .side-menu {
   position: fixed;
   top: 0;
-  left: -250px; /* começa escondido fora da tela */
-  width: 250px;
+  left: -300px; /* começa escondido fora da tela */
+  width: 300px;
   height: 100vh;
   background: #f5f5f5;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   color: rgb(0, 0, 0);
   padding: 1rem;
   transition: left 0.3s ease;
-  z-index: 1000; 
+  z-index: 1000;
 }
 
 .side-menu.open {
@@ -163,17 +143,19 @@ button:hover {
 }
 
 /* botoes do side menu e do nav mobile */
-.new-donation, .old-donations {
-    margin: 2px;
-    padding: 10px;
-    background: #1d7a66;
-    border: none;
-    border-radius: 6px;
-    font-size: 1rem;
-    color: white;
-    cursor: pointer;
-    flex: 1;
-  }
+.new-donation,
+.old-donations {
+  margin: 5px;
+  padding: 10px;
+  width: 95%;
+  background: #1d7a66;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: white;
+  cursor: pointer;
+  flex: 1;
+}
 
 /*menu do mobile, fica escondido se for desktop */
 
@@ -197,8 +179,13 @@ button:hover {
 
 @media (max-width: 670px) {
   .side-menu,
-  .open-menu{ display: none;} /*Aquie sconde o menu lateral */
-  .page-container {padding-bottom: 60px}
+  .open-menu {
+    display: none;
+  } /*Aquie sconde o menu lateral */
+  .page-container {
+    padding-bottom: 110px;
+    padding-top: 0;
+  }
   .mobile-nav {
     display: block;
     display: flex;
@@ -211,5 +198,5 @@ button:hover {
     color: white;
     box-shadow: 0 -2px 8px rgba(24, 23, 23, 0.2);
     z-index: 1000;
-    }
+  }
 }
