@@ -3,19 +3,22 @@
 import React from "react";
 import CustomInputs from "../../../components/custom-inputs";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 export default function Login() {
+  const router = useRouter();
   const [usuario, setUsuario] = React.useState("");
   const [senha, setSenha] = React.useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    router.push("/donate-page");
   };
 
   return (
-    <div>
+    <div className="w-full">
       <Link href="/" className="underline text-blue-700 fixed p-4">
         Voltar
       </Link>
@@ -29,7 +32,7 @@ export default function Login() {
             />
             <p className="mb-1 text-sm">É aluno e não tem cadastro?</p>
             <Link
-              href="/register/sign-in"
+              href="/register/sign-up"
               className="bg-[#eeeeee] text-black px-4 py-1 font-medium hover:bg-[#354F52] hover:text-white mb-4 rounded"
             >
               Cadastre-se
@@ -72,7 +75,9 @@ export default function Login() {
                 type="submit"
                 className="border-transparent bg-primary text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-[#354F52] rounded-lg"
               >
-                Entrar
+                <Link href="/donate-page">
+                  <span> Entrar</span>
+                </Link>
               </button>
             </form>
           </section>

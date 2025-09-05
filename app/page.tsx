@@ -13,7 +13,7 @@ export default function PublicDashboard() {
   const biggestDonations = donations.slice(0, 6);
 
   return (
-    <div className="min-h-screen px-6 pt-6 pb-4">
+    <div className="min-h-screen w-full px-6 pt-6 pb-4">
       <div className="flex justify-center w-full pb-4">
         <h1 className="font-light text-slate-600 text-sm">Arkana Dashboard</h1>
       </div>
