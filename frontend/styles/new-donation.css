@@ -1,3 +1,5 @@
+/*IMPORTANTE: MUDAR PARA TAILWIND*/
+
 .container {
   display: flex;
   align-items: center;
@@ -12,7 +14,7 @@
 }
 
 .page-container.shifted {
-  margin-left: 300px; /* mesmo tamanho do aside */
+  margin-left: 270px; /* mesmo tamanho do aside */
 }
 
 header {
@@ -21,10 +23,9 @@ header {
   align-items: center;
   position: relative;
   color: rgb(242, 238, 238);
-  margin: 20px 0;
 }
 
-/*Aba de cadastrar doações */
+/* Aba de cadastrar doações */
 .card-area {
   background: #f5f5f5;
   border: 1px solid #ccc;
@@ -116,8 +117,8 @@ button:hover {
 .side-menu {
   position: fixed;
   top: 0;
-  left: -300px; /* começa escondido fora da tela */
-  width: 300px;
+  left: -270px; /* começa escondido fora da tela */
+  width: 270px;
   height: 100vh;
   background: #f5f5f5;
   border: 1px solid #ccc;
@@ -143,21 +144,25 @@ button:hover {
 }
 
 /* botoes do side menu e do nav mobile */
-.new-donation,
-.old-donations {
+.donation-menu-button {
   margin: 5px;
-  padding: 10px;
+  padding: 8px;
   width: 95%;
-  background: #1d7a66;
-  border: none;
+  color: #000;
+  background-color: white;
+  border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 1rem;
-  color: white;
   cursor: pointer;
   flex: 1;
 }
 
-/*menu do mobile, fica escondido se for desktop */
+.donation-menu-button:hover {
+  color: #1d7a66;
+  border: 1px solid #1d7a66;
+}
+
+/* menu do mobile, fica escondido se for desktop */
 
 .mobile-nav {
   display: none;

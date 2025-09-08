@@ -77,6 +77,8 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground flex justify-center;
+    @apply min-h-screen bg-background text-foreground flex items-center justify-center;
   }
 }
+
+@import "../styles/new-donation.css";

@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+
+import BackHome from "@/components/back-home";
 
 export default function Cadastro() {
   const router = useRouter();
@@ -10,14 +11,13 @@ export default function Cadastro() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/donate-page");
+    router.push("/register/new-donation");
   };
 
   return (
     <div className="w-full">
-      <Link href="/" className="underline text-blue-700 fixed p-4">
-        Voltar
-      </Link>
+      <div className="absolute left-0 top-0"><BackHome /></div>
+
       <div className="min-h-screen flex items-center justify-center items-center p-6">
         <div className="flex flex-col md:flex-row w-full max-w-3xl">
           <section className="bg-[#1C7C61] h-100 m-1 flex flex-col rounded-lg items-center justify-center md:w-1/2 p-6 text-white">
