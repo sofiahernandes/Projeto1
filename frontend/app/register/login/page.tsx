@@ -11,17 +11,23 @@ import BackHome from "@/components/back-home";
 
 export default function Login() {
   const router = useRouter();
-  const [usuario, setUsuario] = React.useState("");
-  const [senha, setSenha] = React.useState("");
+  const [raAlunoMentor, setRaAlunoMentor] = React.useState(0);
+  const [senhaAlunoMentor, setSenhaAlunoMentor] = React.useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/register/new-donation");
+    const newUser = {
+      raAlunoMentor,
+      senhaAlunoMentor
+    };
+    router.push(`/(restricted)/[${newUser.raAlunoMentor}]/new-contribution`);
   };
 
   return (
     <div className="w-full">
-      <div className="absolute left-0 top-0"><BackHome /></div>
+      <div className="absolute left-0 top-0">
+        <BackHome />
+      </div>
 
       <div className="min-h-screen flex items-center justify-center p-6">
         <div className="flex flex-col md:flex-row w-full max-w-3xl">
@@ -67,18 +73,16 @@ export default function Login() {
               className="flex flex-col gap-4 w-full"
             >
               <CustomInputs
-                usuario={usuario}
-                setUsuario={setUsuario}
-                senha={senha}
-                setSenha={setSenha}
+                usuario={raAlunoMentor}
+                setUsuario={setRaAlunoMentor}
+                senha={senhaAlunoMentor}
+                setSenha={setSenhaAlunoMentor}
               />
               <button
                 type="submit"
                 className="border-transparent bg-primary text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-[#354F52] rounded-lg"
               >
-                <Link href="/register/new-donation">
-                  <span>Entrar</span>
-                </Link>
+                <span>Entrar</span>
               </button>
             </form>
           </section>

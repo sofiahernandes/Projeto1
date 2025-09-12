@@ -1,0 +1,27 @@
+{
+  "name": "projeto1",
+  "version": "1.0.0",
+  "description": "<h1 align=\"center\">Fundação de Comércio Álvares Penteado</h1>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2025-2-MCC2/Projeto1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/2025-2-MCC2/Projeto1/issues"
+  },
+  "homepage": "https://github.com/2025-2-MCC2/Projeto1#readme",
+  "dependencies": {
+    "@clerk/clerk-sdk-node": "^4.13.23",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0"
+  }
+}
