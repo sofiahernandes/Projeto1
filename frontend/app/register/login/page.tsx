@@ -4,6 +4,7 @@ import React from "react";
 import CustomInputs from "../../../components/login-inputs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { FormEvent } from "react";
 
 import { SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
@@ -18,7 +19,7 @@ export default function Login() {
     e.preventDefault();
     const newUser = {
       raAlunoMentor,
-      senhaAlunoMentor
+      senhaAlunoMentor,
     };
     router.push(`/(restricted)/[${newUser.raAlunoMentor}]/new-contribution`);
   };
@@ -82,7 +83,7 @@ export default function Login() {
                 type="submit"
                 className="border-transparent bg-primary text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-[#354F52] rounded-lg"
               >
-                <span>Entrar</span>
+                Entrar
               </button>
             </form>
           </section>

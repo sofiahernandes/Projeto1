@@ -21,7 +21,7 @@ const CustomInputs: React.FC<Props> = ({
         <input
           type="number"
           placeholder="Registro Acadêmico (RA)"
-          value={usuario!==0 ? usuario : ""}
+          value={usuario}
           className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
           onChange={(e) => setUsuario(Number(e.target.value))}
         />

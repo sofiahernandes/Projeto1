@@ -26,9 +26,7 @@ export default function Cadastro() {
 
   return (
     <div className="w-full">
-      <div className="absolute left-0 top-0">
-        <BackHome />
-      </div>
+      <div className="absolute left-0 top-0"><BackHome /></div>
 
       <div className="min-h-screen flex items-center justify-center items-center p-6">
         <div className="flex flex-col md:flex-row w-full max-w-3xl">
@@ -79,7 +77,7 @@ export default function Cadastro() {
                     id="ra"
                     name="ra"
                     type="number"
-                    value={raAlunoMentor!==0 ? raAlunoMentor : ""}
+                    value={raAlunoMentor}
                     onChange={(e) => setRaAlunoMentor(Number(e.target.value))}
                     placeholder="Insira seu R.A"
                     className="block w-full bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
