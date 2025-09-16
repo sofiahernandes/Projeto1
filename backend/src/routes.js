@@ -11,9 +11,10 @@ const r = Router();
 
 r.get("/db/health", async (_, res) => {
   try {
-  } catch {
     const [rows] = await pool.query("SELECT 1 AS db_ok");
     res.json({ ok: true, db: rows[0].db_ok });
+  } catch {
+    res.status(500).json({ok: false, db:'down'})
   }
 });
 
