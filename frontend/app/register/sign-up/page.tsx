@@ -7,18 +7,28 @@ import BackHome from "@/components/back-home";
 
 export default function Cadastro() {
   const router = useRouter();
+  const [raAlunoMentor, setRaAlunoMentor] = React.useState(0);
+  const [nomeAlunoMentor, setNomeAlunoMentor] = React.useState("");
+  const [emailAlunoMentor, setEmailAlunoMentor] = React.useState("");
+  const [senhaAlunoMentor, setSenhaAlunoMentor] = React.useState("");
   const [mostrarSenha, setMostrarSenha] = React.useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/register/new-donation");
+    const newUser = {
+      raAlunoMentor,
+      senhaAlunoMentor,
+      nomeAlunoMentor,
+      emailAlunoMentor,
+    };
+    router.push(`/(restricted)/[userId]/new-contribution`);
   };
 
   return (
     <div className="w-full">
       <div className="absolute left-0 top-0"><BackHome /></div>
 
-      <div className="min-h-screen flex items-center justify-center items-center p-6">
+      <div className="min-h-screen flex justify-center items-center p-6">
         <div className="flex flex-col md:flex-row w-full max-w-3xl">
           <section className="bg-[#1C7C61] h-100 m-1 flex flex-col rounded-lg items-center justify-center md:w-1/2 p-6 text-white">
             <h1 className="flex justify-center font-bold text-[#fff] text-[22px] mb-1">
@@ -41,6 +51,8 @@ export default function Cadastro() {
                     id="nome"
                     name="nome"
                     type="text"
+                    value={nomeAlunoMentor}
+                    onChange={(e) => setNomeAlunoMentor(e.target.value)}
                     placeholder="Insira seu nome completo"
                     className="block w-full bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
                   />
@@ -52,6 +64,8 @@ export default function Cadastro() {
                     id="email"
                     name="email"
                     type="email"
+                    value={emailAlunoMentor}
+                    onChange={(e) => setEmailAlunoMentor(e.target.value)}
                     placeholder="Insira o email institucional"
                     className="block w-full bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
                   />
@@ -62,7 +76,9 @@ export default function Cadastro() {
                   <input
                     id="ra"
                     name="ra"
-                    type="text"
+                    type="number"
+                    value={raAlunoMentor}
+                    onChange={(e) => setRaAlunoMentor(Number(e.target.value))}
                     placeholder="Insira seu R.A"
                     className="block w-full bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
                   />
@@ -72,7 +88,9 @@ export default function Cadastro() {
                   <input
                     id="senha"
                     name="senha"
-                    type="password"
+                    type={mostrarSenha ? "text" : "password"}
+                    value={senhaAlunoMentor}
+                    onChange={(e) => setSenhaAlunoMentor(e.target.value)}
                     placeholder="Insira a senha"
                     className="block w-full bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
                   />

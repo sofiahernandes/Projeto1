@@ -14,8 +14,8 @@ export default function MenuDesktop({ menuOpen, setMenuOpen }: Properties) {
       </button>
       <nav>
         <Link href="/"><button className="donation-menu-button">Voltar ao Dashboard</button></Link>
-        <Link href="/register/new-contribution"><button className="donation-menu-button">Cadastrar novas contribuições</button></Link>
-        <Link href="/team-history"><button className="donation-menu-button">Histórico de contribuições</button></Link>
+        <Link href="/(restricted)/[userId]/new-contribution"><button className="donation-menu-button">Cadastrar novas contribuições</button></Link>
+        <Link href="/(restricted)/[userId]/team-history"><button className="donation-menu-button">Histórico de contribuições</button></Link>
       </nav>
     </aside>
   );
