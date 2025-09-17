@@ -21,7 +21,7 @@ export default function Cadastro() {
       nomeAlunoMentor,
       emailAlunoMentor,
     };
-    router.push(`/(restricted)/[${newUser.raAlunoMentor}]/new-contribution`);
+    router.push(`/(restricted)/[userId]/new-contribution`);
   };
 
   return (

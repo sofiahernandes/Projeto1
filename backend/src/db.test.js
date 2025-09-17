@@ -10,7 +10,6 @@ const tryConnection = async () => {
       user: MYSQL_USER,
       database: MYSQL_DB,
       password: MYSQL_PASSWORD
-      
     })
     const [rows] = await connection.query("SELECT NOW() AS agora");
     console.log("Conectando ao MySQL - Data/Hora:", rows[0].agora);

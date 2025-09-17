@@ -12,7 +12,7 @@ const mentorController = {
     }
   },
 
-  mentorByID: async (req, res) => {
+  mentorById: async (req, res) => {
     const { IdMentor } = req.params;
 
     try {
@@ -41,17 +41,17 @@ const mentorController = {
   },
 
   createMentor: async (req, res) => {
-    const { EmailMentor, SenhaMentor } = req.body;
+    const { EmailMentor, IsAdmin, SenhaMentor } = req.body;
 
-    if (!EmailMentor || !SenhaMentor) {
+    if (!EmailMentor || !SenhaMentor || !IsAdmin) {
       alert("Preencha todos os campos");
       return req.status(400).json("Preencha todos os campos");
     }
 
     try {
       const [insert] = await pool.query(
-        "INSERT INTO mentor (IdMentor, EmailMentor, SenhaMentor) VALUES(?,?)",
-        [EmailMentor, SenhaMentor]
+        "INSERT INTO mentor (IdMentor, EmailMentor, SenhaMentor) VALUES(?,?,?)",
+        [EmailMentor, SenhaMentor, IsAdmin]
       )
 
       const [rows] = await pool.query(
@@ -70,7 +70,7 @@ const mentorController = {
 
     try {
       const [result] = pool.query(
-        "DELETE FROM mentor WHERE EmailMentor=?",
+        "DELETE FROM mentor WHERE EmailMentor=? CHECK IsAdmin=false",
         [EmailMentor]
       )
       if (result.affectedRows == 0) {

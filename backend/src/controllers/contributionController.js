@@ -1,6 +1,5 @@
 import { pool } from "../db.js";
 
-// GET /api/contributions
 const contributionController = {
   allContributions: async (_, res) => {
     try {
@@ -13,24 +12,24 @@ const contributionController = {
     }
   },
 
-
-  // POST /api/createContribution
   createContribution: async (req, res) => {
     const {
       IdTime,
       TipoDoacao,
-      Valor,
+      Quantidade,
       Meta,
-      NomeDoador,
-      Fundos,
+      Gastos,
+      Fonte,
       Comprovante
     } = req.body;
 
     if (
       !IdTime ||
       !TipoDoacao ||
-      !Valor ||
-      !NomeDoador ||
+      !Quantidade ||
+      !Meta ||
+      !Gastos ||
+      !Fonte ||
       !Comprovante
     ) {
       alert("Preencha todos os campos");
@@ -39,8 +38,8 @@ const contributionController = {
 
     try {
       const [insert] = await pool.query(
-        'INSERT INTO contribuicao (Valor, TipoDoacao, Fundos, Meta, NomeDoador, IdTime)  VALUES(?,?,?,?,?,?,?)',
-        [Valor, TipoDoacao, Fundos, Meta, NomeDoador, IdTime, Comprovante]
+        'INSERT INTO contribuicao (IdTime, TipoDoacao, Quantidade, Meta, Gastos, Fonte, Comprovante)  VALUES(?,?,?,?,?,?,?)',
+        [IdTime, TipoDoacao, Quantidade, Meta, Gastos, Fonte, Comprovante]
       )
       const [rows] = await pool.query(
         'SELECT * FROM contribuicao WHERE IdContribuicao=?',
@@ -52,8 +51,6 @@ const contributionController = {
       res.status(500).json({ error: 'Erro ao criar contribuição', details: err.message });
     }
   },
-
-  // Delete /api/deleteContribution/:IdContribuicao
 
   deleteContribution: async (req, res) => {
     const { IdContribuicao } = req.params;

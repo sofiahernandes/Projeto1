@@ -6,7 +6,6 @@ const contribuicao = [
     Meta: 12, // reais || kg
     Gastos: 100, // reais
     Fonte: "João Carlos",
-    Comprovante: {}, // file upload
+    Comprovante: "url", // file upload
   },
 ];
-

@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { pool } from "./db.js";
 
-import contributionsController from "./controllers/contributionsController";
-import editionsController from "./controllers/editionsController";
-import teamsController from "./controllers/teamsController";
-import mentorController from "./controllers/mentorController";
-import usersController from "./controllers/usersController";
+import contributionController from "./controllers/contributionController.js";
+import adminController from "./controllers/adminController.js";
+import teamController from "./controllers/teamController.js";
+import mentorController from "./controllers/mentorController.js";
+import userController from "./controllers/userController.js";
 
 const r = Router();
 
@@ -18,29 +18,30 @@ r.get("/db/health", async (_, res) => {
   }
 });
 
-r.post("/createContribution", contributionsController.createContribution);
-r.get("/contributions", contributionsController.allContributions);
-r.delete("/deleteContribution/:IdContribuicao", contributionsController.deleteContribution);
+r.post("/api/createContribution", contributionController.createContribution);
+r.get("/api/contributions", contributionController.allContributions);
+r.delete("/api/deleteContribution/:IdContribuicao", contributionController.deleteContribution);
 
-r.post("/createEdition", editionsController.createEdition);
-r.get("/editions", editionsController.allEditions);
-r.get("/editions/:idEdition", editionsController.editionByNumber);
-r.delete("/deleteEdition/:idEdition", editionsController.deleteEdition);
+r.post("/api/createAdm", adminController.createAdmin);
+r.get("/api/admins", adminController.allAdmins);
+r.get("/api/admins/:IdAdm", adminController.adminById);
+r.get("/api/admins/:EmailAdm", adminController.adminByEmail);
+r.delete("/deleteAdmin/:IdAdm", adminController.deleteAdmin);
 
-r.post("/createMentor", mentorController.createMentor);
-r.get("/mentors", mentorController.allMentors);
-r.get("/mentors/:idMentor", mentorController.mentorByEmail);
-r.get("/mentors/:emailMentor", mentorController.mentorByEmail);
-r.delete("/deleteMentor/:emailMentor", mentorController.deleteMentor);
+r.post("/api/createMentor", mentorController.createMentor);
+r.get("/api/mentors", mentorController.allMentors);
+r.get("/api/mentors/:IdMentor", mentorController.mentorById);
+r.get("/api/mentors/:EmailMentor", mentorController.mentorByEmail);
+r.delete("/api/deleteMentor/:EmailMentor", mentorController.deleteMentor);
 
-r.post("/createTeam", teamsController.createTeam);
-r.get("/teams", teamsController.allTeams);
-r.get("/team/:idTeam", teamsController.teamByID);
-r.delete("/deleteTeam/:RA", teamsController.deleteTeam);
+r.post("/api/createTeam", teamController.createTeam);
+r.get("/api/teams", teamController.allTeams);
+r.get("/api/team/:IdTime", teamController.teamByID);
+r.delete("/api/deleteTeam/:RA", teamController.deleteTeam);
 
-r.post("/register/sign-up", usersController.createUser);
-r.get("/users", usersController.allUsers);
-r.get("/user/:RA", usersController.userByRA);
-r.delete("/deleteUser/:RA", usersController.deleteUser);
+r.post("/api/register/sign-up", userController.createUser);
+r.get("/api/users", userController.allUsers);
+r.get("/api/user/:RA", userController.userByRA);
+r.delete("/api/deleteUser/:RA", userController.deleteUser);
 
 export default r;
