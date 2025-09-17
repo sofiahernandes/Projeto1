@@ -22,12 +22,6 @@ r.post("/api/createContribution", contributionController.createContribution);
 r.get("/api/contributions", contributionController.allContributions);
 r.delete("/api/deleteContribution/:IdContribuicao", contributionController.deleteContribution);
 
-r.post("/api/createAdm", adminController.createAdmin);
-r.get("/api/admins", adminController.allAdmins);
-r.get("/api/admins/:IdAdm", adminController.adminById);
-r.get("/api/admins/:EmailAdm", adminController.adminByEmail);
-r.delete("/deleteAdmin/:IdAdm", adminController.deleteAdmin);
-
 r.post("/api/createMentor", mentorController.createMentor);
 r.get("/api/mentors", mentorController.allMentors);
 r.get("/api/mentors/:IdMentor", mentorController.mentorById);
