@@ -46,13 +46,16 @@ Texto
 
 ## 🗂 Estrutura de Pastas
 ```
-|-->src  
-  |-->app  
-  |-->components  
-  |-->hooks  
-  |-->lib  
-  |-->styles  
-|-->entregas-disciplinas  
+|-->backend
+    |-->src
+|-->frontend
+    |-->src  
+       |-->app  
+       |-->components  
+       |-->hooks  
+       |-->lib  
+       |-->styles  
+|-->entregas
     |-->entrega-1  
        |-->web-dev-fullstack  
        |-->calculo-2  
