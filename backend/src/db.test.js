@@ -20,3 +20,5 @@ const tryConnection = async () => {
 };
 
 export default tryConnection;
+
+tryConnection();

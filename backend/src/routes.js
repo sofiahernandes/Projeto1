@@ -2,7 +2,6 @@ import { Router } from "express";
 import { pool } from "./db.js";
 
 import contributionController from "./controllers/contributionController.js";
-import adminController from "./controllers/adminController.js";
 import teamController from "./controllers/teamController.js";
 import mentorController from "./controllers/mentorController.js";
 import userController from "./controllers/userController.js";
