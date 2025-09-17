@@ -1,4 +1,4 @@
-import teams from "../models/teamsModel";
+import teams from "../models/teamsModel.js";
 
 const teamsController = {
   allTeams: (_, res) => {

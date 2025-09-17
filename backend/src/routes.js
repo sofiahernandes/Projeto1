@@ -20,7 +20,7 @@ r.get("/db/health", async (_, res) => {
 
 r.post("/createContribution", contributionsController.createContribution);
 r.get("/contributions", contributionsController.allContributions);
-r.delete("/deleteContribution/:idContribution", contributionsController.deleteContribution);
+r.delete("/deleteContribution/:IdContribuicao", contributionsController.deleteContribution);
 
 r.post("/createEdition", editionsController.createEdition);
 r.get("/editions", editionsController.allEditions);

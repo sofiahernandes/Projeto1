@@ -1,59 +1,89 @@
 import { v4 } from "uuid";
-import contributions, { findIndex, push } from "../models/contributionsModel";
+import contributions /*{ findIndex, push, splice } */ from "../models/contributionsModel.js";
+import {pool} from "../db.js"
 
+//GET http://localhost:3300/api/contributions
 const contributionsController = {
-  allContributions: (_, res) => {
-    // Inserir aqui códigos de manipulação da Base de Dados SQL aprendidos em aula (Web Full-stack)
-    return res.status(200).json(contributions);
+  allContributions: async (_, res) => {
+    try {
+      const [rows] = await pool.query(
+        'SELECT * FROM contribuicao'
+      )
+      res.json(rows)
+    } catch(err) {
+      res.status(500).json({error: 'Erro ao listar contribuições.'})
+    }
   },
 
-  createContribution: async (req, _) => {
+
+//POST http://localhost:3300/api/createContribution
+  createContribution: async (req, res) => {
     const {
-      idTeam,
-      typeContribution,
-      quantityContribution,
-      pontuationContribution,
-      receiptContribution,
+      IdTime,
+      TipoDoacao,
+      Valor,
+     // pontuationContribution,
+      Meta,
+      NomeDoador,
+      Fundos,
+     // receiptContribution
     } = req.body;
 
     if (
-      !idTeam ||
-      !typeContribution ||
-      !quantityContribution ||
-      !pontuationContribution ||
-      !receiptContribution
+      !IdTime ||
+      !TipoDoacao ||
+      !Valor ||
+      //!pontuationContribution ||
+      !NomeDoador
     ) {
-      // Inserir aqui códigos de manipulação da Base de Dados SQL aprendidos em aula (Web Full-stack)
-      return req.status(400).json("Preencha todos os campos");
+        return res.status(400).json({ error: "Preencha todos os campos" });
     }
 
     const contribution = {
-      idContribution: v4(),
-      idTeam,
-      typeContribution,
-      quantityContribution,
-      pontuationContribution,
-      receiptContribution,
+     // IdContribuicao: v4(),
+      IdTime,
+      TipoDoacao,
+      Valor,
+      //pontuationContribution,
+      //receiptContribution,
+      NomeDoador,
+      Meta,
+      Fundos
     };
 
-    // Inserir aqui códigos de manipulação da Base de Dados SQL aprendidos em aula (Web Full-stack)
-    push(contribution);
-    return res.status(201).json(contribution);
+    try{
+      const[insert] = await pool.query(
+        'INSERT INTO contribuicao (Valor, TipoDoacao, Fundos, Meta, NomeDoador, IdTime)  VALUES(?,?,?,?,?,?)',
+      [Valor, TipoDoacao, Fundos, Meta, NomeDoador, IdTime]
+      )
+      const [rows] = await pool.query(
+        'SELECT * FROM contribuicao WHERE IdContribuicao=?',
+        [insert.insertId]
+      )
+      res.status(201).json(rows[0])     
+    } 
+    catch (err) {
+      res.status(500).json({ error: 'ERRO ao criar contribuição', details: err.message });
+      }
   },
 
-  deleteContribution: (req, res) => {
-    const { idContribution } = req.params;
+  //Delete http://localhost:3300/api/deleteContribution/:IdContribuicao
 
-    const indexContribution = findIndex(
-      (contribution) => contribution.idContribution === idContribution
-    );
-    if (indexContribution === -1)
-      return res.status(404).json({ message: "Contribution not found" });
+  deleteContribution: async (req, res) => {
+    const { IdContribuicao } = req.params;
 
-    const deleted = splice(indexContribution, 1);
-
-    // Inserir aqui códigos de manipulação da Base de Dados SQL aprendidos em aula (Web Full-stack)
-    return res.status(201).json(deleted);
+    try{
+      const [result] = await pool.query(
+        'DELETE FROM contribuicao WHERE IdContribuicao=?',
+        [IdContribuicao]
+        )
+        if (result.affectedRows === 0) {
+            return res.status(404).json({error: "Contribuição não encontrada"}) 
+        }
+    res.json({message: "Contribuiçãoo deletada com sucesso!"})
+    } catch {
+      res.status(500).json({error: "Erro ao deletar contribuição"})
+    }
   },
 };
 
