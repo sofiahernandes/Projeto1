@@ -1,9 +1,8 @@
 const teams = [
   {
-    idTeam: 25027462,
-    teamEdition: 1,
-    teamPontuation: 100,
-    teamName: "Arkana",
+    IdTime: 25027462,
+    SemestreEdicao: 1,
+    NomeTime: "Arkana",
   },
 ];
 

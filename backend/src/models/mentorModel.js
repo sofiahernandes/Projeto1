@@ -1,9 +1,8 @@
-const mentors = [
+const mentor = [
   {
-    idMentor: 1,
-    emailMentor: "professor@fecap.br",
-    passwordMentor: "123#Senha",
+    IdMentor: 1, // auto_increment
+    EmailMentor: "professor@fecap.br",
+    SenhaMentor: "123#Senha",
   },
 ];
 
-export default mentors;

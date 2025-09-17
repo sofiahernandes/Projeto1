@@ -1,12 +1,12 @@
-const contributions = [
+const contribuicao = [
   {
-    idContribution: 1,
-    idTeam: 1,
-    typeContribution: "dinheiro" || "alimento",
-    quantityContribution: 10, // reais || kg
-    pontuationContribution: 9,
-    receiptContribution: {}, // file upload
+    IdTime: 1, // auto_increment
+    TipoDoacao: "dinheiro" || "alimento",
+    Quantidade: 10, // reais || kg
+    Meta: 12, // reais || kg
+    Gastos: 100, // reais
+    Fonte: "João Carlos",
+    Comprovante: {}, // file upload
   },
 ];
 
-export default contributions;
