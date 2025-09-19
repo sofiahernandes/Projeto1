@@ -30,7 +30,7 @@ const usersController = {
     }
   },
 
-  //GET http://localhost:3001/api/register
+  //POST http://localhost:3001/api/register
   createUser: async (req, res) => {
     const { RaAlunoM, NomeUsuario, EmailUsuario, SenhaAluno, Telefone, Turma } =
       req.body;
@@ -53,8 +53,9 @@ const usersController = {
       );
 
       const [rows] = await pool.query(
-        "SELECT * FROM user WHERE IdUsuario = ?",
-        [insert.insertId]
+        "SELECT * FROM user WHERE RaAlunoM = ?",
+        [RaAlunoM]
+        // [insert.insertId]
       );
       res.status(201).json(rows[0]);
     } catch (err) {

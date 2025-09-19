@@ -13,7 +13,7 @@ const mentorController = {
     }
   },
 
-  //GET http://localhost:3001/api/mentors/:EmailMentor
+  //GET http://localhost:3001/api/mentor/id/:IdMentor
   mentorById: async (req, res) => {
     const { IdMentor } = req.params;
 
@@ -28,7 +28,7 @@ const mentorController = {
     }
   },
 
-  //GET http://localhost:3001/api/mentors/:IdMentor
+  //GET http://localhost:3001/api/mentor/email/:EmailMentor
   mentorByEmail: async (req, res) => {
     const { EmailMentor } = req.params;
 
@@ -47,14 +47,13 @@ const mentorController = {
   createMentor: async (req, res) => {
     const { EmailMentor, IsAdmin, SenhaMentor } = req.body;
 
-    if (!EmailMentor || !SenhaMentor || !IsAdmin) {
-      alert("Preencha todos os campos");
-      return req.status(400).json("Preencha todos os campos");
+    if (!EmailMentor || !SenhaMentor || IsAdmin === undefined) {
+      return res.status(400).json("Preencha todos os campos");
     }
 
     try {
       const [insert] = await pool.query(
-        "INSERT INTO mentor (IdMentor, EmailMentor, SenhaMentor) VALUES(?,?,?)",
+        "INSERT INTO mentor (EmailMentor, SenhaMentor, IsAdmin) VALUES(?,?,?)",
         [EmailMentor, SenhaMentor, IsAdmin]
       )
 
@@ -70,16 +69,16 @@ const mentorController = {
   },
 
   //DELETE http://localhost:3001/api/deleteMentor/:EmailMentor
-  deleteMentor: (req, res) => {
+  deleteMentor: async (req, res) => {
     const { EmailMentor } = req.params;
 
     try {
-      const [result] = pool.query(
-        "DELETE FROM mentor WHERE EmailMentor=? CHECK IsAdmin=false",
+      const [result] = await pool.query(
+        "DELETE FROM mentor WHERE EmailMentor=? AND IsAdmin=false",
         [EmailMentor]
       )
       if (result.affectedRows == 0) {
-        res.status(404).json({ error: "Mentor não encontrado.", details: err.message })
+        res.status(404).json({ error: "Mentor não encontrado."})
       }
     } catch (err) {
       res.status(500).json({ error: "Erro ao deletar mentor.", details: err.message })

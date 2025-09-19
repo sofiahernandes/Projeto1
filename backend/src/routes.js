@@ -23,8 +23,8 @@ r.delete("/deleteContribution/:IdContribuicao", contributionController.deleteCon
 
 r.post("/createMentor", mentorController.createMentor);
 r.get("/mentors", mentorController.allMentors);
-r.get("/mentor/:IdMentor", mentorController.mentorById);
-r.get("/mentor/:EmailMentor", mentorController.mentorByEmail);
+r.get("/mentor/id/:IdMentor", mentorController.mentorById);
+r.get("/mentor/email/:EmailMentor", mentorController.mentorByEmail);
 r.delete("/deleteMentor/:EmailMentor", mentorController.deleteMentor);
 
 r.post("/createTeam", teamController.createTeam);
