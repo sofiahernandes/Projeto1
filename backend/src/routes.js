@@ -17,24 +17,24 @@ r.get("/db/health", async (_, res) => {
   }
 });
 
-r.post("/api/createContribution", contributionController.createContribution);
-r.get("/api/contributions", contributionController.allContributions);
-r.delete("/api/deleteContribution/:IdContribuicao", contributionController.deleteContribution);
+r.post("/createContribution", contributionController.createContribution);
+r.get("/contributions", contributionController.allContributions);
+r.delete("/deleteContribution/:IdContribuicao", contributionController.deleteContribution);
 
-r.post("/api/createMentor", mentorController.createMentor);
-r.get("/api/mentors", mentorController.allMentors);
-r.get("/api/mentors/:IdMentor", mentorController.mentorById);
-r.get("/api/mentors/:EmailMentor", mentorController.mentorByEmail);
-r.delete("/api/deleteMentor/:EmailMentor", mentorController.deleteMentor);
+r.post("/createMentor", mentorController.createMentor);
+r.get("/mentors", mentorController.allMentors);
+r.get("/mentors/:IdMentor", mentorController.mentorById);
+r.get("/mentors/:EmailMentor", mentorController.mentorByEmail);
+r.delete("/deleteMentor/:EmailMentor", mentorController.deleteMentor);
 
-r.post("/api/createTeam", teamController.createTeam);
-r.get("/api/teams", teamController.allTeams);
-r.get("/api/team/:IdTime", teamController.teamByID);
-r.delete("/api/deleteTeam/:RA", teamController.deleteTeam);
+r.post("/createTeam", teamController.createTeam);
+r.get("/teams", teamController.allTeams);
+r.get("/team/:IdTime", teamController.teamByID);
+r.delete("/deleteTeam/:IdTime", teamController.deleteTeam);
 
-r.post("/api/register/sign-up", userController.createUser);
-r.get("/api/users", userController.allUsers);
-r.get("/api/user/:RA", userController.userByRA);
-r.delete("/api/deleteUser/:RA", userController.deleteUser);
+r.post("/register/sign-up", userController.createUser);
+r.get("/users", userController.allUsers);
+r.get("/user/:RA", userController.userByRA);
+r.delete("/deleteUser/:RA", userController.deleteUser);
 
 export default r;

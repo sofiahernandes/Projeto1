@@ -1,5 +1,6 @@
 import { pool } from "../db.js";
 
+//GET http://localhost:3000/api/contributions
 const contributionController = {
   allContributions: async (_, res) => {
     try {
@@ -11,6 +12,7 @@ const contributionController = {
       res.status(500).json({ error: 'Erro ao listar contribuições.', details: err.message })
     }
   },
+  //POST http://localhost:3000/api/CreateContributions
 
   createContribution: async (req, res) => {
     const {
@@ -52,6 +54,7 @@ const contributionController = {
     }
   },
 
+  //delete http://localhost:3000/api/deleteContribution/:IdContribuicao"
   deleteContribution: async (req, res) => {
     const { IdContribuicao } = req.params;
 
