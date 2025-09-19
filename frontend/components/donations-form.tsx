@@ -2,14 +2,39 @@
 
 import React, { useState } from "react";
 
-export default function DonationsForm() {
-  const [idTime, setIdTime] = useState<number>(0);
-  const [tipoDoacao, setTipoDoacao] = useState("");
-  const [quantidade, setQuantidade] = useState<number>(0);
-  const [fonte, setFonte] = useState("");
-  const [meta, setMeta] = useState<number>(0);
-  const [gastos, setGastos] = useState("");
-  const [comprovante, setComprovante] = useState("");
+interface Properties {
+  idTime: number
+  setIdTime: React.Dispatch<React.SetStateAction<number | undefined>>
+  tipoDoacao: string
+  setTipoDoacao: React.Dispatch<React.SetStateAction<string>>
+  quantidade: number
+  setQuantidade: React.Dispatch<React.SetStateAction<number | undefined>>
+  fonte: string
+  setFonte: React.Dispatch<React.SetStateAction<string>>
+  meta: number
+  setMeta: React.Dispatch<React.SetStateAction<number | undefined>>
+  gastos: number
+  setGastos: React.Dispatch<React.SetStateAction<number | undefined>>
+  comprovante: string
+  setComprovante: React.Dispatch<React.SetStateAction<string>>
+}
+
+export default function DonationsForm({
+  idTime,
+  setIdTime,
+  tipoDoacao,
+  setTipoDoacao,
+  quantidade,
+  setQuantidade,
+  fonte,
+  setFonte,
+  meta,
+  setMeta,
+  gastos,
+  setGastos,
+  comprovante,
+  setComprovante
+}: Properties) {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,7 +71,7 @@ export default function DonationsForm() {
       setQuantidade(0);
       setFonte("");
       setMeta(0);
-      setGastos("");
+      setGastos(0);
       setComprovante("");
     } catch (error) {
       console.error("Erro ao enviar contribuição:", error);
@@ -89,10 +114,10 @@ export default function DonationsForm() {
         onChange={(e) => setMeta(Number(e.target.value))}
       />
       <input
-        type="text"
+        type="number"
         placeholder="Gastos"
         value={gastos}
-        onChange={(e) => setGastos(e.target.value)}
+        onChange={(e) => setGastos(Number(e.target.value))}
       />
       <input
         type="text"
