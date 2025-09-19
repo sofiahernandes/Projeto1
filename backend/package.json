@@ -19,7 +19,6 @@
   },
   "homepage": "https://github.com/2025-2-MCC2/Projeto1#readme",
   "dependencies": {
-    "@clerk/clerk-sdk-node": "^4.13.23",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0"

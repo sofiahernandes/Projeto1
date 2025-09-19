@@ -4,7 +4,7 @@ import { SetStateAction, useState } from "react";
 
 import MenuDesktop from "@/components/menu-desktop";
 import MenuMobile from "@/components/menu-mobile";
-import DonationsForm from "@/components/donations-form"
+import DonationsForm from "@/components/donations-form";
 import BackHome from "@/components/back-home";
 
 export default function Donations() {
@@ -12,7 +12,9 @@ export default function Donations() {
 
   return (
     <div className="container w-full">
-      <div className="md:hidden absolute left-0 top-0"><BackHome /></div>
+      <div className="md:hidden absolute left-0 top-0">
+        <BackHome />
+      </div>
       <header>
         <button
           className={`open-menu ${menuOpen ? "menu-icon hidden" : "menu-icon"}`}

@@ -4,9 +4,6 @@ import React from "react";
 import CustomInputs from "../../../components/login-inputs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent } from "react";
-
-import { SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 import BackHome from "@/components/back-home";
 
@@ -15,14 +12,33 @@ export default function Login() {
   const [raAlunoMentor, setRaAlunoMentor] = React.useState(0);
   const [senhaAlunoMentor, setSenhaAlunoMentor] = React.useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newUser = {
-      raAlunoMentor,
-      senhaAlunoMentor,
-    };
-    router.push("/(restricted)/[userId]/new-contribution");
-  };
+  
+    try {
+      const res = await fetch("http://localhost:3001/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          RA: raAlunoMentor,
+          senhaAlunoMentor,
+        }),
+      });
+  
+      if (!res.ok) {
+        const errorData = await res.json();
+        alert(errorData.error || "Erro no login");
+        return;
+      }
+  
+      const user = await res.json();
+      
+      router.push(`/(restricted)/${user.RaAlunoM}/new-contribution`);
+    } catch (err) {
+      console.error("Erro de conexão:", err);
+      alert("Erro de conexão com o servidor");
+    }
+  };  
 
   return (
     <div className="w-full">
@@ -52,22 +68,8 @@ export default function Login() {
           </section>
 
           <section className="bg-[#eeeeee] border border-[#b4b4b4] rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2 px-6 py-8">
-            <h2 className="text-black font-bold text-xl md:text-xl mb-3">
-              Professores
-            </h2>
-            <SignedOut>
-              <SignUpButton>
-                <button className="bg-primary text-white rounded-lg font-medium text-sm sm:text-base py-2 cursor-pointer mb-6 w-[80%] hover:bg-[#354F52]">
-                  Sign Up
-                </button>
-              </SignUpButton>
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-
             <h2 className="text-black font-bold text-xl md:text-xl mb-2 mt-4">
-              Login Alunos
+              Login Alunos-Mentores, Professores e Mentores
             </h2>
             <form
               onSubmit={handleSubmit}

@@ -35,6 +35,7 @@ r.delete("/deleteTeam/:IdTime", teamController.deleteTeam);
 r.post("/register/sign-up", userController.createUser);
 r.get("/users", userController.allUsers);
 r.get("/user/:RA", userController.userByRA);
+r.get("/users/login", userController.userByRA);
 r.delete("/deleteUser/:RA", userController.deleteUser);
 
 export default r;

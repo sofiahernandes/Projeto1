@@ -13,16 +13,39 @@ export default function Cadastro() {
   const [senhaAlunoMentor, setSenhaAlunoMentor] = React.useState("");
   const [mostrarSenha, setMostrarSenha] = React.useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newUser = {
-      raAlunoMentor,
-      senhaAlunoMentor,
-      nomeAlunoMentor,
-      emailAlunoMentor,
-    };
-    router.push(`/(restricted)/[userId]/new-contribution`);
-  };
+  
+    try {
+      const res = await fetch("http://localhost:3001/api/register/sign-up", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          RA: raAlunoMentor,
+          nomeUsuario: nomeAlunoMentor,
+          emailUsuario: emailAlunoMentor,
+          SenhaAluno: senhaAlunoMentor,
+          Telefone: "000000000",
+          Turma: "A"
+        }),
+      });
+  
+      if (!res.ok) {
+        const err = await res.json();
+        alert("Erro: " + err.error);
+        return;
+      }
+  
+      const newUser = await res.json();
+      console.log("Usuário cadastrado:", newUser);
+  
+      // redireciona para contribuições passando o id
+      router.push(`/(restricted)/${newUser.RaAlunoM}/new-contribution`);
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao cadastrar usuário");
+    }
+  };  
 
   return (
     <div className="w-full">

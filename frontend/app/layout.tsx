@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "@/styles/globals.css";
@@ -15,17 +14,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}>
-      <html lang="en">
-        <head>
-          <style>{`html {
+    <html lang="en">
+      <head>
+        <style>{`html {
             font-family: ${GeistSans.style.fontFamily};
             --font-sans: ${GeistSans.variable};
             --font-mono: ${GeistMono.variable};
           }`}</style>
-        </head>
-        <body>{children}</body>
-      </html>
-    </ClerkProvider>
+      </head>
+      <body>{children}</body>
+    </html>
   );
 }
