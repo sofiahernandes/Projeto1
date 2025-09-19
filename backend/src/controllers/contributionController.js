@@ -1,29 +1,22 @@
 import { pool } from "../db.js";
 
-//GET http://localhost:3000/api/contributions
 const contributionController = {
+  //GET http://localhost:3001/api/contributions
   allContributions: async (_, res) => {
     try {
-      const [rows] = await pool.query(
-        'SELECT * FROM contribuicao'
-      )
-      res.json(rows)
+      const [rows] = await pool.query("SELECT * FROM contribuicao");
+      res.json(rows);
     } catch (err) {
-      res.status(500).json({ error: 'Erro ao listar contribuições.', details: err.message })
+      res
+        .status(500)
+        .json({ error: "Erro ao listar contribuições.", details: err.message });
     }
   },
-  //POST http://localhost:3000/api/CreateContributions
 
+  //POST http://localhost:3001/api/createContribution
   createContribution: async (req, res) => {
-    const {
-      IdTime,
-      TipoDoacao,
-      Quantidade,
-      Meta,
-      Gastos,
-      Fonte,
-      Comprovante
-    } = req.body;
+    const { IdTime, TipoDoacao, Quantidade, Meta, Gastos, Fonte, Comprovante } =
+      req.body;
 
     if (
       !IdTime ||
@@ -40,35 +33,40 @@ const contributionController = {
 
     try {
       const [insert] = await pool.query(
-        'INSERT INTO contribuicao (IdTime, TipoDoacao, Quantidade, Meta, Gastos, Fonte, Comprovante)  VALUES(?,?,?,?,?,?,?)',
+        "INSERT INTO contribuicao (IdTime, TipoDoacao, Quantidade, Meta, Gastos, Fonte, Comprovante)  VALUES(?,?,?,?,?,?,?)",
         [IdTime, TipoDoacao, Quantidade, Meta, Gastos, Fonte, Comprovante]
-      )
+      );
       const [rows] = await pool.query(
-        'SELECT * FROM contribuicao WHERE IdContribuicao=?',
+        "SELECT * FROM contribuicao WHERE IdContribuicao=?",
         [insert.insertId]
-      )
-      res.status(201).json(rows[0])
-    }
-    catch (err) {
-      res.status(500).json({ error: 'Erro ao criar contribuição', details: err.message });
+      );
+      res.status(201).json(rows[0]);
+    } catch (err) {
+      res
+        .status(500)
+        .json({ error: "Erro ao criar contribuição", details: err.message });
     }
   },
 
-  //delete http://localhost:3000/api/deleteContribution/:IdContribuicao"
+  //DELETE http://localhost:3001/api/deleteContribution/:IdContribuicao
   deleteContribution: async (req, res) => {
     const { IdContribuicao } = req.params;
 
     try {
       const [result] = await pool.query(
-        'DELETE FROM contribuicao WHERE IdContribuicao=?',
+        "DELETE FROM contribuicao WHERE IdContribuicao=?",
         [IdContribuicao]
-      )
+      );
       if (result.affectedRows === 0) {
-        return res.status(404).json({ error: "Contribuição não encontrada", details: err.message })
+        return res
+          .status(404)
+          .json({ error: "Contribuição não encontrada", details: err.message });
       }
-      res.json({ message: "Contribuição deletada com sucesso!" })
+      res.json({ message: "Contribuição deletada com sucesso!" });
     } catch {
-      res.status(500).json({ error: "Erro ao deletar contribuição", details: err.message })
+      res
+        .status(500)
+        .json({ error: "Erro ao deletar contribuição", details: err.message });
     }
   },
 };

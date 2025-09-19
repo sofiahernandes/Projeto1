@@ -1,7 +1,9 @@
 import { pool } from "../db.js";
 
+{/* 2° Entrega: {IdTime, RaAlunoM, RA1, RA2, RA3, RA4, RA5, RA6, RA7, RA8, RA9, RA10} */}
+
 const teamsController = {
-  //GET http://localhost:3000/api/teams
+  //GET http://localhost:3001/api/teams
   allTeams: async (_, res) => {
     try {
       const [rows] = await pool.query("SELECT * FROM times");
@@ -11,13 +13,12 @@ const teamsController = {
     }
   },
 
-  //GET http://localhost:3000/api/team/:idTime
-
+  //GET http://localhost:3001/api/team/:IdTime
   teamByID: async (req, res) => {
-    const { idTime } = req.params;
+    const { IdTime } = req.params;
     try {
-      const [rows] = await pool.query("SELECT * FROM times WHERE idTime=?", [
-        idTime,
+      const [rows] = await pool.query("SELECT * FROM times WHERE IdTime=?", [
+        IdTime,
       ]);
       res.json(rows);
     } catch (err) {
@@ -25,26 +26,18 @@ const teamsController = {
     }
   },
 
-  //POST http://localhost:3000/api/createTeam
-
+  //POST http://localhost:3001/api/createTeam
   createTeam: async (req, res) => {
-    const { NomeTime, IdMentor, RaAlunoM, NomeAlunos, RaAlunos } = req.body;
+    const { NomeTime, RaAlunoM, RaAlunos } = req.body;
 
-    if (
-      // !idTime ||
-      !NomeTime ||
-      // !IdMentor ||
-      // !RaAlunoM ||
-      !NomeAlunos ||
-      !RaAlunos
-    ) {
+    if (!NomeTime || !RaAlunoM || !RaAlunos) {
       return res.status(400).json("Preencha todos os campos");
     }
 
     try {
       const [insert] = await pool.query(
-        "INSERT INTO times (NomeTime, NomeAlunos, RaAlunos) VALUES (?,?,?)",
-        [NomeTime, NomeAlunos, RaAlunos]
+        "INSERT INTO times (NomeTime, RaAlunos) VALUES (?,?,?)",
+        [NomeTime, RaAlunos]
       );
       const [rows] = await pool.query("SELECT * FROM times where IdTime=?", [
         insert.insertId,
@@ -55,8 +48,8 @@ const teamsController = {
         .json({ error: "Erro ao criar time", details: err.message });
     }
   },
-  //DELETE http://localhost:3000/api/deleteTeam/:IdTime
 
+  //DELETE http://localhost:3001/api/deleteTeam/:IdTime
   deleteTeam: async (req, res) => {
     const { IdTime } = req.params;
 

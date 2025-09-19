@@ -1,6 +1,7 @@
 import { pool } from "../db.js";
 
 const usersController = {
+  //GET http://localhost:3001/api/users
   allUsers: async (_, res) => {
     try {
       const [rows] = await pool.query("SELECT * FROM user");
@@ -13,11 +14,12 @@ const usersController = {
     }
   },
 
+  //GET http://localhost:3001/api/user/:RaAlunoM
   userByRA: async (req, res) => {
-    const { idUsuario } = req.params;
+    const { RaAlunoM } = req.params;
     try {
       const [rows] = await pool.query("SELECT * FROM user WHERE RaAlunoM = ?", [
-        idUsuario,
+        RaAlunoM,
       ]);
       if (rows.length === 0) {
         return res.status(404).json({ error: "Aluno mentor não encontrado" });
@@ -28,12 +30,13 @@ const usersController = {
     }
   },
 
+  //GET http://localhost:3001/api/register
   createUser: async (req, res) => {
-    const { RA, NomeUsuario, EmailUsuario, SenhaAluno, Telefone, Turma } =
+    const { RaAlunoM, NomeUsuario, EmailUsuario, SenhaAluno, Telefone, Turma } =
       req.body;
 
     if (
-      !RA ||
+      !RaAlunoM ||
       !NomeUsuario ||
       !EmailUsuario ||
       !SenhaAluno ||
@@ -46,11 +49,11 @@ const usersController = {
     try {
       const [insert] = await pool.query(
         "INSERT INTO user (RaAlunoM, NomeAlunoM, Email, SenhaAluno, Telefone, Turma) VALUES (?, ?, ?, ?, ?, ?)",
-        [RA, NomeUsuario, EmailUsuario, SenhaAluno, Telefone, Turma]
+        [RaAlunoM, NomeUsuario, EmailUsuario, SenhaAluno, Telefone, Turma]
       );
 
       const [rows] = await pool.query(
-        "SELECT * FROM user WHERE idUsuario = ?",
+        "SELECT * FROM user WHERE IdUsuario = ?",
         [insert.insertId]
       );
       res.status(201).json(rows[0]);
@@ -62,17 +65,18 @@ const usersController = {
     }
   },
 
+  //POST http://localhost:3001/api/user/login
   loginUser: async (req, res) => {
-    const { RA, senhaAlunoMentor } = req.body;
+    const { RaAlunoM, senhaAlunoMentor } = req.body;
 
-    if (!RA || !senhaAlunoMentor) {
+    if (!RaAlunoM || !senhaAlunoMentor) {
       return res.status(400).json({ error: "RA e senha são obrigatórios" });
     }
 
     try {
       const [rows] = await pool.query(
         "SELECT * FROM user WHERE RaAlunoM = ? AND SenhaAluno = ?",
-        [RA, senhaAlunoMentor]
+        [RaAlunoM, senhaAlunoMentor]
       );
 
       if (rows.length === 0) {
@@ -85,12 +89,13 @@ const usersController = {
     }
   },
 
+  //DELETE http://localhost:3001/api/deleteUser/:RaAlunoM
   deleteUser: async (req, res) => {
-    const { idUsuario } = req.params;
+    const { RaAlunoM } = req.params;
 
     try {
       const [result] = await pool.query("DELETE FROM user WHERE RaAlunoM = ?", [
-        idUsuario,
+        RaAlunoM,
       ]);
       if (result.affectedRows === 0) {
         return res.status(404).json({ error: "Aluno Mentor não encontrado" });

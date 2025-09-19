@@ -1,6 +1,7 @@
 import { pool } from "../db.js";
 
 const mentorController = {
+  //GET http://localhost:3001/api/mentors
   allMentors: async (_, res) => {
     try {
       const [rows] = await pool.query(
@@ -12,6 +13,7 @@ const mentorController = {
     }
   },
 
+  //GET http://localhost:3001/api/mentors/:EmailMentor
   mentorById: async (req, res) => {
     const { IdMentor } = req.params;
 
@@ -26,6 +28,7 @@ const mentorController = {
     }
   },
 
+  //GET http://localhost:3001/api/mentors/:IdMentor
   mentorByEmail: async (req, res) => {
     const { EmailMentor } = req.params;
 
@@ -40,6 +43,7 @@ const mentorController = {
     }
   },
 
+  //POST http://localhost:3001/api/createMentor
   createMentor: async (req, res) => {
     const { EmailMentor, IsAdmin, SenhaMentor } = req.body;
 
@@ -65,6 +69,7 @@ const mentorController = {
     }
   },
 
+  //DELETE http://localhost:3001/api/deleteMentor/:EmailMentor
   deleteMentor: (req, res) => {
     const { EmailMentor } = req.params;
 

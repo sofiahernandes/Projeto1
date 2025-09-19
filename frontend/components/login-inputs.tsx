@@ -2,7 +2,7 @@ import React from "react";
 
 type Props = {
   usuario: number;
-  setUsuario: React.Dispatch<React.SetStateAction<number>>;
+  setUsuario: React.Dispatch<React.SetStateAction<number | undefined>>;
   senha: string;
   setSenha: React.Dispatch<React.SetStateAction<string>>;
 };

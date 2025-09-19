@@ -9,19 +9,19 @@ import BackHome from "@/components/back-home";
 
 export default function Login() {
   const router = useRouter();
-  const [raAlunoMentor, setRaAlunoMentor] = React.useState(0);
+  const [raAlunoMentor, setRaAlunoMentor] = React.useState<number>();
   const [senhaAlunoMentor, setSenhaAlunoMentor] = React.useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   
     try {
-      const res = await fetch("http://localhost:3001/users/login", {
+      const res = await fetch("http://localhost:3001/user/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          RA: raAlunoMentor,
-          senhaAlunoMentor,
+          RaAlunoM: raAlunoMentor,
+          SenhaAlunoM: senhaAlunoMentor,
         }),
       });
   
@@ -32,7 +32,7 @@ export default function Login() {
       }
   
       const user = await res.json();
-      
+
       router.push(`/(restricted)/${user.RaAlunoM}/new-contribution`);
     } catch (err) {
       console.error("Erro de conexão:", err);
@@ -76,7 +76,7 @@ export default function Login() {
               className="flex flex-col gap-4 w-full"
             >
               <CustomInputs
-                usuario={raAlunoMentor}
+                usuario={raAlunoMentor!}
                 setUsuario={setRaAlunoMentor}
                 senha={senhaAlunoMentor}
                 setSenha={setSenhaAlunoMentor}

@@ -4,20 +4,24 @@ import React from "react";
 import { useRouter } from "next/navigation";
 
 import BackHome from "@/components/back-home";
+import DropdownTurmas from "@/components/dropdown-turmas";
 
 export default function Cadastro() {
   const router = useRouter();
-  const [raAlunoMentor, setRaAlunoMentor] = React.useState(0);
+  const [raAlunoMentor, setRaAlunoMentor] = React.useState<number>();
+  const [telefoneAlunoMentor, setTelefoneAlunoMentor] =
+    React.useState<number>();
   const [nomeAlunoMentor, setNomeAlunoMentor] = React.useState("");
+  const [turma, setTurma] = React.useState("");
   const [emailAlunoMentor, setEmailAlunoMentor] = React.useState("");
   const [senhaAlunoMentor, setSenhaAlunoMentor] = React.useState("");
   const [mostrarSenha, setMostrarSenha] = React.useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     try {
-      const res = await fetch("http://localhost:3001/api/register/sign-up", {
+      const res = await fetch("http://localhost:3001/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -25,37 +29,39 @@ export default function Cadastro() {
           nomeUsuario: nomeAlunoMentor,
           emailUsuario: emailAlunoMentor,
           SenhaAluno: senhaAlunoMentor,
-          Telefone: "000000000",
-          Turma: "A"
+          Telefone: telefoneAlunoMentor,
+          Turma: turma,
         }),
       });
-  
+
       if (!res.ok) {
         const err = await res.json();
         alert("Erro: " + err.error);
         return;
       }
-  
+
       const newUser = await res.json();
       console.log("Usuário cadastrado:", newUser);
-  
+
       // redireciona para contribuições passando o id
       router.push(`/(restricted)/${newUser.RaAlunoM}/new-contribution`);
     } catch (error) {
       console.error(error);
       alert("Erro ao cadastrar usuário");
     }
-  };  
+  };
 
   return (
     <div className="w-full">
-      <div className="absolute left-0 top-0"><BackHome /></div>
+      <div className="absolute left-0 top-0">
+        <BackHome />
+      </div>
 
       <div className="min-h-screen flex justify-center items-center p-6">
         <div className="flex flex-col md:flex-row w-full max-w-3xl">
-          <section className="bg-[#1C7C61] h-100 m-1 flex flex-col rounded-lg items-center justify-center md:w-1/2 p-6 text-white">
-            <h1 className="flex justify-center font-bold text-[#fff] text-[22px] mb-1">
-              Cadastro de Alunos-mentores
+          <section className="bg-[#1C7C61] h-120 m-1 flex flex-col rounded-lg items-center justify-center md:w-1/2 p-6 text-white">
+            <h1 className="flex text-center font-bold text-[#fff] text-[22px] mb-1">
+              Cadastro de<br/>Alunos-mentores
             </h1>
             <img
               src="https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=180,fit=crop,q=95/dOq4lP0kVLiEl8Z3/lideranaas-empaticas-logo-AoPWG9oBrrt3QGv0.png"
@@ -68,6 +74,8 @@ export default function Cadastro() {
             <form onSubmit={handleSubmit} className="p-8 max-w-xl w-full">
               {/*Container Esquerda*/}
               <div className="flex flex-col space-y-2">
+                <DropdownTurmas turma={turma} setTurma={setTurma} />
+
                 <div className="text-base">
                   Nome completo
                   <input
@@ -106,8 +114,24 @@ export default function Cadastro() {
                     className="block w-full bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
                   />
                 </div>
+
                 <div className="text-base">
-                  Senha
+                  Número de Celular
+                  <input
+                    id="ra"
+                    name="ra"
+                    type="number"
+                    value={telefoneAlunoMentor}
+                    onChange={(e) =>
+                      setTelefoneAlunoMentor(Number(e.target.value))
+                    }
+                    placeholder="Insira seu Número"
+                    className="block w-full bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
+                  />
+                </div>
+
+                <p className="mb-0">Senha</p>
+                <div className="text-base flex">
                   <input
                     id="senha"
                     name="senha"
@@ -115,7 +139,7 @@ export default function Cadastro() {
                     value={senhaAlunoMentor}
                     onChange={(e) => setSenhaAlunoMentor(e.target.value)}
                     placeholder="Insira a senha"
-                    className="block w-full bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
+                    className="block w-[75%] mr-2 bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
                   />
                   <button
                     onClick={() => setMostrarSenha(!mostrarSenha)}
@@ -127,14 +151,11 @@ export default function Cadastro() {
                       <img src="../assets/EyeOpen.png" />
                     )}
                   </button>
-                </div>
-
-                <div className="flex items-center justify-end">
                   <button
                     type="submit"
-                    className="border-transparent bg-primary text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-[#354F52] rounded-lg"
+                    className="border-transparent text-white py-2 px-6 bg-primary self-center rounded-lg"
                   >
-                    Entrar
+                    Cadastrar
                   </button>
                 </div>
               </div>
