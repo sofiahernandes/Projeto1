@@ -27,7 +27,6 @@ const contributionController = {
       !Fonte ||
       !Comprovante
     ) {
-      alert("Preencha todos os campos");
       return res.status(400).json({ error: "Preencha todos os campos" });
     }
 
