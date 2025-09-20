@@ -22,7 +22,7 @@ const DropdownTurmas = ({ turma, setTurma }: Properties) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="border border-[#b4b4b4] hover:bg-primary/40 text-black hover:text-black!" asChild>
-        <Button variant="outline">Selecionar Turma</Button>
+        <Button variant="outline">{turma || "Selecionar Turma"}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 border border-[#b4b4b4]">
         <DropdownMenuRadioGroup value={turma} onValueChange={setTurma}>

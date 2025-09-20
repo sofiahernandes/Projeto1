@@ -48,7 +48,7 @@ const usersController = {
 
     try {
       const [insert] = await pool.query(
-        "INSERT INTO user (RaAlunoM, NomeAlunoM, Email, SenhaAluno, Telefone, Turma) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO user (RaAlunoM, NomeUsuario, EmailUsuario, SenhaAluno, Telefone, Turma) VALUES (?, ?, ?, ?, ?, ?)",
         [RaAlunoM, NomeUsuario, EmailUsuario, SenhaAluno, Telefone, Turma]
       );
 

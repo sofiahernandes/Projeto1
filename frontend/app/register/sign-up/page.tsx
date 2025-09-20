@@ -25,9 +25,9 @@ export default function Cadastro() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          RA: raAlunoMentor,
-          nomeUsuario: nomeAlunoMentor,
-          emailUsuario: emailAlunoMentor,
+          RaAlunoM: raAlunoMentor,
+          NomeUsuario: nomeAlunoMentor,
+          EmailUsuario: emailAlunoMentor,
           SenhaAluno: senhaAlunoMentor,
           Telefone: telefoneAlunoMentor,
           Turma: turma,
@@ -118,8 +118,8 @@ export default function Cadastro() {
                 <div className="text-base">
                   Número de Celular
                   <input
-                    id="ra"
-                    name="ra"
+                    id="telefone"
+                    name="telefone"
                     type="number"
                     value={telefoneAlunoMentor}
                     onChange={(e) =>
