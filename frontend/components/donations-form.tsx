@@ -42,7 +42,7 @@ export default function DonationsForm({
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:3001/createContribution", {
+      const res = await fetch("http://localhost:3001/api/createContribution", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -83,43 +83,44 @@ export default function DonationsForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <input
+      <input className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none "
         type="number"
         placeholder="Id do Time"
         value={idTime}
-        onChange={(e) => setIdTime(Number(e.target.value))}
+        onChange={(e) => setIdTime(Number(e.target.value))
+        }
       />
-      <input
+      <input className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none "
         type="text"
         placeholder="Tipo da Doação"
         value={tipoDoacao}
         onChange={(e) => setTipoDoacao(e.target.value)}
       />
-      <input
+      <input className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none "
         type="number"
         placeholder="Quantidade"
         value={quantidade}
         onChange={(e) => setQuantidade(Number(e.target.value))}
       />
-      <input
+      <input className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none "
         type="text"
         placeholder="Fonte"
         value={fonte}
         onChange={(e) => setFonte(e.target.value)}
       />
-      <input
+      <input className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none "
         type="number"
         placeholder="Meta"
         value={meta}
         onChange={(e) => setMeta(Number(e.target.value))}
       />
-      <input
+      <input className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none "
         type="number"
         placeholder="Gastos"
         value={gastos}
         onChange={(e) => setGastos(Number(e.target.value))}
       />
-      <input
+      <input className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none "
         type="text"
         placeholder="Comprovante (link do arquivo)"
         value={comprovante}

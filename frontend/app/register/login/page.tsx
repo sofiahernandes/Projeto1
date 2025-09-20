@@ -33,7 +33,7 @@ export default function Login() {
   
       const user = await res.json();
 
-      router.push(`/(restricted)/${user.RaAlunoM}/new-contribution`);
+      router.push(`/${user.RaAlunoM}/new-contribution`);
     } catch (err) {
       console.error("Erro de conexão:", err);
       alert("Erro de conexão com o servidor");

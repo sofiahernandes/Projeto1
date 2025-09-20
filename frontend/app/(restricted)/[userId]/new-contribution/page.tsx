@@ -1,16 +1,18 @@
 "use client";
 
 import { SetStateAction, useState } from "react";
-
 import MenuDesktop from "@/components/menu-desktop";
 import MenuMobile from "@/components/menu-mobile";
 import DonationsForm from "@/components/donations-form";
 import BackHome from "@/components/back-home";
+import { useParams } from "next/navigation";
 
 export default function Donations() {
+  const params = useParams();
+  const userId = Number(params.userId);
   const [menuOpen, setMenuOpen] = useState(false);
 
-    const [idTime, setIdTime] = useState<number>();
+    const [idTime, setIdTime] = useState<number | undefined>(userId);
     const [tipoDoacao, setTipoDoacao] = useState("");
     const [quantidade, setQuantidade] = useState<number>();
     const [fonte, setFonte] = useState("");
@@ -43,6 +45,7 @@ export default function Donations() {
 
           {/* Menu rodapé quando está no mobile */}
           <MenuMobile 
+            idTime={idTime!}
             // idTime={idTime!} 
           />
 
