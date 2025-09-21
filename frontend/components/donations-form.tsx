@@ -49,9 +49,9 @@ export default function DonationsForm({
           IdTime: idTime,
           TipoDoacao: tipoDoacao,
           Quantidade: quantidade,
-          Fonte: fonte,
           Meta: meta,
           Gastos: gastos,
+          Fonte: fonte,
           Comprovante: comprovante,
         }),
       });
@@ -69,9 +69,9 @@ export default function DonationsForm({
       setIdTime(0);
       setTipoDoacao("");
       setQuantidade(0);
-      setFonte("");
       setMeta(0);
       setGastos(0);
+      setFonte("");
       setComprovante("");
     } catch (error) {
       console.error("Erro ao enviar contribuição:", error);

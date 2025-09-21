@@ -25,11 +25,11 @@ export default function Cadastro() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          RaAlunoM: raAlunoMentor,
+          RaUsuario: raAlunoMentor,
           NomeUsuario: nomeAlunoMentor,
           EmailUsuario: emailAlunoMentor,
-          SenhaAluno: senhaAlunoMentor,
-          Telefone: telefoneAlunoMentor,
+          SenhaUsuario: senhaAlunoMentor,
+          TelefoneUsuario: telefoneAlunoMentor,
           Turma: turma,
         }),
       });
@@ -40,11 +40,11 @@ export default function Cadastro() {
         return;
       }
 
-      const newUser = await res.json();
-      console.log("Usuário cadastrado:", newUser);
+      const novoUsuario = await res.json();
+      console.log("Usuário cadastrado:", novoUsuario);
 
       // redireciona para contribuições passando o id
-      router.push(`/(restricted)/${newUser.RaAlunoM}/new-contribution`);
+      router.push(`/(restricted)/${novoUsuario.RaUsuario}/new-contribution`);
     } catch (error) {
       console.error(error);
       alert("Erro ao cadastrar usuário");
