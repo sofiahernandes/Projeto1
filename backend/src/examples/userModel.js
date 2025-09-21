@@ -1,10 +1,11 @@
 const users = [
   {
-    RaAlunoM: 25027462,
+    RaUsuario: 25027462,
     NomeUsuario: "Sofia Botechia Hernandes",
     EmailUsuario: "sofia.hernandes@edu.fecap.br",
-    SenhaAluno: "123#Senha",
-    Telefone, Turma
+    SenhaUsuario: "123#Senha",
+    Telefone: 11111111111,
+    Turma: "1MA"
   },
 ];
 
