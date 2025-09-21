@@ -1,42 +1,41 @@
 create database Arkana;
-
 use Arkana;
 
-create table user(
-  	RaUsuario int primary key, 
-  	NomeUsuario varchar(250) not null, 
-  	EmailUsuario varchar(250) not null, 
-  	SenhaUsuario varchar(16) not null,
-  	TelefoneUsuario int not null, 
+create table usuario(
+	RaUsuario int primary key, 
+	NomeUsuario varchar(250) not null, 
+	EmailUsuario varchar(250) not null, 
+	SenhaUsuario varchar(16) not null,
+	TelefoneUsuario int not null, 
     Turma varchar(20) not null
 );
 
 create table mentor(
-  IdMentor int primary key auto_increment,
-  EmailMentor varchar(250) not null,
-  IsAdmin boolean not null,
-  SenhaMentor varchar(16) not null
+	IdMentor int primary key auto_increment,
+	EmailMentor varchar(250) not null,
+	IsAdmin boolean not null,
+	SenhaMentor varchar(16) not null
 );
 
 create table time(
 	IdTime int primary key auto_increment,
-  NomeTime varchar(250) not null,
-  RaUsuario int not null,
-  RaAlunos int not null,
-  IdMentor int,
-  foreign key(IdMentor) references mentor(IdMentor),
-  foreign key(RaUsuario) references usuario(RaUsuario)
+	NomeTime varchar(250) not null,
+	RaUsuario int not null,
+	RaAlunos int not null,
+	IdMentor int,
+	foreign key(IdMentor) references mentor(IdMentor),
+	foreign key(RaUsuario) references usuario(RaUsuario)
 );
 
 create table contribuicao(
-  IdTime int,
-  TipoDoacao varchar(10) not null,
-  Quantidade int not null, 
-  Meta int,
-  Gastos int,
-  Fonte varchar(200),
-  Comprovante varchar(200),
-  IdContribuicao int primary key auto_increment,
-  DataContribuicao timestamp default current_timestamp,
-  foreign key (IdTime) references times(IdTime)
+	IdTime int,
+	TipoDoacao varchar(10) not null,
+	Quantidade int not null, 
+	Meta int,
+	Gastos int,
+	Fonte varchar(200),
+	Comprovante varchar(200),
+	IdContribuicao int primary key auto_increment,
+	DataContribuicao timestamp default current_timestamp, 
+	foreign key (IdTime) references time(IdTime)
 );
