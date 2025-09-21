@@ -28,16 +28,16 @@ const teamsController = {
 
   //POST http://localhost:3001/api/createTeam
   createTeam: async (req, res) => {
-    const { NomeTime, RaAlunoM, RaAlunos } = req.body;
+    const { NomeTime, RaUsuario, RaAlunos } = req.body;
 
-    if (!NomeTime || !RaAlunoM || !RaAlunos) {
+    if (!NomeTime || !RaUsuario || !RaAlunos) {
       return res.status(400).json("Preencha todos os campos");
     }
 
     try {
       const [insert] = await pool.query(
-        "INSERT INTO times (NomeTime, RaAlunos) VALUES (?,?,?)",
-        [NomeTime, RaAlunos]
+        "INSERT INTO times (NomeTime, RaUsuario, RaAlunos) VALUES (?,?,?)",
+        [NomeTime, RaUsuario, RaAlunos]
       );
       const [rows] = await pool.query("SELECT * FROM times where IdTime=?", [
         insert.insertId,
