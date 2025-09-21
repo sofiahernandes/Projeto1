@@ -6,7 +6,6 @@
 <h1>Nome do Projeto: Arkana 📑</h1>
 <p>Acesse o app (em construção): <a href="https://arkana-projeto1.vercel.app/">https://arkana-projeto1.vercel.app/</a></p>
 </div>
-
 <br/>
 
 ## Integrantes do Grupo
@@ -21,7 +20,6 @@
 [Francisco de Souza Escobar](https://www.linkedin.com/)  
 [Leonardo Fabris Lugoboni](https://www.linkedin.com/)  
 [Katia Milani Lara Bossi](https://www.linkedin.com/)  
-
 <br/>
 
 # Entregas
@@ -30,6 +28,7 @@
 - banco de dados: [/entregas/entrega-1/banco-de-dados/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/banco-de-dados)  
 - gestao empresarial: [/entregas/entrega-1/gestao-empresarial/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/gestao-empresarial)  
 - projeto interdisciplinar [/entregas/entrega-1/proj-interdisciplinar/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/proj-interdisciplinar)
+<br/>
 
 # Descrição
 ## 🎮 Proposta Principal
@@ -45,12 +44,15 @@ Desenvolvimento de uma Aplicação Web para o [Projeto Lideranças Empáticas](h
 <br/>
 
 ## 🎨 Design Gráfico
-Procuramos desenvolver uma interface que traga a identidade visual do Projeto Lideranças Empáticas mas com o toque especial do grupo Arkana! Nossa interface preza o minimalismo sem perder a personalidade e a riqueza gráfica. Ah! E até o final do projeto esse "toque especial" vai se tornar bem mais presente e único. Fique ligado! 😉  
-<br/>
+Procuramos desenvolver uma interface que traga a identidade visual do Projeto Lideranças Empáticas mas com o toque especial do grupo Arkana! Nossa interface preza o minimalismo sem perder a personalidade e a riqueza gráfica. Ah! E até o final do projeto esse "toque especial" vai se tornar bem mais presente e único. Fique ligado!  
+<br/><br/>
 
 ## 🎥 Trailer do Projeto
-Texto  
-<br/>
+<a href="https://www.youtube.com/watch?v=OoxkFQGJF7c">
+<img width="1280" alt="screenshot-arkana" src="https://github.com/user-attachments/assets/a0bf4067-8cd4-417e-8b75-a678e0a895cd" />
+</a>
+<br/><br/>
+
 
 ## 🗂 Estrutura de Pastas
 ```
@@ -107,11 +109,14 @@ yarn install
 4. Rode o projeto localmente
 ```
 npm run dev
+# ou
+yarn run dev
 ```
 <br/>
 
 ## 📋 Licença
 <a href="https://www.fecap.br/">FECAP - Fundação de Comércio Álvares Penteado</a> - <a href="https://github.com/2025-1-MCC1/Projeto7">Arkana</a> © 2025 by <a href="https://github.com/analicecoimbra">Analice Coimbra Carneiro</a>, <a href="https://github.com/alicelobwp">Mariah Alice Pimentel Lôbo Pereira</a>, <a href="https://github.com/sofiahernandes">Sofia Botechia Hernandes</a> and <a href="https://github.com/viick04">Victória Duarte Vieira Azevedo</a> is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" height="20" width="20" style="margin-left: 0.2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" height="20" width="20" style="margin-left: 0.2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" height="20" width="20" style="margin-left: 0.2em;">
+<br/><br/>
 
 ## 🎓 Referências
 [Creative Commons](https://creativecommons.org/share-your-work/)  
