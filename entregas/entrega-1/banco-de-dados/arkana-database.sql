@@ -19,12 +19,21 @@ create table mentor(
 
 create table time(
 	IdTime int primary key auto_increment,
+<<<<<<< Updated upstream
 	NomeTime varchar(250) not null,
 	RaUsuario int not null,
 	RaAlunos int not null,
 	IdMentor int,
 	foreign key(IdMentor) references mentor(IdMentor),
 	foreign key(RaUsuario) references usuario(RaUsuario)
+=======
+  NomeTime varchar(250) not null,
+  RaUsuario int not null,
+  RaAlunos varchar(300) not null,
+  IdMentor int,
+  foreign key(IdMentor) references mentor(IdMentor),
+  foreign key(RaUsuario) references usuario(RaUsuario)
+>>>>>>> Stashed changes
 );
 
 create table contribuicao(

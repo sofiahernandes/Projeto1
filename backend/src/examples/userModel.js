@@ -1,4 +1,4 @@
-const users = [
+const usuario = [
   {
     RaUsuario: 25027462,
     NomeUsuario: "Sofia Botechia Hernandes",
@@ -9,4 +9,4 @@ const users = [
   },
 ];
 
-export default users;
+export default usuario;

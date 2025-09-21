@@ -6,7 +6,7 @@ const teams = [
     NomeTime: "",
     IdMentor: null || "João da Silva",
     RaUsuario: 25027462,
-    RaAlunos: [25027462, 25027462],
+    RaAlunos: "25027462, 25027462",
   },
 ];
 
