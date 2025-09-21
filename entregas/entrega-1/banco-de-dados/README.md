@@ -17,7 +17,7 @@ Orientadora: Prof. Kátia Milani Lara Bossi
 
 
 ### 3. DIAGRAMA ENTIDADE-RELACIONAMENTO
-[aqui]  
+![DER](https://github.com/user-attachments/assets/8a980bf9-419f-4074-a150-a2019a4e88e2)  
 </br>
 
 ### 4. CONCLUSÃO
