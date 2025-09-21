@@ -99,17 +99,17 @@ git clone https://github.com/2025-2-MCC2/Projeto1.git
 cd Projeto1
 ```
 
-3. Instale as Dependências
+2. Instale as Dependências
 ```
 npm install
 # ou
 yarn install
 ```
 
-4. Rode o banco de dados SQL (disponível no arquivo [/entregas/entrega-1/banco-de-dados/arkana-database.sql](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/banco-de-dados) localmente no Workbench ou interface sa sua preferência.  
+3. Rode o banco de dados SQL (disponível no arquivo [/entregas/entrega-1/banco-de-dados/arkana-database.sql](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/banco-de-dados) localmente no Workbench ou interface sa sua preferência.  
 
 
-5. Entre nas pastas /frontend e /backend e rode o seguinte comando em cada um deles  
+4. Entre nas pastas /frontend e /backend e rode o seguinte comando em cada uma delas  
 ```
 npm run dev
 # ou
