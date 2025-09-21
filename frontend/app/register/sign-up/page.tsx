@@ -40,11 +40,11 @@ export default function Cadastro() {
         return;
       }
 
-      const novoUsuario = await res.json();
-      console.log("Usuário cadastrado:", novoUsuario);
+      const newUser = await res.json();
+      console.log("Usuário cadastrado:", newUser);
 
       // redireciona para contribuições passando o id
-      router.push(`/(restricted)/${novoUsuario.RaUsuario}/new-contribution`);
+      router.push(`/(restricted)/${newUser.RaUsuario}/new-contribution`);
     } catch (error) {
       console.error(error);
       alert("Erro ao cadastrar usuário");

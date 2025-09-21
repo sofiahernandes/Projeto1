@@ -16,7 +16,7 @@ export default function Login() {
     e.preventDefault();
   
     try {
-      const res = await fetch("http://localhost:3001/api/usuario/login", {
+      const res = await fetch("http://localhost:3001/api/user/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -31,9 +31,9 @@ export default function Login() {
         return;
       }
   
-      const usuario = await res.json();
+      const user = await res.json();
 
-      router.push(`/${usuario.RaUsuario}/new-contribution`);
+      router.push(`/${user.RaUsuario}/new-contribution`);
     } catch (err) {
       console.error("Erro de conexão:", err);
       alert("Erro de conexão com o servidor");
