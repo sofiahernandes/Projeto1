@@ -49,7 +49,7 @@ Procuramos desenvolver uma interface que traga a identidade visual do Projeto Li
 
 ## 🎥 Trailer do Projeto
 <a href="https://www.youtube.com/watch?v=OoxkFQGJF7c">
-<img width="1280" alt="screenshot-arkana" src="https://github.com/user-attachments/assets/a0bf4067-8cd4-417e-8b75-a678e0a895cd" />
+<img width="1280" alt="Screenshot Aplicação Arkana" src="https://github.com/user-attachments/assets/8257ef05-086a-4f79-a3fe-3158a136262e" />
 </a>
 <br/><br/>
 
