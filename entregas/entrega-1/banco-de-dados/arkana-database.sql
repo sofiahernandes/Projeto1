@@ -6,7 +6,7 @@ create table usuario(
 	NomeUsuario varchar(250) not null, 
 	EmailUsuario varchar(250) not null, 
 	SenhaUsuario varchar(16) not null,
-	TelefoneUsuario int not null, 
+	TelefoneUsuario varchar(250) not null, 
     Turma varchar(20) not null
 );
 
