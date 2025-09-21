@@ -14,12 +14,12 @@ const usersController = {
     }
   },
 
-  //GET http://localhost:3001/api/user/:RaAlunoM
+  //GET http://localhost:3001/api/user/:RaUsuario
   userByRA: async (req, res) => {
-    const { RaAlunoM } = req.params;
+    const { RaUsuario } = req.params;
     try {
-      const [rows] = await pool.query("SELECT * FROM user WHERE RaAlunoM = ?", [
-        RaAlunoM,
+      const [rows] = await pool.query("SELECT * FROM user WHERE RaUsuario = ?", [
+        RaUsuario,
       ]);
       if (rows.length === 0) {
         return res.status(404).json({ error: "Aluno mentor não encontrado" });
@@ -32,15 +32,15 @@ const usersController = {
 
   //POST http://localhost:3001/api/register
   createUser: async (req, res) => {
-    const { RaAlunoM, NomeUsuario, EmailUsuario, SenhaAluno, Telefone, Turma } =
+    const { RaUsuario, NomeUsuario, EmailUsuario, SenhaUsuario, TelefoneUsuario, Turma } =
       req.body;
 
     if (
-      !RaAlunoM ||
+      !RaUsuario ||
       !NomeUsuario ||
       !EmailUsuario ||
-      !SenhaAluno ||
-      !Telefone ||
+      !SenhaUsuario ||
+      !TelefoneUsuario ||
       !Turma
     ) {
       return res.status(400).json({ error: "Preencha todos os campos" });
@@ -48,13 +48,13 @@ const usersController = {
 
     try {
       const [insert] = await pool.query(
-        "INSERT INTO user (RaAlunoM, NomeUsuario, EmailUsuario, SenhaAluno, Telefone, Turma) VALUES (?, ?, ?, ?, ?, ?)",
-        [RaAlunoM, NomeUsuario, EmailUsuario, SenhaAluno, Telefone, Turma]
+        "INSERT INTO user (RaUsuario, NomeUsuario, EmailUsuario, SenhaUsuario, TelefoneUsuario, Turma) VALUES (?, ?, ?, ?, ?, ?)",
+        [RaUsuario, NomeUsuario, EmailUsuario, SenhaUsuario, TelefoneUsuario, Turma]
       );
 
       const [rows] = await pool.query(
-        "SELECT * FROM user WHERE RaAlunoM = ?",
-        [RaAlunoM]
+        "SELECT * FROM user WHERE RaUsuario = ?",
+        [RaUsuario]
         // [insert.insertId]
       );
       res.status(201).json(rows[0]);
@@ -68,16 +68,16 @@ const usersController = {
 
   //POST http://localhost:3001/api/user/login
   loginUser: async (req, res) => {
-    const { RaAlunoM, senhaAlunoMentor } = req.body;
+    const { RaUsuario, SenhaUsuario } = req.body;
 
-    if (!RaAlunoM || !senhaAlunoMentor) {
+    if (!RaUsuario || !SenhaUsuario) {
       return res.status(400).json({ error: "RA e senha são obrigatórios" });
     }
 
     try {
       const [rows] = await pool.query(
-        "SELECT * FROM user WHERE RaAlunoM = ? AND SenhaAluno = ?",
-        [RaAlunoM, senhaAlunoMentor]
+        "SELECT * FROM user WHERE RaUsuario = ? AND SenhaUsuario = ?",
+        [RaUsuario, SenhaUsuario]
       );
 
       if (rows.length === 0) {
@@ -90,13 +90,13 @@ const usersController = {
     }
   },
 
-  //DELETE http://localhost:3001/api/deleteUser/:RaAlunoM
+  //DELETE http://localhost:3001/api/deleteUser/:RaUsuario
   deleteUser: async (req, res) => {
-    const { RaAlunoM } = req.params;
+    const { RaUsuario } = req.params;
 
     try {
-      const [result] = await pool.query("DELETE FROM user WHERE RaAlunoM = ?", [
-        RaAlunoM,
+      const [result] = await pool.query("DELETE FROM user WHERE RaUsuario = ?", [
+        RaUsuario,
       ]);
       if (result.affectedRows === 0) {
         return res.status(404).json({ error: "Aluno Mentor não encontrado" });
