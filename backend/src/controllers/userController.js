@@ -1,11 +1,13 @@
-import { pool } from "../db.js";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 const usersController = {
   //GET http://localhost:3001/api/users
   allUsers: async (_, res) => {
     try {
-      const [rows] = await pool.query("SELECT * FROM usuario");
-      res.json(rows);
+      const usuario = await prisma.Usuario.findMany();
+      res.json(usuario);
     } catch (err) {
       res.status(500).json({
         error: "Erro ao listar Alunos Mentores",
@@ -13,22 +15,43 @@ const usersController = {
       });
     }
   },
+  // try {
+    //   const [rows] = await pool.query("SELECT * FROM usuario");
+    //   res.json(rows);
+    // } catch (err) {
+    //   res.status(500).json({
+    //     error: "Erro ao listar Alunos Mentores",
+    //     details: err.message,
+    //   });
+    // }
 
   //GET http://localhost:3001/api/user/:RaUsuario
   userByRA: async (req, res) => {
     const { RaUsuario } = req.params;
     try {
-      const [rows] = await pool.query("SELECT * FROM usuario WHERE RaUsuario = ?", [
-        RaUsuario,
-      ]);
-      if (rows.length === 0) {
-        return res.status(404).json({ error: "Aluno mentor não encontrado" });
-      }
-      res.json(rows[0]);
+      const usuario = await prisma.Usuario.findUnique({
+        where:{ RaUsuario: Number(RaUsuario)},
+      });
+      res.json(usuario);
     } catch (err) {
-      res.status(500).json({ error: "Erro no servidor", details: err.message });
-    }
+      if (err.code == P2025) {
+        return res.status(404).json({ error: "Aluno mentor não encontrado" });
+      } else{ 
+        res.status(500).json({ error: "Erro no servidor", details: err.message });
+      }
+        }
   },
+ // try {
+    //   const [rows] = await pool.query("SELECT * FROM usuario WHERE RaUsuario = ?", [
+    //     RaUsuario,
+    //   ]);
+    //   if (rows.length === 0) {
+    //     return res.status(404).json({ error: "Aluno mentor não encontrado" });
+    //   }
+    //   res.json(rows[0]);
+    // } catch (err) {
+    //   res.status(500).json({ error: "Erro no servidor", details: err.message });
+    // }
 
   //POST http://localhost:3001/api/register
   createUser: async (req, res) => {
@@ -47,16 +70,10 @@ const usersController = {
     }
 
     try {
-      const [insert] = await pool.query(
-        "INSERT INTO usuario (RaUsuario, NomeUsuario, EmailUsuario, SenhaUsuario, TelefoneUsuario, Turma) VALUES (?, ?, ?, ?, ?, ?)",
-        [RaUsuario, NomeUsuario, EmailUsuario, SenhaUsuario, TelefoneUsuario, Turma]
-      );
-
-      const [rows] = await pool.query(
-        "SELECT * FROM usuario WHERE RaUsuario = ?",
-        [RaUsuario]
-      );
-      res.status(201).json(rows[0]);
+      const usuario = await prisma.Usuario.create({
+        data: {RaUsuario, NomeUsuario, EmailUsuario, SenhaUsuario, TelefoneUsuario, Turma}
+     } );
+      res.json(usuario);
     } catch (err) {
       res.status(409).json({
         error: "Aluno Mentor já existente",
@@ -65,6 +82,25 @@ const usersController = {
     }
   },
 
+
+    // try {
+    //   const [insert] = await pool.query(
+    //     "INSERT INTO usuario (RaUsuario, NomeUsuario, EmailUsuario, SenhaUsuario, TelefoneUsuario, Turma) VALUES (?, ?, ?, ?, ?, ?)",
+    //     [RaUsuario, NomeUsuario, EmailUsuario, SenhaUsuario, TelefoneUsuario, Turma]
+    //   );
+
+    //   const [rows] = await pool.query(
+    //     "SELECT * FROM usuario WHERE RaUsuario = ?",
+    //     [RaUsuario]
+    //   );
+    //   res.status(201).json(rows[0]);
+    // } catch (err) {
+    //   res.status(409).json({
+    //     error: "Aluno Mentor já existente",
+    //     details: err.message,
+    //   });
+    // }
+
   //POST http://localhost:3001/api/user/login
   loginUser: async (req, res) => {
     const { RaUsuario, SenhaUsuario } = req.body;
@@ -72,36 +108,48 @@ const usersController = {
     if (!RaUsuario || !SenhaUsuario) {
       return res.status(400).json({ error: "RA e senha são obrigatórios" });
     }
-
-    try {
-      const [rows] = await pool.query(
-        "SELECT * FROM usuario WHERE RaUsuario = ? AND SenhaUsuario = ?",
-        [RaUsuario, SenhaUsuario]
-      );
-
-      if (rows.length === 0) {
+     try {
+      const usuario = await prisma.Usuario.findFirst({
+        where: {
+          RaUsuario: RaUsuario,
+          SenhaUsuario: SenhaUsuario
+        }
+      }); 
+      if (!usuario) {
         return res.status(401).json({ error: "Credenciais inválidas" });
       }
-
-      res.json(rows[0]);
+      res.json(usuario);
     } catch (err) {
-      res.status(500).json({ error: "Erro no login", details: err.message });
-    }
-  },
+        res.status(500).json({ error: "Erro no login", details: err.message });
+  }
+  }, // try {
+    //   const [rows] = await pool.query(
+    //     "SELECT * FROM usuario WHERE RaUsuario = ? AND SenhaUsuario = ?",
+    //     [RaUsuario, SenhaUsuario]
+    //   );
+
+    //   if (rows.length === 0) {
+    //     return res.status(401).json({ error: "Credenciais inválidas" });
+    //   }
+
+    //   res.json(rows[0]);
+    // } catch (err) {
+    //   res.status(500).json({ error: "Erro no login", details: err.message });
+    // }
 
   //DELETE http://localhost:3001/api/deleteUser/:RaUsuario
   deleteUser: async (req, res) => {
     const { RaUsuario } = req.params;
 
     try {
-      const [result] = await pool.query("DELETE FROM usuario WHERE RaUsuario = ?", [
-        RaUsuario,
-      ]);
-      if (result.affectedRows === 0) {
+      const usuario = await prisma.Usuario.delete({
+        where:{ RaUsuario: RaUsuario}
+      });
+      res.json({ message: "Aluno Mentor deletado com sucesso!", usuario });
+    } catch (err) { 
+      if (err.code == P2025) {
         return res.status(404).json({ error: "Aluno Mentor não encontrado" });
       }
-      res.json({ message: "Aluno Mentor deletado com sucesso!" });
-    } catch (err) {
       res.status(500).json({
         error: "Erro ao deletar aluno mentor",
         details: err.message,
@@ -110,4 +158,18 @@ const usersController = {
   },
 };
 
+    // try {
+    //   const [result] = await pool.query("DELETE FROM usuario WHERE RaUsuario = ?", [
+    //     RaUsuario,
+    //   ]);
+    //   if (result.affectedRows === 0) {
+    //     return res.status(404).json({ error: "Aluno Mentor não encontrado" });
+    //   }
+    //   res.json({ message: "Aluno Mentor deletado com sucesso!" });
+    // } catch (err) {
+    //   res.status(500).json({
+    //     error: "Erro ao deletar aluno mentor",
+    //     details: err.message,
+    //   });
+    // }
 export default usersController;
