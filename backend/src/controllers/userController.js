@@ -4,7 +4,7 @@ const usersController = {
   //GET http://localhost:3001/api/users
   allUsers: async (_, res) => {
     try {
-      const [rows] = await pool.query("SELECT * FROM user");
+      const [rows] = await pool.query("SELECT * FROM usuario");
       res.json(rows);
     } catch (err) {
       res.status(500).json({
@@ -18,7 +18,7 @@ const usersController = {
   userByRA: async (req, res) => {
     const { RaUsuario } = req.params;
     try {
-      const [rows] = await pool.query("SELECT * FROM user WHERE RaUsuario = ?", [
+      const [rows] = await pool.query("SELECT * FROM usuario WHERE RaUsuario = ?", [
         RaUsuario,
       ]);
       if (rows.length === 0) {
@@ -48,14 +48,13 @@ const usersController = {
 
     try {
       const [insert] = await pool.query(
-        "INSERT INTO user (RaUsuario, NomeUsuario, EmailUsuario, SenhaUsuario, TelefoneUsuario, Turma) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO usuario (RaUsuario, NomeUsuario, EmailUsuario, SenhaUsuario, TelefoneUsuario, Turma) VALUES (?, ?, ?, ?, ?, ?)",
         [RaUsuario, NomeUsuario, EmailUsuario, SenhaUsuario, TelefoneUsuario, Turma]
       );
 
       const [rows] = await pool.query(
-        "SELECT * FROM user WHERE RaUsuario = ?",
+        "SELECT * FROM usuario WHERE RaUsuario = ?",
         [RaUsuario]
-        // [insert.insertId]
       );
       res.status(201).json(rows[0]);
     } catch (err) {
@@ -76,7 +75,7 @@ const usersController = {
 
     try {
       const [rows] = await pool.query(
-        "SELECT * FROM user WHERE RaUsuario = ? AND SenhaUsuario = ?",
+        "SELECT * FROM usuario WHERE RaUsuario = ? AND SenhaUsuario = ?",
         [RaUsuario, SenhaUsuario]
       );
 
@@ -95,7 +94,7 @@ const usersController = {
     const { RaUsuario } = req.params;
 
     try {
-      const [result] = await pool.query("DELETE FROM user WHERE RaUsuario = ?", [
+      const [result] = await pool.query("DELETE FROM usuario WHERE RaUsuario = ?", [
         RaUsuario,
       ]);
       if (result.affectedRows === 0) {
