@@ -15,11 +15,11 @@ const contributionController = {
 
   //POST http://localhost:3001/api/createContribution
   createContribution: async (req, res) => {
-    const { IdTime, TipoDoacao, Quantidade, Meta, Gastos, Fonte, Comprovante } =
+    const { RaUsuario, TipoDoacao, Quantidade, Meta, Gastos, Fonte, Comprovante } =
       req.body;
 
     if (
-      !IdTime ||
+      !RaUsuario ||
       !TipoDoacao ||
       !Quantidade ||
       !Meta ||
@@ -32,8 +32,8 @@ const contributionController = {
 
     try {
       const [insert] = await pool.query(
-        "INSERT INTO contribuicao (IdTime, TipoDoacao, Quantidade, Meta, Gastos, Fonte, Comprovante)  VALUES(?,?,?,?,?,?,?)",
-        [IdTime, TipoDoacao, Quantidade, Meta, Gastos, Fonte, Comprovante]
+        "INSERT INTO contribuicao (RaUsuario, TipoDoacao, Quantidade, Meta, Gastos, Fonte, Comprovante)  VALUES(?,?,?,?,?,?,?)",
+        [RaUsuario, TipoDoacao, Quantidade, Meta, Gastos, Fonte, Comprovante]
       );
       const [rows] = await pool.query(
         "SELECT * FROM contribuicao WHERE IdContribuicao=?",
