@@ -24,6 +24,13 @@
 
 <br/>
 
+# Entregas
+- web dev fullstack: [https://arkana-projeto1.vercel.app/](https://arkana-projeto1.vercel.app/)  
+- calculo II: [/entregas/entrega-1/calculo-2/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/calculo-2)  
+- banco de dados: [/entregas/entrega-1/banco-de-dados/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/banco-de-dados)  
+- gestao empresarial: [/entregas/entrega-1/gestao-empresarial/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/gestao-empresarial)  
+- projeto interdisciplinar [/entregas/entrega-1/proj-interdisciplinar/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/proj-interdisciplinar)
+
 # Descrição
 ## 🎮 Proposta Principal
 Desenvolvimento de uma Aplicação Web para o [Projeto Lideranças Empáticas](https://liderancasempaticas.com/), uma iniciativa do Centro Universitário FECAP que une impacto social e educação empreendedora através da arrecadação de alimentos e recursos financeiros.
@@ -64,15 +71,15 @@ Texto
     |-->styles  
 |-->entregas
     |-->entrega-1  
-       |-->web-dev-fullstack  
        |-->calculo-2  
        |-->banco-de-dados  
-       |-->gestao-empresarial  
+       |-->gestao-empresarial
+       |-->proj-interdisciplinar
     |-->entrega-2  
-       |-->web-dev-fullstack  
        |-->calculo-2  
        |-->banco-de-dados  
-       |-->gestao-empresarial  
+       |-->gestao-empresarial
+       |-->proj-interdisciplinar
 |README.md  
 |LICENSE  
 ```
