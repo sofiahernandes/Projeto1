@@ -20,8 +20,8 @@ export default function Login() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          RaAlunoM: raAlunoMentor,
-          senhaAlunoMentor: senhaAlunoMentor,
+          RaUsuario: raAlunoMentor,
+          SenhaUsuario: senhaAlunoMentor,
         }),
       });
   
@@ -33,7 +33,7 @@ export default function Login() {
   
       const user = await res.json();
 
-      router.push(`/${user.RaAlunoM}/new-contribution`);
+      router.push(`/${user.RaUsuario}/new-contribution`);
     } catch (err) {
       console.error("Erro de conexão:", err);
       alert("Erro de conexão com o servidor");

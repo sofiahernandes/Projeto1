@@ -28,7 +28,7 @@ create table time(
 );
 
 create table contribuicao(
-	IdTime int,
+	RaUsuario int,
 	TipoDoacao varchar(10) not null,
 	Quantidade int not null, 
 	Meta int,
@@ -37,5 +37,5 @@ create table contribuicao(
 	Comprovante varchar(200),
 	IdContribuicao int primary key auto_increment,
 	DataContribuicao timestamp default current_timestamp, 
-	foreign key (IdTime) references time(IdTime)
+	foreign key (RaUsuario) references usuario(RaUsuario)
 );

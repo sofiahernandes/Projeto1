@@ -17,7 +17,7 @@ const teamsController = {
   teamByID: async (req, res) => {
     const { IdTime } = req.params;
     try {
-      const [rows] = await pool.query("SELECT * FROM times WHERE IdTime=?", [
+      const [rows] = await pool.query("SELECT * FROM time WHERE IdTime=?", [
         IdTime,
       ]);
       res.json(rows);
@@ -36,10 +36,10 @@ const teamsController = {
 
     try {
       const [insert] = await pool.query(
-        "INSERT INTO times (NomeTime, RaUsuario, RaAlunos) VALUES (?,?,?)",
+        "INSERT INTO time (NomeTime, RaUsuario, RaAlunos) VALUES (?,?,?)",
         [NomeTime, RaUsuario, RaAlunos]
       );
-      const [rows] = await pool.query("SELECT * FROM times where IdTime=?", [
+      const [rows] = await pool.query("SELECT * FROM time where IdTime=?", [
         insert.insertId,
       ]);
     } catch (err) {
@@ -54,7 +54,7 @@ const teamsController = {
     const { IdTime } = req.params;
 
     try {
-      const [result] = await pool.query("DELETE FROM times WHERE IdTime=?", [
+      const [result] = await pool.query("DELETE FROM time WHERE IdTime=?", [
         IdTime,
       ]);
       if (result.affectedRows === 0) {

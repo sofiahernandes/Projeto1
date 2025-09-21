@@ -46,12 +46,12 @@ export default function DonationsForm({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          IdTime: idTime,
+          RaUsuario: Number(idTime),
           TipoDoacao: tipoDoacao,
-          Quantidade: quantidade,
+          Quantidade: Number(quantidade),
+          Meta: Number(meta),
+          Gastos: Number(gastos),
           Fonte: fonte,
-          Meta: meta,
-          Gastos: gastos,
           Comprovante: comprovante,
         }),
       });
@@ -69,9 +69,9 @@ export default function DonationsForm({
       setIdTime(0);
       setTipoDoacao("");
       setQuantidade(0);
-      setFonte("");
       setMeta(0);
       setGastos(0);
+      setFonte("");
       setComprovante("");
     } catch (error) {
       console.error("Erro ao enviar contribuição:", error);

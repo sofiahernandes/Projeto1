@@ -6,8 +6,11 @@ import routes from './routes.js';
 const app = express();
 app.use(express.json()); // Middleware
 app.use(express.urlencoded({ extended: true }));
+
 app.use(cors({
-  origin: "http://192.168.3.122:3000" //faz o cors ler o front como origem para o fecth
+  origin: ["http://192.168.3.122:3000", "https://arkana-projeto1.vercel.app"],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
 }));
 
 // Check server health
