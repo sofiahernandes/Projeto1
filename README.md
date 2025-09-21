@@ -106,12 +106,16 @@ npm install
 yarn install
 ```
 
-4. Rode o projeto localmente
+4. Rode o banco de dados SQL (disponível no arquivo [/entregas/entrega-1/banco-de-dados/arkana-database.sql](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/banco-de-dados) localmente no Workbench ou interface sa sua preferência.  
+
+
+5. Entre nas pastas /frontend e /backend e rode o seguinte comando em cada um deles  
 ```
 npm run dev
 # ou
 yarn run dev
 ```
+
 <br/>
 
 ## 📋 Licença
