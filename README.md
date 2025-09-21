@@ -1,10 +1,11 @@
 <h1 align="center">Fundação de Comércio Álvares Penteado</h1>
 
-<p align="center">
+<div align="center">
 <a href= "https://www.fecap.br/"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhZPrRa89Kma0ZZogxm0pi-tCn_TLKeHGVxywp-LXAFGR3B1DPouAJYHgKZGV0XTEf4AE&usqp=CAU" alt="FECAP - Fundação de Comércio Álvares Penteado" border="0"></a>
-</p>
 
-<h1 align="center">Nome do Projeto: Arkana 📑</h1>
+<h1>Nome do Projeto: Arkana 📑</h1>
+<p>Acesse o app (em construção): <a href="https://arkana-projeto1.vercel.app/">https://arkana-projeto1.vercel.app/</a></p>
+</div>
 
 <br/>
 
@@ -29,15 +30,15 @@ Desenvolvimento de uma Aplicação Web para o [Projeto Lideranças Empáticas](h
 - Essa aplicação objetiva gerenciar as edições deste projeto, incluindo controle de equipes, atividades, metas e resultados.
 
 **Features:**  
-- cadastro e gerenciamento de edições e participantes
-- observação de relatórios e sua filtragem por time, edição, etc.
-- criação de equipes por partes autorizadas
-- registro de atividades por equipe
-- geração de relatórios
+- Cadastro e gerenciamento de edições e participantes;
+- Observação de relatórios e sua filtragem por time, edição, etc.;
+- Criação de equipes por partes autorizadas;
+- Registro de atividades por equipe;
+- Geração de relatórios.
 <br/>
 
 ## 🎨 Design Gráfico
-Texto  
+Procuramos desenvolver uma interface que traga a identidade visual do Projeto Lideranças Empáticas mas com o toque especial do grupo Arkana! Nossa interface preza o minimalismo sem perder a personalidade e a riqueza gráfica. Ah! E até o final do projeto esse "toque especial" vai se tornar bem mais presente e único. Fique ligado! 😉  
 <br/>
 
 ## 🎥 Trailer do Projeto
@@ -48,13 +49,19 @@ Texto
 ```
 |-->backend
     |-->src
+       |-->controllers
+       |-->examples
+       |app.js
+       |db.js
+       |db.test.js
+       |routes.js
+       |server.js
 |-->frontend
-    |-->src  
-       |-->app  
-       |-->components  
-       |-->hooks  
-       |-->lib  
-       |-->styles  
+    |-->app  
+    |-->components  
+    |-->hooks  
+    |-->lib  
+    |-->styles  
 |-->entregas
     |-->entrega-1  
        |-->web-dev-fullstack  
@@ -88,6 +95,11 @@ cd Projeto1
 npm install
 # ou
 yarn install
+```
+
+4. Rode o projeto localmente
+```
+npm run dev
 ```
 <br/>
 
