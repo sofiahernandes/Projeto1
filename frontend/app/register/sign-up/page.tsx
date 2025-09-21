@@ -44,7 +44,7 @@ export default function Cadastro() {
       console.log("Usuário cadastrado:", newUser);
 
       // redireciona para contribuições passando o id
-      router.push(`/(restricted)/${newUser.RaUsuario}/new-contribution`);
+      router.push(`/${newUser.RaUsuario}/new-contribution`);
     } catch (error) {
       console.error(error);
       alert("Erro ao cadastrar usuário");
