@@ -53,14 +53,8 @@ const usersController = {
       );
 
       const [rows] = await pool.query(
-<<<<<<< Updated upstream
         "SELECT * FROM usuario WHERE RaUsuario = ?",
         [RaUsuario]
-=======
-        "SELECT * FROM user WHERE RaUsuario = ?",
-        [RaUsuario]usuario
-        // [insert.insertId]
->>>>>>> Stashed changes
       );
       res.status(201).json(rows[0]);
     } catch (err) {
