@@ -2,10 +2,10 @@
 
 const teams = [
   {
-    idTime: 1, // auto_increment
+    IdTime: 1, // auto_increment
     NomeTime: "",
     IdMentor: null || "João da Silva",
-    RaAlunoM: 25027462,
+    RaUsuario: 25027462,
     RaAlunos: [25027462, 25027462],
   },
 ];
