@@ -1,48 +1,58 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
 generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
-}
+// MODELS
 
-model contribuicao {
-  IdContribuicao   Int       @id @default(autoincrement())
-  DataContribuicao DateTime? @default(now()) @db.Timestamp(0)
+model Contribuicao {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  DataContribuicao DateTime @default(now())
   Quantidade       Int
-  TipoDoacao       String    @db.VarChar(10)
+  TipoDoacao       String
   Gastos           Int
   Meta             Int?
-  Fonte            String?   @db.VarChar(200)
-  Comprovante      String?   @db.VarChar(200)
-  RaUsuario        Int?
+  Fonte            String?
+  Comprovante      String?
 
-  @@index([RaUsuario], map: "RaUsuario")
+  // FK para Usuario
+  usuarioId String?  @db.ObjectId
+  usuario   Usuario? @relation(fields: [usuarioId], references: [RaUsuario])
 }
 
-model mentor {
-  IdMentor Int      @id @default(autoincrement())
-  Email    String   @db.VarChar(250)
+model Mentor {
+  IdMentor String   @id @default(auto()) @map("_id") @db.ObjectId
+  Email    String
   IsAdm    Boolean?
+
+  times Time?
 }
 
-model time {
-  IdTime    Int    @id @default(autoincrement())
-  NomeTime  String @db.VarChar(250)
-  IdMentor  Int?
-  RaUsuario Int?
-  RaAlunos  Int?
+model Time {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  NomeTime String
 
-  @@index([IdMentor], map: "IdMentor")
-  @@index([RaUsuario], map: "RaUsuario")
+  // chaves-estrangeiras
+  mentorId String? @unique @db.ObjectId
+  mentor   Mentor? @relation(fields: [mentorId], references: [IdMentor])
+
+  usuarioId String?  @unique @db.ObjectId
+  usuario   Usuario? @relation(fields: [usuarioId], references: [RaUsuario])
 }
 
-model usuario {
-  RaUsuario       Int     @id
-  NomeUsuario     String  @db.VarChar(250)
-  EmailUsuario    String  @db.VarChar(250)
-  SenhaUsuario    String  @db.VarChar(16)
-  Turma           String  @db.VarChar(20)
-  TelefoneUsuario String? @db.VarChar(20)
+model Usuario {
+  RaUsuario       String  @id @default(auto()) @map("_id") @db.ObjectId
+  NomeUsuario     String
+  EmailUsuario    String
+  SenhaUsuario    String
+  Turma           String
+  TelefoneUsuario String?
+
+  // Relacionamentos
+  contribuicoes Contribuicao[]
+  times         Time?
 }
