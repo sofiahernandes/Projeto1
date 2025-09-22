@@ -48,9 +48,12 @@ Procuramos desenvolver uma interface que traga a identidade visual do Projeto Li
 <br/><br/>
 
 ## 🎥 Trailer do Projeto
-<a href="https://www.youtube.com/watch?v=OoxkFQGJF7c">
-<img width="1280" alt="Screenshot Aplicação Arkana" src="https://github.com/user-attachments/assets/8257ef05-086a-4f79-a3fe-3158a136262e" />
-</a>
+<div align="center">
+    <a href="https://www.youtube.com/watch?v=OoxkFQGJF7c">
+    <img width="1000" alt="Screenshot Aplicação Arkana" src="https://github.com/user-attachments/assets/8257ef05-086a-4f79-a3fe-3158a136262e" />
+    </a>
+    Amostra do funcionamento da aplicação localmente (clique aqui ↑)
+</div>
 <br/><br/>
 
 
@@ -87,16 +90,17 @@ Procuramos desenvolver uma interface que traga a identidade visual do Projeto Li
 ```
 <br/>
 
-## 🚀 Instalação
+## 🚀 Instalação Local
 ### Pré-requisitos
 - [Node.js](https://nodejs.org/)
 - [Yarn](https://classic.yarnpkg.com/lang/en/) ou `npm`
 <br/>
 
-1. Clone o Repositório
+1. Clone o Repositório e vá para a branch `local-development`
 ```
 git clone https://github.com/2025-2-MCC2/Projeto1.git  
 cd Projeto1
+git checkout local-development
 ```
 
 2. Instale as Dependências
@@ -106,7 +110,7 @@ npm install
 yarn install
 ```
 
-3. Rode o banco de dados SQL (disponível no arquivo [/entregas/entrega-1/banco-de-dados/arkana-database.sql](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/banco-de-dados) localmente no Workbench ou interface sa sua preferência.  
+3. Rode o banco de dados SQL (disponível no arquivo [/entregas/entrega-1/banco-de-dados/arkana-database.sql](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/banco-de-dados) localmente no Workbench ou interface sa sua preferência. Popule o .env do /backend com as variáveis do seu ambiente.  
 
 
 4. Entre nas pastas /frontend e /backend e rode o seguinte comando em cada uma delas  
