@@ -7,14 +7,13 @@ const contributionController = {
   allContributions: async (_, res) => {
     try {
       const contribuicao = await prisma.contribuicao.findMany();
-      res.json(contribuicao)
+      res.json(contribuicao);
     } catch (err) {
       res
         .status(500)
         .json({ error: "Erro ao listar contribuições.", details: err.message });
     }
   },
-
 
   // allContributions: async (_, res) => {
   //   try {
@@ -27,12 +26,17 @@ const contributionController = {
   //   }
   // },
 
-
   //POST http://localhost:3001/api/createContribution
   createContribution: async (req, res) => {
-    const { RaUsuario, TipoDoacao, Quantidade, Meta, Gastos, Fonte, Comprovante } =
-      req.body;
-
+    const {
+      RaUsuario,
+      TipoDoacao,
+      Quantidade,
+      Meta,
+      Gastos,
+      Fonte,
+      Comprovante,
+    } = req.body;
 
     if (
       !RaUsuario ||
@@ -46,13 +50,19 @@ const contributionController = {
       return res.status(400).json({ error: "Preencha todos os campos" });
     }
 
-
-      try {
+    try {
       const contribuicao = await prisma.contribuicao.create({
-        data:{RaUsuario, TipoDoacao, Quantidade, Meta, Gastos, Fonte, Comprovante},
+        data: {
+          RaUsuario,
+          TipoDoacao,
+          Quantidade,
+          Meta,
+          Gastos,
+          Fonte,
+          Comprovante,
+        },
       });
-      res.status(201).json(contribuicao)
-     
+      res.status(201).json(contribuicao);
     } catch (err) {
       res
         .status(500)
@@ -76,7 +86,6 @@ const contributionController = {
   //   }
   // },
 
-
   //DELETE http://localhost:3001/api/deleteContribution/:IdContribuicao
   deleteContribution: async (req, res) => {
     const { IdContribuicao } = req.params;
@@ -88,10 +97,7 @@ const contributionController = {
     } catch (err) {
       res.status(404).json({ error: "Contribuição não encontrada" });
     }
-
-
   },
-
 
   //   try {
   //     const [result] = await pool.query(
@@ -111,6 +117,5 @@ const contributionController = {
   //   }
   // },
 };
-
 
 export default contributionController;
