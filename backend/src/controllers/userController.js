@@ -6,7 +6,7 @@ const usersController = {
   //GET http://localhost:3001/api/users
   allUsers: async (_, res) => {
     try {
-      const usuario = await prisma.Usuario.findMany();
+      const usuario = await prisma.usuario.findMany();
       res.json(usuario);
     } catch (err) {
       res.status(500).json({
@@ -29,7 +29,7 @@ const usersController = {
   userByRA: async (req, res) => {
     const { RaUsuario } = req.params;
     try {
-      const usuario = await prisma.Usuario.findUnique({
+      const usuario = await prisma.usuario.findUnique({
         where: { RaUsuario: Number(RaUsuario) },
       });
       res.json(usuario);
@@ -78,7 +78,7 @@ const usersController = {
     }
 
     try {
-      const usuario = await prisma.Usuario.create({
+      const usuario = await prisma.usuario.create({
         data: {
           RaUsuario,
           NomeUsuario,
@@ -123,7 +123,7 @@ const usersController = {
       return res.status(400).json({ error: "RA e senha são obrigatórios" });
     }
     try {
-      const usuario = await prisma.Usuario.findFirst({
+      const usuario = await prisma.usuario.findFirst({
         where: {
           RaUsuario: RaUsuario,
           SenhaUsuario: SenhaUsuario,
@@ -156,7 +156,7 @@ const usersController = {
     const { RaUsuario } = req.params;
 
     try {
-      const usuario = await prisma.Usuario.delete({
+      const usuario = await prisma.usuario.delete({
         where: { RaUsuario: RaUsuario },
       });
       res.json({ message: "Aluno Mentor deletado com sucesso!", usuario });

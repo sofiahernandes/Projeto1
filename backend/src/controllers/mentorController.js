@@ -7,7 +7,7 @@ const mentorController = {
   allMentors: async (_, res) => {
     const { IdMentor, EmailMentor, IsAdmin, SenhaMentor } = req.params;
     try {
-      const mentores = await prisma.Mentor.findMany({
+      const mentores = await prisma.mentor.findMany({
         select: {
           IdMentor: IdMentor,
           EmailMentor: EmailMentor,
@@ -35,7 +35,7 @@ const mentorController = {
   mentorById: async (req, res) => {
     const { IdMentor } = req.params;
     try {
-      const mentor = await pool.prisma.Mentor.findUnique({
+      const mentor = await prisma.mentor.findUnique({
         where: { IdMentor: Number(IdMentor) },
       });
 
@@ -63,7 +63,7 @@ const mentorController = {
     const { EmailMentor } = req.params;
 
     try {
-      const mentor = await prisma.Mentor.findUnique({
+      const mentor = await prisma.mentor.findUnique({
         where: { EmailMentor: String(EmailMentor) },
       });
       res.json(mentor);
@@ -92,7 +92,7 @@ const mentorController = {
     }
 
     try {
-      const mentor = await prisma.Mentor.create({
+      const mentor = await prisma.mentor.create({
         data: { EmailMentor, IsAdmin: IsAdmin ?? false, SenhaMentor },
       });
       res.json(mentor);
@@ -108,7 +108,7 @@ const mentorController = {
     const { EmailMentor } = req.params;
 
     try {
-      const mentor = await prisma.Mentor.delete({
+      const mentor = await prisma.mentor.delete({
         where: { EmailMentor: EmailMentor },
       });
       res.json({ message: "Mentor deletado com sucesso!", mentor });
