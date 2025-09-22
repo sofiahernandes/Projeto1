@@ -1,0 +1,58 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// MODELS
+
+model Contribuicao {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  DataContribuicao DateTime @default(now())
+  Quantidade       Int
+  TipoDoacao       String
+  Gastos           Int
+  Meta             Int?
+  Fonte            String?
+  Comprovante      String?
+
+  // FK para Usuario
+  usuarioId String?  @db.ObjectId
+  usuario   Usuario? @relation(fields: [usuarioId], references: [RaUsuario])
+}
+
+model Mentor {
+  IdMentor String   @id @default(auto()) @map("_id") @db.ObjectId
+  Email    String
+  IsAdm    Boolean?
+
+  times Time?
+}
+
+model Time {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  NomeTime String
+
+  // chaves-estrangeiras
+  mentorId String? @unique @db.ObjectId
+  mentor   Mentor? @relation(fields: [mentorId], references: [IdMentor])
+
+  usuarioId String?  @unique @db.ObjectId
+  usuario   Usuario? @relation(fields: [usuarioId], references: [RaUsuario])
+}
+
+model Usuario {
+  RaUsuario       String  @id @default(auto()) @map("_id") @db.ObjectId
+  NomeUsuario     String
+  EmailUsuario    String
+  SenhaUsuario    String
+  Turma           String
+  TelefoneUsuario String?
+
+  // Relacionamentos
+  contribuicoes Contribuicao[]
+  times         Time?
+}
