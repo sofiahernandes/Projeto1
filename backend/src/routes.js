@@ -8,6 +8,7 @@ import userController from "./controllers/userController.js";
 
 const r = Router();
 
+
 r.get("/db/health", async (_, res) => {
   try {
     const [rows] = await pool.query("SELECT 1 AS db_ok");
