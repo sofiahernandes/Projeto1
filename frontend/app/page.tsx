@@ -116,7 +116,7 @@ export default function PublicDashboard() {
                 </Button>
                 <Button className="overflow-hidden h-18 gap-2 bg-primary/30 hover:bg-primary/60 border border-primary/40 transition-colors">
                   <Link
-                    href="/public-reports"
+                    href="/user-profile" // "/public-reports"
                     className="flex flex-col gap-2 items-center"
                   >
                     <FileText className="w-6 h-6 text-gray-600" />

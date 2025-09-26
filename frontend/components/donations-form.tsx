@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 
 interface Properties {
-  idTime: number
-  setIdTime: React.Dispatch<React.SetStateAction<number | undefined>>
+  raUsuario: number
+  setRaUsuario: React.Dispatch<React.SetStateAction<number | undefined>>
   tipoDoacao: string
   setTipoDoacao: React.Dispatch<React.SetStateAction<string>>
   quantidade: number
@@ -20,8 +20,8 @@ interface Properties {
 }
 
 export default function DonationsForm({
-  idTime,
-  setIdTime,
+  raUsuario,
+  setRaUsuario,
   tipoDoacao,
   setTipoDoacao,
   quantidade,
@@ -46,7 +46,7 @@ export default function DonationsForm({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          RaUsuario: Number(idTime),
+          RaUsuario: Number(raUsuario),
           TipoDoacao: tipoDoacao,
           Quantidade: Number(quantidade),
           Meta: Number(meta),
@@ -65,14 +65,6 @@ export default function DonationsForm({
       const data = await res.json();
       alert("Contribuição registrada com sucesso!");
       console.log("Contribuição criada:", data);
-
-      setIdTime(0);
-      setTipoDoacao("");
-      setQuantidade(0);
-      setMeta(0);
-      setGastos(0);
-      setFonte("");
-      setComprovante("");
     } catch (error) {
       console.error("Erro ao enviar contribuição:", error);
       alert("Erro de conexão com o servidor.");
@@ -86,8 +78,8 @@ export default function DonationsForm({
       <input className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none "
         type="number"
         placeholder="Id do Time"
-        value={idTime}
-        onChange={(e) => setIdTime(Number(e.target.value))
+        value={raUsuario}
+        onChange={(e) => setRaUsuario(Number(e.target.value))
         }
       />
       <input className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none "

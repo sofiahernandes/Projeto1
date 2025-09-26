@@ -12,7 +12,7 @@ export default function Donations() {
   const userId = Number(params.userId);
   const [menuOpen, setMenuOpen] = useState(false);
 
-    const [idTime, setIdTime] = useState<number | undefined>(userId);
+    const [raUsuario, setRaUsuario] = useState<number | undefined>(userId);
     const [tipoDoacao, setTipoDoacao] = useState("");
     const [quantidade, setQuantidade] = useState<number>();
     const [fonte, setFonte] = useState("");
@@ -39,13 +39,13 @@ export default function Donations() {
           {/* Menu lateral quando está no desktop/tablet */}
           <MenuDesktop
             menuOpen={menuOpen}
-            idTime={idTime!}
+            raUsuario={raUsuario!}
             setMenuOpen={(arg: SetStateAction<boolean>) => setMenuOpen(arg)}
           />
 
           {/* Menu rodapé quando está no mobile */}
           <MenuMobile 
-            idTime={idTime!}
+            raUsuario={raUsuario!}
             // idTime={idTime!} 
           />
 
@@ -53,8 +53,8 @@ export default function Donations() {
             <div className="card-area">
               <h2>Contribuições financeiras</h2>
               <DonationsForm
-                idTime={idTime!}
-                setIdTime={setIdTime}
+                raUsuario={raUsuario!}
+                setRaUsuario={setRaUsuario}
                 tipoDoacao={tipoDoacao}
                 setTipoDoacao={setTipoDoacao}
                 quantidade={quantidade!}

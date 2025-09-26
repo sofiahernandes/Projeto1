@@ -4,10 +4,10 @@ import Link from "next/link";
 interface Properties {
   menuOpen: Boolean
   setMenuOpen: (arg: SetStateAction<boolean>) => void
-  idTime: number
+  raUsuario: number
 }
 
-export default function MenuDesktop({ menuOpen, setMenuOpen, idTime }: Properties) {
+export default function MenuDesktop({ menuOpen, setMenuOpen, raUsuario }: Properties) {
   return (
     <aside className={`side-menu ${menuOpen ? "open" : ""}`}>
       <button className="close-menu" onClick={() => setMenuOpen(false)}>
@@ -15,8 +15,8 @@ export default function MenuDesktop({ menuOpen, setMenuOpen, idTime }: Propertie
       </button>
       <nav>
         <Link href="/"><button className="donation-menu-button">Voltar ao Dashboard</button></Link>
-        <Link href={`/(restricted)/${idTime}/new-contribution`}><button className="donation-menu-button">Cadastrar novas contribuições</button></Link>
-        <Link href={`/(restricted)/${idTime}/team-history`}><button className="donation-menu-button">Histórico de contribuições</button></Link>
+        <Link href={`/(restricted)/${raUsuario}/new-contribution`}><button className="donation-menu-button">Cadastrar novas contribuições</button></Link>
+        <Link href={`/(restricted)/${raUsuario}/team-history`}><button className="donation-menu-button">Histórico de contribuições</button></Link>
       </nav>
     </aside>
   );

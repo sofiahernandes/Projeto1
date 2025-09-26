@@ -31,6 +31,7 @@ r.delete("/deleteMentor/:EmailMentor", mentorController.deleteMentor);
 r.post("/createTeam", teamController.createTeam);
 r.get("/teams", teamController.allTeams);
 r.get("/team/:IdTime", teamController.teamByID);
+r.get("/team/:RaUsuario", teamController.teamByUserRA);
 r.delete("/deleteTeam/:IdTime", teamController.deleteTeam);
 
 r.post("/register", userController.createUser);
