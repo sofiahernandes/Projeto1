@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import routes from './routes.js';
+import serveless from "serverless-http";
 
 const app = express();
 app.use(express.json()); // Middleware
@@ -22,4 +23,4 @@ app.use("/api", routes);
 
 
 
-export default app;
+export default serveless(app);

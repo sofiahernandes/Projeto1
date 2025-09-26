@@ -21,7 +21,7 @@ export default function Cadastro() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:3001/api/register", {
+      const res = await fetch("http://https://arkana-projeto1.vercel.app/api/register/sing-up", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
