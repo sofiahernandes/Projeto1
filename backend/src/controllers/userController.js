@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import bcrypt from "bcrypt";
+import { prisma } from "../prisma.js";
 
 const usersController = {
   //GET http://localhost:3001/api/users
@@ -66,6 +65,8 @@ const usersController = {
       Turma,
     } = req.body;
 
+    const hashedPassword = await bcrypt.hash(SenhaUsuario, 10);
+
     if (
       !RaUsuario ||
       !NomeUsuario ||
@@ -83,7 +84,7 @@ const usersController = {
           RaUsuario,
           NomeUsuario,
           EmailUsuario,
-          SenhaUsuario,
+          SenhaUsuario: hashedPassword,
           TelefoneUsuario,
           Turma,
         },
@@ -129,14 +130,19 @@ const usersController = {
           SenhaUsuario: SenhaUsuario,
         },
       });
-      if (!usuario) {
-        return res.status(401).json({ error: "Credenciais inválidas" });
-      }
-      res.json(usuario);
-    } catch (err) {
-      res.status(500).json({ error: "Erro no login", details: err.message });
+       const senhaValida = await bcrypt.compare(SenhaUsuario, usuario.SenhaUsuario);
+
+    if (!senhaValida) {
+      return res.status(401).json({ error: "Senha incorreta" });
     }
-  }, // try {
+
+    res.json({ message: "Login realizado com sucesso", usuario });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro no login" });
+  }
+  }, 
+  // try {
   //   const [rows] = await pool.query(
   //     "SELECT * FROM usuario WHERE RaUsuario = ? AND SenhaUsuario = ?",
   //     [RaUsuario, SenhaUsuario]
