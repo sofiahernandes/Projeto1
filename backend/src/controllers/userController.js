@@ -1,12 +1,11 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import bcrypt from "bcrypt";
+import { prisma } from "../prisma.js";
 
 const usersController = {
   //GET http://localhost:3001/api/users
   allUsers: async (_, res) => {
     try {
-      const usuario = await prisma.Usuario.findMany();
+      const usuario = await prisma.usuario.findMany();
       res.json(usuario);
     } catch (err) {
       res.status(500).json({
@@ -29,7 +28,7 @@ const usersController = {
   userByRA: async (req, res) => {
     const { RaUsuario } = req.params;
     try {
-      const usuario = await prisma.Usuario.findUnique({
+      const usuario = await prisma.usuario.findUnique({
         where: { RaUsuario: Number(RaUsuario) },
       });
       res.json(usuario);
@@ -66,6 +65,8 @@ const usersController = {
       Turma,
     } = req.body;
 
+    const hashedPassword = await bcrypt.hash(SenhaUsuario, 10);
+
     if (
       !RaUsuario ||
       !NomeUsuario ||
@@ -78,12 +79,12 @@ const usersController = {
     }
 
     try {
-      const usuario = await prisma.Usuario.create({
+      const usuario = await prisma.usuario.create({
         data: {
           RaUsuario,
           NomeUsuario,
           EmailUsuario,
-          SenhaUsuario,
+          SenhaUsuario: hashedPassword,
           TelefoneUsuario,
           Turma,
         },
@@ -123,20 +124,25 @@ const usersController = {
       return res.status(400).json({ error: "RA e senha são obrigatórios" });
     }
     try {
-      const usuario = await prisma.Usuario.findFirst({
+      const usuario = await prisma.usuario.findFirst({
         where: {
           RaUsuario: RaUsuario,
           SenhaUsuario: SenhaUsuario,
         },
       });
-      if (!usuario) {
-        return res.status(401).json({ error: "Credenciais inválidas" });
-      }
-      res.json(usuario);
-    } catch (err) {
-      res.status(500).json({ error: "Erro no login", details: err.message });
+       const senhaValida = await bcrypt.compare(SenhaUsuario, usuario.SenhaUsuario);
+
+    if (!senhaValida) {
+      return res.status(401).json({ error: "Senha incorreta" });
     }
-  }, // try {
+
+    res.json({ message: "Login realizado com sucesso", usuario });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro no login" });
+  }
+  }, 
+  // try {
   //   const [rows] = await pool.query(
   //     "SELECT * FROM usuario WHERE RaUsuario = ? AND SenhaUsuario = ?",
   //     [RaUsuario, SenhaUsuario]
@@ -156,7 +162,7 @@ const usersController = {
     const { RaUsuario } = req.params;
 
     try {
-      const usuario = await prisma.Usuario.delete({
+      const usuario = await prisma.usuario.delete({
         where: { RaUsuario: RaUsuario },
       });
       res.json({ message: "Aluno Mentor deletado com sucesso!", usuario });

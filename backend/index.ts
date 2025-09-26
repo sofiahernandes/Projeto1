@@ -11,5 +11,7 @@ app.get("/public", (_, res) => {
   res.json({ message: "This is public data" });
 });
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`Backend running on http://localhost:${PORT}`));
+// const PORT = process.env.PORT || 4000;
+// app.listen(PORT, () => console.log(`Backend running on http://localhost:${PORT}`));
+
+export default app

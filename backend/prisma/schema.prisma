@@ -33,7 +33,7 @@ model Mentor {
 }
 
 model Time {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  idTime       String @id @default(auto()) @map("_id") @db.ObjectId
   NomeTime String
 
   // chaves-estrangeiras
