@@ -45,7 +45,7 @@ model Time {
 }
 
 model Usuario {
-  RaUsuario       String  @id @default(auto()) @map("_id") @db.ObjectId
+  RaUsuario       String  @id @map("_id") @db.ObjectId
   NomeUsuario     String
   EmailUsuario    String
   SenhaUsuario    String
