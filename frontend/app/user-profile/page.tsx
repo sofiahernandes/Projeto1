@@ -1,113 +1,107 @@
 "use client";
 
-import React, { SetStateAction } from "react";
-import { useParams, useRouter } from "next/navigation";
+import React, { SetStateAction, useEffect } from "react";
+import { useParams } from "next/navigation";
 
-import BackHome from "@/components/back-home";
 import MenuMobile from "@/components/menu-mobile";
 import MenuDesktop from "@/components/menu-desktop";
+import { fetchData } from "@/hooks/fetch-user-profile";
+import { Chart } from "@/components/area-chart";
 
 export default function UserProfile() {
-  // const router = useRouter();
   const params = useParams();
   const userId = Number(params.userId);
 
   const [menuOpen, setMenuOpen] = React.useState(false);
 
-  const [idMentor] = React.useState<number>();
-  const [raAlunoMentor] = React.useState<number>();
-  const [nomeTime] = React.useState("");
-  const [nomeAlunoMentor] = React.useState("");
-  const [raAlunos] = React.useState("");
-  const [turma] = React.useState("");
+  const [user, setUser] = React.useState<any>(null);
+  const [team, setTeam] = React.useState<any>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    const fetchTeamData = async () => {
+      const data = await fetchData(userId);
+      setUser(data?.user);
+      setTeam(data?.team);
+    };
+    fetchTeamData();
+  }, [userId]);
 
-    try {
-      const res = await fetch(`http://localhost:3001/team/${userId}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          NomeTime: nomeTime,
-          RaUsuario: raAlunoMentor,
-          RaAlunos: raAlunos,
-          IdMentor: idMentor,
-        }),
-      });
-
-      const userRes = await fetch(`http://localhost:3001/user/${userId}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          NomeUsuario: nomeAlunoMentor,
-          Turma: turma,
-        }),
-      });
-
-      if (!res.ok || !userRes.ok) {
-        const err = await res.json();
-        alert("Erro: " + err.error);
-        return;
-      }
-
-      const team = await res.json();
-      const user = await userRes.json();
-      console.log("Time:", team);
-      console.log("Aluno Mentor:", user);
-    } catch (error) {
-      console.error(error);
-      alert("Erro ao buscar time.");
-    }
-  };
+  const chartData = [
+    { month: "January", desktop: 186 },
+    { month: "February", desktop: 305 },
+    { month: "March", desktop: 237 },
+    { month: "April", desktop: 73 },
+    { month: "May", desktop: 209 },
+    { month: "June", desktop: 214 },
+  ];
 
   return (
-    <div className="w-full">
+    <div className="w-screen h-screen overflow-x-clip">
       <div className="absolute left-0 top-0">
-        <BackHome />
+        <header>
+          <button
+            type="button"
+            className={`open-menu hover:text-primay/60 ${
+              menuOpen ? "menu-icon hidden" : "menu-icon"
+            }`}
+            onClick={() => setMenuOpen(true)}
+          >
+            {" "}
+            ☰{" "}
+          </button>
+        </header>
       </div>
 
-      <div className={`page-container ${menuOpen ? "shifted" : ""}`}>
+      <div
+        className={`${
+          menuOpen ? "ml-[270px]" : ""
+        } w-full h-full flex justify-center items-center transition-all duration-300 ease-in-out`}
+      >
         {/* Menu lateral quando está no desktop/tablet */}
         <MenuDesktop
           menuOpen={menuOpen}
-          raUsuario={raAlunoMentor!}
+          raUsuario={team?.RaUsuario || 10000000}
           setMenuOpen={(arg: SetStateAction<boolean>) => setMenuOpen(arg)}
         />
 
         {/* Menu rodapé quando está no mobile */}
-        <MenuMobile
-          raUsuario={raAlunoMentor!}
-        />
-        <div className="min-h-screen flex justify-center items-center p-6">
-          <main className="w-full max-w-4xl m-1 flex flex-col items-center justify-center md:w-1/2">
-            <form onSubmit={handleSubmit} className="p-8 max-w-xl w-full">
-              <div className="flex flex-col space-y-2">
-                <div>
-                  <p className="font-semibold">Nome completo</p>
-                  <p className="block min-h-9 border rounded-md border-gray-400 px-2 mt-1 mb-4 text-gray-800 w-full text-black placeholder-gray-400 py-1 text-base focus:outline-none">
-                    {nomeAlunoMentor ? nomeAlunoMentor : "Nome aparecerá aqui"}
-                  </p>
-                </div>
+        <MenuMobile raUsuario={team?.RaUsuario || 10000000} />
 
-                <div>
-                  <p className="font-semibold">R.A do Aluno-mentor</p>
-                  <p className="block w-full min-h-9 border rounded-md border-gray-400 px-4 mt-1 mb-3 text-gray-800 text-black placeholder-gray-400 py-1 text-base focus:outline-none">
-                    {raAlunoMentor ? raAlunoMentor : "Nome aparecerá aqui"}
-                  </p>
-                </div>
+        <main className="w-screen max-w-[1300px] mt-30 md:mt-0 grid grid-cols-1 md:grid-cols-3">
+          <div className="flex flex-col gap-2 mx-3">
+            <h3 className="text-2xl uppercase font-semibold text-primary">
+              {team?.NomeTime ? team?.NomeTime : "Nome do time aparecerá aqui"}
+            </h3>
+            <h4 className="mb-3 text-xl text-primary">
+              Turma {team?.Turma ? team?.Turma : "X"} | Yº Edição
+            </h4>
 
-                <div>
-                  <p className="font-semibold">R.A dos Alunos</p>
-                  <div className="block w-full min-h-65 border rounded-md border-gray-400 px-4 mt-1 mb-3 text-gray-800 text-black placeholder-gray-400 py-2 text-base focus:outline-none">
-                     {raAlunos ? raAlunos.split(", ").map((raAluno) => <p>{raAluno}</p>) : "RAs dos membros aparecerão aqui"} 
-                  
-                  </div>
-                </div>
-              </div>
-            </form>
-          </main>
-        </div>
+            <p className="font-semibold">Nome completo</p>
+            <p className="block min-h-9 border rounded-md border-gray-400 px-2 mb-4 w-full text-black placeholder-gray-400 py-1 text-base focus:outline-none">
+              {user?.NomeUsuario ? user?.NomeUsuario : "Nome aparecerá aqui"}
+            </p>
+
+            <p className="font-semibold">R.A do Aluno-mentor</p>
+            <p className="block w-full min-h-9 border rounded-md border-gray-400 px-4 mb-3 text-black placeholder-gray-400 py-1 text-base focus:outline-none">
+              {team?.RaUsuario ? team?.RaUsuario : "Nome aparecerá aqui"}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2 mx-3">
+            <p className="font-semibold">Integrantes</p>
+            <div className="block w-full h-65 md:h-95 border rounded-md border-gray-400 px-4 mt-1 mb-3 text-black placeholder-gray-400 py-2 text-base focus:outline-none">
+              {team?.RaAlunos
+                ? team?.RaAlunos.split(", ").map((raAluno: string) => <p>{raAluno}</p>)
+                : "RAs dos membros aparecerão aqui"}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2 mx-3">
+            <div className="h-fit md:h-95 w-full rounded-md mb-30 md:mb-3 mt-9">
+              <Chart chartData={chartData} />
+            </div>
+          </div>
+        </main>
       </div>
     </div>
   );
