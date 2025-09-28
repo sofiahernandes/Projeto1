@@ -71,7 +71,7 @@ export default function TeamHistory() {
               Turma {team?.Turma ? team?.Turma : "X"} | Yº Edição
             </h4>
           </div>
-          <div className="bg-[#d4ddd7] mx-4 grid grid-cols-1 md:grid-cols-3 gap-4.5 rounded-sm ">
+          <div className="bg-[#d4ddd7] mx-4 grid grid-cols-1 md:grid-cols-3 gap-4.5 rounded-sm p-2.5">
             <RenderContribution/>
           </div>
 

@@ -37,7 +37,7 @@ export default function RenderContribution() {
   }, [userId]);
 
   if (contributions.length === 0) {
-    return <p className="text-gray-500">Nenhuma contribuição encontrada.</p>;
+    return <p className="text-gray-800">Nenhuma contribuição encontrada!</p>;
   }
 
   return (
@@ -50,10 +50,10 @@ export default function RenderContribution() {
           <div className="font-semibold text-lg">Usuário: {c.RaUsuario}</div>
           <div>Tipo de Doação: {c.TipoDoacao}</div>
           <div>Quantidade: {c.Quantidade}</div>
-          {c.Meta && <div>Meta: {c.Meta}</div>}
-          {c.Gastos && <div>Gastos: {c.Gastos}</div>}
-          {c.Fonte && <div>Fonte: {c.Fonte}</div>}
-          {c.Comprovante && <div>Comprovante: {c.Comprovante}</div>}
+          <div>Meta: {c.Meta}</div>
+          <div>Gastos: {c.Gastos}</div>
+          <div>Fonte: {c.Fonte}</div>
+          <div>Comprovante: {c.Comprovante}</div>
           <div className="text-gray-500 text-sm">
             Data: {new Date(c.DataContribuicao).toLocaleDateString()}
           </div>
