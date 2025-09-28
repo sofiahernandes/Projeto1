@@ -4,7 +4,7 @@
   "description": "<h1 align=\"center\">Fundação de Comércio Álvares Penteado</h1>",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node src/db.test.js",
     "dev": "nodemon src/server.js",
     "build": "tsc",
     "start": "node dist/index.js",
@@ -28,6 +28,7 @@
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "mongodb": "^6.20.0",
+    "mongoose": "^8.18.2",
     "mysql2": "^3.15.0",
     "serverless-http": "^4.0.0"
   },
