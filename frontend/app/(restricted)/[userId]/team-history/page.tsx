@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import MenuMobile from "@/components/menu-mobile";
 import MenuDesktop from "@/components/menu-desktop";
 import { fetchData } from "@/hooks/fetch-user-profile";
-import renderContribution from "@/components/render-contribution";
 import RenderContribution from "@/components/render-contribution";
 
 export default function TeamHistory() {
@@ -72,7 +71,7 @@ export default function TeamHistory() {
               Turma {team?.Turma ? team?.Turma : "X"} | Yº Edição
             </h4>
           </div>
-          <div className="bg-[#f5f5f5] mx-4 grid grid-cols-1 md:grid-cols-3 gap-4.5 ">
+          <div className="bg-[#d4ddd7] mx-4 grid grid-cols-1 md:grid-cols-3 gap-4.5 rounded-sm ">
             <RenderContribution/>
           </div>
 
