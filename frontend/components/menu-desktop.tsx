@@ -15,8 +15,10 @@ export default function MenuDesktop({ menuOpen, setMenuOpen, raUsuario }: Proper
       </button>
       <nav>
         <Link href="/"><button className="donation-menu-button">Voltar ao Dashboard</button></Link>
-        <Link href={`/(restricted)/${raUsuario}/new-contribution`}><button className="donation-menu-button">Cadastrar novas contribuições</button></Link>
-        <Link href={`/(restricted)/${raUsuario}/team-history`}><button className="donation-menu-button">Histórico de contribuições</button></Link>
+        <Link href={`/${raUsuario}/new-contribution`}><button className="donation-menu-button">Cadastrar novas contribuições</button></Link>
+        <Link href={`/${raUsuario}/team-history`}><button className="donation-menu-button">Histórico de contribuições</button></Link>
+        <Link href={`/${raUsuario}/user-profile`}><button className="donation-menu-button">Meu perfil</button></Link>
+
       </nav>
     </aside>
   );

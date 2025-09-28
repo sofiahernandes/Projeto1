@@ -16,14 +16,14 @@ interface Contribution {
 }
 
 export default function RenderContribution() {
-    const [contributions, setContributions] = useState<Contribution[]>([]);
-    const params = useParams();
-    const userId = Number(params.userId);
+  const [contributions, setContributions] = useState<Contribution[]>([]);
+  const params = useParams();
+  const userId = Number(params.userId);
 
   useEffect(() => {
     async function fetchContributions() {
       try {
-        const res = await fetch("http://localhost:3001/api/contributions"); 
+        const res = await fetch(`http://localhost:3001/api/contributions/${userId}`);
 
         if (!res.ok) throw new Error("Erro ao buscar contribuições");
         const data = await res.json();
@@ -47,16 +47,15 @@ export default function RenderContribution() {
           key={c.IdContribuicao}
           className="bg-white p-4 rounded shadow-md flex flex-col gap-1"
         >
-          <div className="font-semibold text-lg">Usuário: {c.RaUsuario}</div>
-          <div>Tipo de Doação: {c.TipoDoacao}</div>
-          <div>Quantidade: {c.Quantidade}</div>
-          <div>Meta: {c.Meta}</div>
-          <div>Gastos: {c.Gastos}</div>
-          <div>Fonte: {c.Fonte}</div>
-          <div>Comprovante: {c.Comprovante}</div>
+          <div className="font-semibold text-lg">Fonte: {c.Fonte}</div>
           <div className="text-gray-500 text-sm">
             Data: {new Date(c.DataContribuicao).toLocaleDateString()}
           </div>
+          <div>Tipo de Doação: {c.TipoDoacao}</div>
+          <div>Quantidade: {c.Quantidade}</div>
+          {/* <div>Meta: {c.Meta}</div>
+          <div>Gastos: {c.Gastos}</div> */}
+          <div>Comprovante: {c.Comprovante}</div>
         </div>
       ))}
     </>
