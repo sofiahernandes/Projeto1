@@ -28,7 +28,6 @@
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "mongodb": "^6.20.0",
-    "mongoose": "^8.18.2",
     "mysql2": "^3.15.0",
     "serverless-http": "^4.0.0"
   },
