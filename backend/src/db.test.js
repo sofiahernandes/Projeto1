@@ -7,11 +7,11 @@ async function tryConnection() {
     
     const newUser = await prisma.usuario.create({
       data: {  RaUsuario: 25027757,
-      NomeUsuario:"Analice Coimbra",
-      EmailUsuario:"analice.carneiro@edu.fecap",
-      SenhaUsuario:"123@projeto01",
-      TelefoneUsuario:"1145367282",
-      Turma:"1MA",},
+      NomeUsuario:"",
+      EmailUsuario:"",
+      SenhaUsuario:"",
+      TelefoneUsuario:"",
+      Turma:"",},
     });
 
     console.log("Usuário criado:", newUser);
