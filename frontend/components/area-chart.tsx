@@ -1,13 +1,11 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -37,6 +35,7 @@ interface ChartProps {
 export function Chart({ chartData }: ChartProps) {
   return (
     <Card className="rounded-md h-full border border-gray-400 shadow-none">
+  
       <CardHeader>
         <CardTitle>Histórico de Arrecadações</CardTitle>
         <CardDescription>
@@ -45,31 +44,32 @@ export function Chart({ chartData }: ChartProps) {
           </div>
         </CardDescription>
       </CardHeader>
-      <CardContent className="px-0 mx-0">
-        <ChartContainer config={chartConfig}>
-          <AreaChart accessibilityLayer data={chartData}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
-            />
-            <Area
-              dataKey="desktop"
-              type="natural"
-              fill="var(--color-desktop)"
-              fillOpacity={0.4}
-              stroke="var(--color-desktop)"
-            />
-          </AreaChart>
-        </ChartContainer>
-      </CardContent>
+      
+        <CardContent className="px-0 mx-0 h-full">
+          <ChartContainer config={chartConfig}>
+            <AreaChart className="h-full" accessibilityLayer data={chartData}>
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="month"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                tickFormatter={(value) => value.slice(0, 3)}
+              />
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent indicator="line" />}
+              />
+              <Area
+                dataKey="desktop"
+                type="natural"
+                fill="var(--color-desktop)"
+                fillOpacity={0.4}
+                stroke="var(--color-desktop)"
+              />
+            </AreaChart>
+          </ChartContainer>
+        </CardContent>
     </Card>
   );
 }

@@ -93,7 +93,7 @@ input[type="file"]::file-selector-button:hover {
 }
 
 button:hover {
-  color: #ffffff;
+  color: #66d3bb;
 }
 
 /* Menu lateral */
@@ -204,6 +204,7 @@ button:hover {
     box-shadow: 0 -2px 8px rgba(24, 23, 23, 0.2);
     z-index: 1000;
     margin: auto;
+    flex-grow: 1;
     justify-content: space-around;
   }
   .donation-menu-button {

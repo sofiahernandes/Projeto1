@@ -37,7 +37,7 @@ export default function UserProfile() {
 
   return (
     <div className="w-screen h-screen overflow-x-clip">
-      <div className="absolute left-0 top-0">
+      <div className="absolute justify-between left-0 top-0">
         <header>
           <button
             type="button"
@@ -55,7 +55,7 @@ export default function UserProfile() {
       <div
         className={`${
           menuOpen ? "ml-[270px]" : ""
-        } w-full h-full flex justify-center items-center transition-all duration-300 ease-in-out`}
+        } w-full h-full flex justify-center md:items-center transition-all duration-300 ease-in-out`}
       >
         {/* Menu lateral quando está no desktop/tablet */}
         <MenuDesktop
@@ -67,7 +67,7 @@ export default function UserProfile() {
         {/* Menu rodapé quando está no mobile */}
         <MenuMobile raUsuario={team?.RaUsuario || 10000000} />
 
-        <main className="w-screen max-w-[1300px] mt-30 md:mt-0 grid grid-cols-1 md:grid-cols-3">
+        <main className="w-screen max-w-[1300px] mt-20 md:mt-0 grid grid-cols-1 md:grid-cols-3">
           <div className="flex flex-col gap-2 mx-3">
             <h3 className="text-2xl uppercase font-semibold text-primary">
               {team?.NomeTime ? team?.NomeTime : "Nome do time aparecerá aqui"}
@@ -85,11 +85,13 @@ export default function UserProfile() {
             <p className="block w-full min-h-9 border rounded-md border-gray-400 px-4 mb-3 text-black placeholder-gray-400 py-1 text-base focus:outline-none">
               {team?.RaUsuario ? team?.RaUsuario : "Nome aparecerá aqui"}
             </p>
+
+            <div className="bg-primary rounded-md h-[225px] w-full"></div>
           </div>
 
           <div className="flex flex-col gap-2 mx-3">
             <p className="font-semibold">Integrantes</p>
-            <div className="block w-full h-65 md:h-95 border rounded-md border-gray-400 px-4 mt-1 mb-3 text-black placeholder-gray-400 py-2 text-base focus:outline-none">
+            <div className="block w-full h-65 md:h-full border rounded-md border-gray-400 px-4 mt-1 text-black placeholder-gray-400 text-base focus:outline-none">
               {team?.RaAlunos
                 ? team?.RaAlunos.split(", ").map((raAluno: string) => <p>{raAluno}</p>)
                 : "RAs dos membros aparecerão aqui"}
@@ -97,7 +99,7 @@ export default function UserProfile() {
           </div>
 
           <div className="flex flex-col gap-2 mx-3">
-            <div className="h-fit md:h-95 w-full rounded-md mb-30 md:mb-3 mt-9">
+            <div className="h-fit md:h-full items-center w-full rounded-md mb-30 md:mb-0 mt-9">
               <Chart chartData={chartData} />
             </div>
           </div>
