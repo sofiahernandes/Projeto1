@@ -1,58 +1,48 @@
-datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
-// MODELS
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
 
 model Contribuicao {
-  id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  DataContribuicao DateTime @default(now())
+  IdContribuicao   Int       @id @default(autoincrement())
+  DataContribuicao DateTime? @default(now()) @db.Timestamp(0)
   Quantidade       Int
-  TipoDoacao       String
+  TipoDoacao       String    @db.VarChar(10)
   Gastos           Int
   Meta             Int?
-  Fonte            String?
-  Comprovante      String?
+  Fonte            String?   @db.VarChar(200)
+  Comprovante      String?   @db.VarChar(200)
+  RaUsuario        Int?
 
-  // FK para Usuario
-  usuarioId String?  @db.ObjectId
-  usuario   Usuario? @relation(fields: [usuarioId], references: [RaUsuario])
+  @@index([RaUsuario], map: "RaUsuario")
 }
 
 model Mentor {
-  IdMentor String   @id @default(auto()) @map("_id") @db.ObjectId
-  Email    String
+  IdMentor Int      @id @default(autoincrement())
+  Email    String   @db.VarChar(250)
   IsAdm    Boolean?
-
-  times Time?
 }
 
 model Time {
-  idTime       String @id @default(auto()) @map("_id") @db.ObjectId
-  NomeTime String
+  IdTime    Int    @id @default(autoincrement())
+  NomeTime  String @db.VarChar(250)
+  IdMentor  Int?
+  RaUsuario Int?
+  RaAlunos  Int?
 
-  // chaves-estrangeiras
-  mentorId String? @unique @db.ObjectId
-  mentor   Mentor? @relation(fields: [mentorId], references: [IdMentor])
-
-  usuarioId String?  @unique @db.ObjectId
-  usuario   Usuario? @relation(fields: [usuarioId], references: [RaUsuario])
+  @@index([IdMentor], map: "IdMentor")
+  @@index([RaUsuario], map: "RaUsuario")
 }
 
 model Usuario {
-  RaUsuario       String  @id @default(auto()) @map("_id") @db.ObjectId
-  NomeUsuario     String
-  EmailUsuario    String
-  SenhaUsuario    String
-  Turma           String
-  TelefoneUsuario String?
-
-  // Relacionamentos
-  contribuicoes Contribuicao[]
-  times         Time?
+  RaUsuario       Int     @id
+  NomeUsuario     String  @db.VarChar(250)
+  EmailUsuario    String  @db.VarChar(250)
+  SenhaUsuario    String  @db.VarChar(16)
+  Turma           String  @db.VarChar(20)
+  TelefoneUsuario String? @db.VarChar(20)
 }
