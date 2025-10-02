@@ -16,14 +16,14 @@ export default function TeamHistory() {
   const [user, setUser] = React.useState<any>(null);
   const [team, setTeam] = React.useState<any>(null);
 
-  // useEffect(() => {
-  //   const fetchTeamData = async () => {
-  //     const data = await fetchData(userId);
-  //     setUser(data?.user);
-  //     setTeam(data?.team);
-  //   };
-  //   fetchTeamData();
-  // }, [userId]);
+  useEffect(() => {
+    const fetchTeamData = async () => {
+      const data = await fetchData(userId);
+      setUser(data?.user);
+      setTeam(data?.team);
+    };
+    fetchTeamData();
+  }, [userId]);
 
   return (
     <div className="w-screen h-screen overflow-x-clip">
@@ -68,7 +68,7 @@ export default function TeamHistory() {
               {team?.NomeTime ? team?.NomeTime : "Nome do time aparecerá aqui"}
             </h3>
             <h4 className="mb-3 text-xl text-primary">
-              Turma {team?.Turma ? team?.Turma : "X"} | Yº Edição
+              Turma {user?.Turma ? user?.Turma : "X"} | Yº Edição
             </h4>
           </div>
           <div className="bg-[#d4ddd7] mx-4 grid grid-cols-1 md:grid-cols-3 gap-4.5 rounded-sm p-2.5">

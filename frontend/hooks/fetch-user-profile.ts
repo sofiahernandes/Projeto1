@@ -12,12 +12,12 @@ interface User {
 
 export async function fetchData(userId: number): Promise<{ team: Team; user: User } | undefined> {
     try {
-      const res = await fetch(`http://localhost:3001/team/${userId}`, {
+      const res = await fetch(`http://localhost:3001/api/team/${userId}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
 
-      const userRes = await fetch(`http://localhost:3001/user/${userId}`, {
+      const userRes = await fetch(`http://localhost:3001/api/user/${userId}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });

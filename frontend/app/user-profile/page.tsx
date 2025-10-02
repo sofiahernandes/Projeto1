@@ -73,7 +73,7 @@ export default function UserProfile() {
               {team?.NomeTime ? team?.NomeTime : "Nome do time aparecerá aqui"}
             </h3>
             <h4 className="mb-3 text-xl text-primary">
-              Turma {team?.Turma ? team?.Turma : "X"} | Yº Edição
+              Turma {user?.Turma ? user?.Turma : "X"} | Yº Edição
             </h4>
 
             <p className="font-semibold">Nome completo</p>
