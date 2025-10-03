@@ -1,9 +1,8 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
-import {useParams} from "next/navigation";
-import {Button} from "@/components/ui/button";
-import {BookOpen} from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 interface Contribution {
@@ -26,7 +25,9 @@ export default function RenderContribution() {
   useEffect(() => {
     async function fetchContributions() {
       try {
-        const res = await fetch(`http://localhost:3001/api/contributions/${userId}`);
+        const res = await fetch(
+          `http://localhost:3001/api/contributions/${userId}`
+        );
 
         if (!res.ok) throw new Error("Erro ao buscar contribuições");
         const data = await res.json();
@@ -41,23 +42,27 @@ export default function RenderContribution() {
 
   if (contributions.length === 0) {
     return <div>
-              <p className="text-gray-800">Nenhuma contribuição encontrada. Adicione uma nova contribuição para ver aqui!</p>
-              <Button className="overflow-hidden h-18 flex-col gap-2 hover:bg-primary/20 hover:border-primary/60 border border-primary/40 transition-colors bg-white">
-                  <Link
-                   href="/register/login"
-                    className="flex flex-col gap-2 items-center"
-                  >
-                    <BookOpen className="w-6 h-6 text-gray-600" />
-                    <span className="text-sm text-gray-900 font-medium">
-                      Registrar Doações
-                    </span>
-                  </Link>
-                </Button> 
-           </div>;
+              <div className="bg-[#d4ddd7] max-w-2xl mx-4 gap-4.5 rounded-sm p-2.5 ">
+                <p className="text-gray-800">
+                  Nenhuma contribuição encontrada. Adicione uma nova contribuição para
+                  ver aqui!
+                </p>
+              </div>
+              <Button className="justify-center self-center mt-4 ml-4 overflow-hidden h-10 gap-2 hover:bg-primary/20 hover:border-primary/60 border border-primary/40 transition-colors bg-white">
+                <Link
+                  href={`/${userId}/new-contribution`}
+                  className="flex flex-col gap-2 items-center"
+                >
+                  <span className="text-sm text-gray-900 font-medium">
+                    Registrar Doações
+                  </span>
+                </Link>
+              </Button>
+            </div>;
   }
 
   return (
-    <>
+    <div className="bg-[#d4ddd7] mx-4 grid grid-cols-1 md:grid-cols-3 gap-4.5 rounded-sm p-2.5">
       {contributions.map((c) => (
         <div
           key={c.IdContribuicao}
@@ -74,6 +79,6 @@ export default function RenderContribution() {
           <div>Comprovante: {c.Comprovante}</div>
         </div>
       ))}
-    </>
+    </div>
   );
 }
