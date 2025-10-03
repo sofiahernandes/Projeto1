@@ -16,8 +16,9 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-interface ChartData {
-  month: string;
+
+interface Contribution {
+  month: string
   desktop: number;
 }
 
@@ -29,7 +30,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 interface ChartProps {
-  chartData: ChartData[];
+  chartData: Contribution[];
 }
 
 export function Chart({ chartData }: ChartProps) {
@@ -45,9 +46,9 @@ export function Chart({ chartData }: ChartProps) {
         </CardDescription>
       </CardHeader>
       
-        <CardContent className="px-0 mx-0 h-full">
+        <CardContent className="px-0 mx-2">
           <ChartContainer config={chartConfig}>
-            <AreaChart className="h-full" accessibilityLayer data={chartData}>
+            <AreaChart accessibilityLayer data={chartData}>
               <CartesianGrid vertical={false} />
               <XAxis
                 dataKey="month"
