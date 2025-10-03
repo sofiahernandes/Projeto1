@@ -8,7 +8,6 @@
      "start": "node src/server.js",
      "test": "node src/db.test.js",
      "dev": "nodemon src/server.js",
-     "build": "tsc",
    
     "vercel-build": "prisma generate"
   },
