@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: ["http://192.168.3.122:3000", "https://arkana-projeto1.vercel.app"],
+    origin: process.env.FRONTEND_URL || "*", 
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })

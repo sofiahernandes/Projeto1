@@ -1,6 +1,5 @@
 import { prisma } from "../../prisma/lib/prisma.js";
 
-
 const mentorController = {
   //GET http://localhost:3001/api/mentors
   allMentors: async (_, res) => {

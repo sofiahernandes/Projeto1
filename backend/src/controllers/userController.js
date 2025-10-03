@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import { prisma } from "../../prisma/lib/prisma.js"
 
-
 const usersController = {
   //GET http://localhost:3001/api/users
   allUsers: async (_, res) => {
