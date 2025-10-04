@@ -42,7 +42,7 @@ export default function DonationsForm({
     setLoading(true);
 
     try {
-     const res = await fetch(`${NEXT_PUBLIC_API_URL}/api/createContribution`, {
+     const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/createContribution`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

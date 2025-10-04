@@ -2,9 +2,9 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-
 import BackHome from "@/components/back-home";
 import DropdownTurmas from "@/components/dropdown-turmas";
+
 
 export default function Cadastro() {
   const router = useRouter();
@@ -21,7 +21,7 @@ export default function Cadastro() {
     e.preventDefault();
 
     try {
-      const res = await fetch(` ${NEXT_PUBLIC_BACKEND_URL}/api/register`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
