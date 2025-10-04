@@ -1,5 +1,4 @@
-import { prisma } from "../prisma.js";
-
+import { prisma } from "../../prisma/lib/prisma.js";
 
 const contributionController = {
   //GET http://localhost:3001/api/contributions
