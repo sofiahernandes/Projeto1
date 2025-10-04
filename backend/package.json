@@ -2,12 +2,13 @@
   "name": "projeto1",
   "version": "1.0.0",
   "description": "<h1 align=\"center\">Fundação de Comércio Álvares Penteado</h1>",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "node src/db.test.js",
-    "dev": "nodemon src/server.js",
-    "build": "tsc",
-    "start": "node dist/index.js",
+     "start": "node src/server.js",
+     "test": "node src/db.test.js",
+     "dev": "nodemon src/server.js",
+   
     "vercel-build": "prisma generate"
   },
   "repository": {
@@ -17,17 +18,16 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
   "bugs": {
     "url": "https://github.com/2025-2-MCC2/Projeto1/issues"
   },
   "homepage": "https://github.com/2025-2-MCC2/Projeto1#readme",
   "dependencies": {
-    "@prisma/client": "^6.16.2",
+    "@prisma/client": "^6.16.3",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
-    "mongodb": "^6.20.0",
     "mysql2": "^3.15.0",
     "serverless-http": "^4.0.0"
   },
@@ -36,6 +36,6 @@
     "@types/express": "^5.0.3",
     "@types/node": "^24.5.2",
     "nodemon": "^3.1.10",
-    "prisma": "^6.16.2"
+    "prisma": "^6.16.3"
   }
 }

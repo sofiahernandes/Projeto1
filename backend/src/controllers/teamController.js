@@ -1,4 +1,4 @@
-import { prisma } from "../prisma.js";
+import { prisma } from "../../prisma/lib/prisma.js";
 
 { /* 2° Entrega: {IdTime, RaAlunoM, RA1, RA2, RA3, RA4, RA5, RA6, RA7, RA8, RA9, RA10} */}
 
