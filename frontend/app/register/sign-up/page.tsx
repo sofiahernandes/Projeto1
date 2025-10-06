@@ -19,9 +19,10 @@ export default function Cadastro() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
+    
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/register`, {
+      const res = await fetch(`${backend_url}/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

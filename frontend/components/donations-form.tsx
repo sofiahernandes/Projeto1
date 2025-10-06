@@ -40,9 +40,10 @@ export default function DonationsForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+    const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
+    
     try {
-     const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/createContribution`, {
+      const res = await fetch(`${backend_url}/api/createContribution`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
