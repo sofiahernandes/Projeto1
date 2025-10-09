@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { prisma } from "../../prisma/lib/prisma.js"
+import { prisma } from "../../prisma/lib/prisma.js";
 
 const usersController = {
   //GET http://localhost:3001/api/users
@@ -91,18 +91,18 @@ const usersController = {
       });
       res.json(usuario);
     } catch (err) {
-      if(err.code == P2002){ res.status(409).json({
-        error: "Aluno Mentor já existente",
-        details: err.message,
-      })
+      if (err.code == "P2002") {
+        res.status(409).json({
+          error: "Aluno Mentor já existente",
+          details: err.message,
+        });
+      } else {
+        res.status(500).json({
+          error: "Erro ao cadastrar Aluno Mentor..",
+          details: err.message,
+        });
+      }
     }
-      else{
-      res.status(500).json({
-        error: "Erro ao cadastrar Aluno Mentor..",
-        details: err.message
-      })
-    } 
-  }
   },
 
   // try {
@@ -137,18 +137,21 @@ const usersController = {
           SenhaUsuario: SenhaUsuario,
         },
       });
-       const senhaValida = await bcrypt.compare(SenhaUsuario, usuario.SenhaUsuario);
+      const senhaValida = await bcrypt.compare(
+        SenhaUsuario,
+        usuario.SenhaUsuario
+      );
 
-    if (!senhaValida) {
-      return res.status(401).json({ error: "Senha incorreta" });
+      if (!senhaValida) {
+        return res.status(401).json({ error: "Senha incorreta" });
+      }
+
+      res.json({ message: "Login realizado com sucesso", usuario });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Erro no login" });
     }
-
-    res.json({ message: "Login realizado com sucesso", usuario });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erro no login" });
-  }
-  }, 
+  },
   // try {
   //   const [rows] = await pool.query(
   //     "SELECT * FROM usuario WHERE RaUsuario = ? AND SenhaUsuario = ?",
