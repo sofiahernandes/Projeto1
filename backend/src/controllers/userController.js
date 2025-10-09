@@ -65,7 +65,7 @@ const usersController = {
       Turma,
     } = req.body;
 
-    const hashedPassword = await bcrypt.hash(SenhaUsuario, 10);
+    const hashedPassword = await bcrypt.hash(SenhaUsuario, 16);
 
     if (
       !RaUsuario ||
@@ -91,11 +91,18 @@ const usersController = {
       });
       res.json(usuario);
     } catch (err) {
-      res.status(409).json({
+      if(err.code == P2002){ res.status(409).json({
         error: "Aluno Mentor já existente",
         details: err.message,
-      });
+      })
     }
+      else{
+      res.status(500).json({
+        error: "Erro ao cadastrar Aluno Mentor..",
+        details: err.message
+      })
+    } 
+  }
   },
 
   // try {
