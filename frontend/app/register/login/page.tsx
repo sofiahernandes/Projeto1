@@ -14,8 +14,11 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
-    
+    const backend_url =
+      process.env.NEXT_PUBLIC_BACKEND_URL ||
+      (process.env.NODE_ENV === "production"
+        ? "https://projeto1-production-633f.up.railway.app"
+        : "http://localhost:3001");
     try {
       const res = await fetch(`${backend_url}/api/user/login`, {
         method: "POST",
@@ -25,13 +28,13 @@ export default function Login() {
           SenhaUsuario: senhaAlunoMentor,
         }),
       });
-  
+
       if (!res.ok) {
         const errorData = await res.json();
         alert(errorData.error || "Erro no login");
         return;
       }
-  
+
       const user = await res.json();
 
       router.push(`/${user.RaUsuario}/new-contribution`);
@@ -39,7 +42,7 @@ export default function Login() {
       console.error("Erro de conexão:", err);
       alert("Erro de conexão com o servidor");
     }
-  };  
+  };
 
   return (
     <div className="w-full">

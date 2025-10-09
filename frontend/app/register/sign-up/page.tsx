@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import BackHome from "@/components/back-home";
 import DropdownTurmas from "@/components/dropdown-turmas";
 
-
 export default function Cadastro() {
   const router = useRouter();
   const [raAlunoMentor, setRaAlunoMentor] = React.useState<number>();
@@ -19,8 +18,12 @@ export default function Cadastro() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
-    
+    const backend_url =
+      process.env.NEXT_PUBLIC_BACKEND_URL ||
+      (process.env.NODE_ENV === "production"
+        ? "https://projeto1-production-633f.up.railway.app"
+        : "http://localhost:3001");
+
     try {
       const res = await fetch(`${backend_url}/api/register`, {
         method: "POST",
@@ -62,7 +65,9 @@ export default function Cadastro() {
         <div className="flex flex-col md:flex-row w-full max-w-3xl">
           <section className="bg-[#1C7C61] h-120 m-1 flex flex-col rounded-lg items-center justify-center md:w-1/2 p-6 text-white">
             <h1 className="flex text-center font-bold text-[#fff] text-[22px] mb-1">
-              Cadastro de<br/>Alunos-mentores
+              Cadastro de
+              <br />
+              Alunos-mentores
             </h1>
             <img
               src="https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=180,fit=crop,q=95/dOq4lP0kVLiEl8Z3/lideranaas-empaticas-logo-AoPWG9oBrrt3QGv0.png"
