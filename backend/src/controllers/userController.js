@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+//import bcrypt from "bcrypt";
 import { prisma } from "../../prisma/lib/prisma.js";
 
 const usersController = {
@@ -84,7 +84,7 @@ const usersController = {
           RaUsuario,
           NomeUsuario,
           EmailUsuario,
-          SenhaUsuario: hashedPassword,
+          SenhaUsuario,
           TelefoneUsuario,
           Turma,
         },
