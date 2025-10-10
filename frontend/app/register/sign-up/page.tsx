@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import BackHome from "@/components/back-home";
 import DropdownTurmas from "@/components/dropdown-turmas";
 
@@ -15,67 +15,66 @@ export default function Cadastro() {
   const [senhaAlunoMentor, setSenhaAlunoMentor] = React.useState("");
   const [mostrarSenha, setMostrarSenha] = React.useState(false);
 
-   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  
-  // Adicione verificação da URL
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-  
-  if (!backendUrl) {
-    console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
-    alert("Erro de configuração. Entre em contato com o suporte.");
-    return;
-  }
-  
-  // Garanta que a URL termine com /
-  const apiUrl = backendUrl.endsWith('/') 
-    ? `${backendUrl}api/register` 
-    : `${backendUrl}/api/register`;
-  
-  console.log("Tentando conectar em:", apiUrl); // Debug
-  
-  try {
-    const res = await fetch(apiUrl, {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        RaUsuario: Number(raAlunoMentor),
-        NomeUsuario: nomeAlunoMentor,
-        EmailUsuario: emailAlunoMentor,
-        SenhaUsuario: senhaAlunoMentor,
-        TelefoneUsuario: telefoneAlunoMentor,
-        Turma: turma,
-      }),
-    });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ error: "Erro desconhecido" }));
-      console.error("Erro da API:", err);
-      alert("Erro: " + (err.error || `Status ${res.status}`));
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+    if (!backendUrl) {
+      console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
+      alert("Erro de configuração. Entre em contato com o suporte.");
       return;
     }
 
-    const newUser = await res.json();
-    console.log("Usuário cadastrado:", newUser);
-    
-    alert("Usuário cadastrado com sucesso!");
-    
-    // Redireciona para contribuições passando o id
-    router.push(`/$/new-contribution?userId=${newUser.RaUsuario}`);
-    
-  } catch (error) {
-    console.error("Erro ao cadastrar usuário:", error);
-    
-    // Verifique se é erro de rede
-    if (error instanceof TypeError && error.message === "Failed to fetch") {
-      alert("Erro de conexão. Verifique se o backend está rodando e se a URL está correta.");
-    } else {
-      alert("Erro ao cadastrar usuário: " + error);
+    const apiUrl = backendUrl.endsWith("/")
+      ? `${backendUrl}api/register`
+      : `${backendUrl}/api/register`;
+
+    console.log("Tentando conectar em:", apiUrl);
+
+    try {
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          RaUsuario: Number(raAlunoMentor),
+          NomeUsuario: nomeAlunoMentor,
+          EmailUsuario: emailAlunoMentor,
+          SenhaUsuario: senhaAlunoMentor,
+          TelefoneUsuario: telefoneAlunoMentor,
+          Turma: turma,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res
+          .json()
+          .catch(() => ({ error: "Erro desconhecido" }));
+        console.error("Erro da API:", err);
+        alert("Erro: " + (err.error || `Status ${res.status}`));
+        return;
+      }
+
+      const newUser = await res.json();
+      console.log("Usuário cadastrado:", newUser);
+
+      alert("Usuário cadastrado com sucesso!");
+
+      router.push(`/$/new-contribution?userId=${newUser.RaUsuario}`);
+    } catch (error) {
+      console.error("Erro ao cadastrar usuário:", error);
+
+      if (error instanceof TypeError && error.message === "Failed to fetch") {
+        alert(
+          "Erro de conexão. Verifique se o backend está rodando e se a URL está correta."
+        );
+      } else {
+        alert("Erro ao cadastrar usuário: " + error);
+      }
     }
-  }
-};
+  };
 
   return (
     <div className="w-full">
@@ -150,9 +149,7 @@ export default function Cadastro() {
                     name="telefone"
                     type="string"
                     value={telefoneAlunoMentor}
-                    onChange={(e) =>
-                      setTelefoneAlunoMentor(e.target.value)
-                    }
+                    onChange={(e) => setTelefoneAlunoMentor(e.target.value)}
                     placeholder="Insira seu Número"
                     className="block w-full bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
                   />
