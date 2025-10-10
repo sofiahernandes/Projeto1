@@ -59,7 +59,7 @@ export default function Cadastro() {
 
       <div className="min-h-screen flex justify-center items-center p-6">
         <div className="flex flex-col md:flex-row w-full max-w-3xl">
-          <section className="bg-[#1C7C61] h-120 m-1 flex flex-col rounded-lg items-center justify-center md:w-1/2 p-6 text-white">
+          <section className="bg-primary h-120 m-1 flex flex-col rounded-lg items-center justify-center md:w-1/2 p-6 text-white">
             <h1 className="flex text-center font-bold text-[#fff] text-[22px] mb-1">
               Cadastro de<br/>Alunos-mentores
             </h1>
@@ -70,7 +70,7 @@ export default function Cadastro() {
             />
           </section>
 
-          <section className="bg-[#eeeeee] border border-[#b4b4b4] rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2">
+          <section className="border border-[#b4b4b4] rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2">
             <form onSubmit={handleSubmit} className="p-8 max-w-xl w-full">
               {/*Container Esquerda*/}
               <div className="flex flex-col space-y-2">
