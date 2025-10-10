@@ -14,7 +14,7 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL + "/api/register";
+    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL + "api/user/login";
 
     try {
       const res = await fetch(apiUrl, {
