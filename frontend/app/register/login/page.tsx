@@ -9,7 +9,7 @@ import BackHome from "@/components/back-home";
 
 export default function Login() {
   const router = useRouter();
-  const [raAlunoMentor, setRaAlunoMentor] = React.useState<number>();
+  const [raAlunoMentor, setRaAlunoMentor] = React.useState("");
   const [senhaAlunoMentor, setSenhaAlunoMentor] = React.useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
