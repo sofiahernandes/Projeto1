@@ -133,7 +133,7 @@ export default function UserProfile() {
         {/* Menu rodapé quando está no mobile */}
         <MenuMobile raUsuario={team?.RaUsuario || 10000000} />
 
-        <main className="w-screen max-w-[1300px] mt-20 md:mt-0 grid grid-cols-1 md:grid-cols-3">
+        <section className="w-screen max-w-[1300px] mt-20 md:mt-0 grid grid-cols-1 md:grid-cols-3">
           <div className="flex flex-col gap-2 mx-3">
             <h3 className="text-2xl uppercase font-semibold text-primary">
               {team?.NomeTime ? team?.NomeTime : "Nome do time aparecerá aqui"}
@@ -143,18 +143,16 @@ export default function UserProfile() {
             </h4>
 
             <p className="font-semibold">Email Mentor</p>
-            <p className="block min-h-9 border rounded-md border-gray-400 px-2 mb-4 w-full text-black placeholder-gray-400 py-1 text-base focus:outline-none">
+            <div className="block min-h-9 border rounded-md border-gray-400 px-2 mb-3 w-full text-black placeholder-gray-400 pt-1 text-base focus:outline-none">
               {team?.IdMentor
-                ? emailMentor
+                ? <p>emailMentor</p>
                 : (
-                  // Falta adicionar o emailMentor a database em si
-                  <form onSubmit={handleSubmit}>
+                  // Falta adicionar o emailMentor à database em si
+                  <form onSubmit={handleSubmit} className="flex justify-between">
                     <input type="text" onChange={(e) => setEmailMentor(e.target.value)} value={emailMentor} placeholder="Adicione aqui seu Mentor!" className="w-[85%] h-full focus:outline-none" />
-                    <button type="submit" className="underline text-blue-700">
+                    <button type="submit" className="underline text-blue-700 h-full">
                       <img
-                        width="30"
-                        height="30"
-                        className="text-primary opacity-60 hover:opacity-70"
+                        className="text-primary w-6 opacity-60 rotate-180 hover:opacity-70"
                         src="https://img.icons8.com/glyph-neue/64/circled-left-2.png"
                         alt="circled-left-2"
                       />
@@ -162,35 +160,38 @@ export default function UserProfile() {
                   </form>
                 )
               }
-            </p>
+            </div>
 
             <p className="font-semibold">R.A do Aluno-mentor</p>
-            <p className="block w-full min-h-9 border rounded-md border-gray-400 px-4 mb-3 text-black placeholder-gray-400 py-1 text-base focus:outline-none">
+            <p className="block w-full min-h-9 border rounded-md border-gray-400 px-2 mb-3 text-black placeholder-gray-400 py-1 text-base focus:outline-none">
               {team?.RaUsuario ? team?.RaUsuario : "Nome aparecerá aqui"}
             </p>
 
-            <div className="border border-gray-400 rounded-md h-[225px] w-full">
+            <div className="border border-gray-400 rounded-md h-full py-1 px-2 w-full">
               {team?.RaAlunos
                 ? team?.RaAlunos.split(", ").map((raAluno: string) => <p>{raAluno}</p>)
-                : "RAs dos membros aparecerão aqui"}
+                : "RAs dos alunos aparecerão aqui"}
             </div>
           </div>
 
           <div className="flex flex-col gap-2 mx-3">
-            <p className="font-semibold">Integrantes</p>
-            <div className="block w-full h-65 md:h-full border rounded-md border-gray-400 px-4 mt-1 text-black placeholder-gray-400 text-base focus:outline-none">
+            <p className="font-semibold">Pontuação por Alimento</p>
+            <div className="block w-full h-65 md:h-full border rounded-md border-gray-400 px-2 py-1 mt-1 text-black placeholder-red-400 text-base focus:outline-none">
               {team?.RaAlunos
                 ? team?.RaAlunos.split(", ").map((raAluno: string) => <p className="p-2">{raAluno}</p>)
-                : "RAs dos membros aparecerão aqui"}
+                : "*Adicionar lógica de pontuação*"}
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 mx-3">
-            <div className="h-fit md:h-full items-center w-full rounded-md mb-30 md:mb-0 mt-9">
+          <div className="flex flex-col justify-between gap-2 mx-3">
+            <div className="h-fit md:h-50 items-center w-full rounded-md my-9">
               <Chart chartData={contributions} />
             </div>
+            <div className="h-[150px] bg-primary items-center w-full rounded-md mb-30 md:mb-0 md:mt-25">
+
+            </div>
           </div>
-        </main>
+        </section>
       </div>
     </div>
   );
