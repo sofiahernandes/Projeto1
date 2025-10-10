@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation"; 
 import BackHome from "@/components/back-home";
 import DropdownTurmas from "@/components/dropdown-turmas";
 
@@ -18,14 +18,10 @@ export default function Cadastro() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const backend_url =
-      process.env.NEXT_PUBLIC_BACKEND_URL ||
-      (process.env.NODE_ENV === "production"
-        ? "https://projeto1-production-633f.up.railway.app"
-        : "http://localhost:3001");
+   const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL+ "/api/register";
 
     try {
-      const res = await fetch(`${backend_url}/api/register`, {
+      const res = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
