@@ -145,14 +145,14 @@ const usersController = {
           SenhaUsuario: SenhaUsuario,
         },
       });
-      const senhaValida = await bcrypt.compare(
-        SenhaUsuario,
-        usuario.SenhaUsuario
-      );
+      // const senhaValida = await bcrypt.compare(
+      //   SenhaUsuario,
+      //   usuario.SenhaUsuario
+      // );
 
-      if (!senhaValida) {
-        return res.status(401).json({ error: "Senha incorreta" });
-      }
+      // if (!senhaValida) {
+      //   return res.status(401).json({ error: "Senha incorreta" });
+      // }
 
       res.json({ message: "Login realizado com sucesso", usuario });
     } catch (error) {

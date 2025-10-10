@@ -12,63 +12,60 @@ export default function Login() {
   const [raAlunoMentor, setRaAlunoMentor] = React.useState("");
   const [senhaAlunoMentor, setSenhaAlunoMentor] = React.useState("");
 
-   const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-  
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-  
-      if (!backendUrl) {
-        console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
-        alert("Erro de configuração. Entre em contato com o suporte.");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+    if (!backendUrl) {
+      console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
+      alert("Erro de configuração. Entre em contato com o suporte.");
+      return;
+    }
+
+    const apiUrl = `${backendUrl}/api/user/login`;
+
+    console.log("Tentando conectar em:", apiUrl);
+
+    try {
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          RaUsuario: Number(raAlunoMentor),
+          SenhaUsuario: senhaAlunoMentor,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res
+          .json()
+          .catch(() => ({ error: "Erro desconhecido" }));
+        console.error("Erro da API:", err);
+        alert("Erro: " + (err.error || `Status ${res.status}`));
         return;
       }
-  
-      const apiUrl = backendUrl.endsWith("/")
-        ? `${backendUrl}api/register`
-        : `${backendUrl}/api/register`;
-  
-      console.log("Tentando conectar em:", apiUrl);
-  
-      try {
-        const res = await fetch(apiUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            RaUsuario: Number(raAlunoMentor),
-            SenhaUsuario: senhaAlunoMentor,
-            
-          }),
-        });
-  
-        if (!res.ok) {
-          const err = await res
-            .json()
-            .catch(() => ({ error: "Erro desconhecido" }));
-          console.error("Erro da API:", err);
-          alert("Erro: " + (err.error || `Status ${res.status}`));
-          return;
-        }
-  
-        const newUser = await res.json();
-        console.log("Usuário cadastrado:", newUser);
-  
-        alert("Usuário cadastrado com sucesso!");
-  
-        router.push(`/$/new-contribution?userId=${newUser.RaUsuario}`);
-      } catch (error) {
-        console.error("Erro ao cadastrar usuário:", error);
-  
-        if (error instanceof TypeError && error.message === "Failed to fetch") {
-          alert(
-            "Erro de conexão. Verifique se o backend está rodando e se a URL está correta."
-          );
-        } else {
-          alert("Erro ao cadastrar usuário: " + error);
-        }
+
+      const User = await res.json();
+      console.log("Usuário Logado:", User);
+
+      alert("Usuário Logado com sucesso!");
+
+      router.push(`/$/new-contribution?userId=${User.RaUsuario}`);
+    } catch (error) {
+      console.error("Erro ao logar usuário:", error);
+
+      if (error instanceof TypeError && error.message === "Failed to fetch") {
+        alert(
+          "Erro de conexão. Verifique se o backend está rodando e se a URL está correta."
+        );
+      } else {
+        alert("Erro ao cadastrar usuário: " + error);
       }
-    };
+    }
+  };
 
   return (
     <div className="w-full">
