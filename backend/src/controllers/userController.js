@@ -81,7 +81,7 @@ const usersController = {
     try {
       const usuario = await prisma.usuario.create({
         data: {
-          RaUsuario,
+          RaUsuario: Number(RaUsuario),
           NomeUsuario,
           EmailUsuario,
           SenhaUsuario,
