@@ -4,17 +4,21 @@ import React, { SetStateAction, useEffect } from "react";
 import { useParams } from "next/navigation";
 import MenuMobile from "@/components/menu-mobile";
 import MenuDesktop from "@/components/menu-desktop";
-import { fetchData } from "@/hooks/fetch-user-profile";
 import RenderContribution from "@/components/render-contribution";
+import { fetchData } from "@/hooks/fetch-user-profile";
+import RecordsModal from "@/components/records-modal";
 
 export default function TeamHistory() {
   const params = useParams();
   const userId = Number(params.userId);
 
   const [menuOpen, setMenuOpen] = React.useState(false);
-
-  const [user, setUser] = React.useState<any>(null);
   const [team, setTeam] = React.useState<any>(null);
+  const [user, setUser] = React.useState<any>(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const [selectedContribution, setSelectedContribution] =
+    React.useState<any>(null);
 
   useEffect(() => {
     const fetchTeamData = async () => {
@@ -31,7 +35,7 @@ export default function TeamHistory() {
         <header>
           <button
             type="button"
-            className={`open-menu hover:text-primay/60 ${
+            className={`open-menu hover:text-primary/60 ${
               menuOpen ? "menu-icon hidden" : "menu-icon"
             }`}
             onClick={() => setMenuOpen(true)}
@@ -39,9 +43,9 @@ export default function TeamHistory() {
             {" "}
             ☰{" "}
           </button>
-           <h1 className="text-2xl font-semibold text-green-800 self-center mt-4">
-              Histórico de contribuições
-            </h1>
+          <h1 className="text-2xl font-semibold text-primary self-center mt-4">
+            Histórico de contribuições
+          </h1>
         </header>
       </div>
 
@@ -62,6 +66,13 @@ export default function TeamHistory() {
 
         {/* main page do historico - todas as contribuições do grupo */}
         <main className="w-screen max-w-[1300px] p-1.5 md:mt-0">
+          {selectedContribution && (
+            <RecordsModal
+              data={selectedContribution}
+              isOpen={isOpen}
+              setIsOpen={setIsOpen}
+            />
+          )}
           {/*grid grid-cols-1 md:grid-cols-3*/}
           <div className="flex flex-col gap-2 mx-3">
             <h3 className="text-2xl uppercase font-semibold text-primary">
@@ -71,9 +82,14 @@ export default function TeamHistory() {
               Turma {user?.Turma ? user?.Turma : "X"} | Yº Edição
             </h4>
           </div>
-          
-            <RenderContribution/>
-          
+          <div className="mx-4 grid grid-cols-1 md:grid-cols-3 gap-4.5 rounded-sm p-2.5">
+            <RenderContribution
+              onSelect={(contribution: any) => {
+                setSelectedContribution(contribution);
+                setIsOpen(true);
+              }}
+            />
+          </div>
         </main>
       </div>
     </div>
