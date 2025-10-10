@@ -14,7 +14,7 @@ export default function PublicDashboard() {
   const biggestDonations = donations.slice(0, 6);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col scroll-smooth">
     <Hero />
 
     <main id="public-graph" className="w-full lg:p-10 p-6 min-h-screen flex align-center justify-center">

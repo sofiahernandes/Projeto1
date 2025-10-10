@@ -27,13 +27,13 @@ const Hero = () => {
         />
       </div>
       <div className="relative pt-10 z-300 bg-transparent h-full mx-auto flex flex-col justify-between items-center">
-        <div className="pointer-events-none h-full flex flex-col justify-center gap-2 items-center">
-          <h1 className="changa-one-bold text-responsive text-5xl md:text-7xl text-white max-w-4xl text-center mx-auto">
+        <div className="h-full flex flex-col justify-center gap-2 items-center">
+          <h1 className="select-none changa-one-bold text-responsive text-5xl md:text-7xl text-white max-w-4xl text-center mx-auto">
             LIDERANÇAS
             <br />
             EMPÁTICAS
           </h1>
-          <p className="changa-one-regular text-2xl mt-0 text-white">
+          <p className="select-none changa-one-regular text-2xl mt-0 text-white">
             + ARKANA
           </p>
         </div>
