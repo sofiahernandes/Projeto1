@@ -145,6 +145,14 @@ const usersController = {
           SenhaUsuario: SenhaUsuario,
         },
       });
+
+      res.json({ message: "Login realizado com sucesso", usuario });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Erro no login" });
+    }
+  },
+
       // const senhaValida = await bcrypt.compare(
       //   SenhaUsuario,
       //   usuario.SenhaUsuario
@@ -154,12 +162,6 @@ const usersController = {
       //   return res.status(401).json({ error: "Senha incorreta" });
       // }
 
-      res.json({ message: "Login realizado com sucesso", usuario });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Erro no login" });
-    }
-  },
   // try {
   //   const [rows] = await pool.query(
   //     "SELECT * FROM usuario WHERE RaUsuario = ? AND SenhaUsuario = ?",
