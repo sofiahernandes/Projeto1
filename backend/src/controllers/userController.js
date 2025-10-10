@@ -108,7 +108,7 @@ const usersController = {
       console.error("Erro ao cadastrar Aluno Mentor:", err);
       return res.status(500).json({
         error: "Erro ao cadastrar Aluno Mentor.",
-        details: err.message || "Erro desconhecido",
+        details: err.message,
       });
     }
   },
