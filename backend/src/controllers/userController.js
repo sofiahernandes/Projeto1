@@ -91,17 +91,25 @@ const usersController = {
       });
       res.json(usuario);
     } catch (err) {
-      if (err.code == "P2002") {
-        res.status(409).json({
+      // Verifica duplicidade (erro de campo único)
+      const isDuplicateError =
+        err.message?.toLowerCase().includes("unique constraint") ||
+        err.meta?.target?.length > 0 ||
+        err.message?.toLowerCase().includes("unique failure");
+
+      if (isDuplicateError) {
+        return res.status(409).json({
           error: "Aluno Mentor já existente",
-          details: err.message,
-        });
-      } else {
-        res.status(500).json({
-          error: "Erro ao cadastrar Aluno Mentor..",
-          details: err.message,
+          details: err.meta?.target || err.message,
         });
       }
+
+      // Loga e retorna erro genérico
+      console.error("Erro ao cadastrar Aluno Mentor:", err);
+      return res.status(500).json({
+        error: "Erro ao cadastrar Aluno Mentor.",
+        details: err.message || "Erro desconhecido",
+      });
     }
   },
 
@@ -177,12 +185,10 @@ const usersController = {
       });
       res.json({ message: "Aluno Mentor deletado com sucesso!", usuario });
     } catch (err) {
-      if (err.code == P2025) {
-        return res.status(404).json({ error: "Aluno Mentor não encontrado" });
-      }
-      res.status(500).json({
+      console.error("Erro ao deletar aluno mentor:", err);
+      return res.status(500).json({
         error: "Erro ao deletar aluno mentor",
-        details: err.message,
+        details: err.message || "Erro desconhecido",
       });
     }
   },
