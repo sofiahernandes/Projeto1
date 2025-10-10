@@ -65,7 +65,7 @@ const usersController = {
       Turma,
     } = req.body;
 
-    const hashedPassword = await bcrypt.hash(SenhaUsuario, 16);
+   // const hashedPassword = await bcrypt.hash(SenhaUsuario, 16);
 
     if (
       !RaUsuario ||
