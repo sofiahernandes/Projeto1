@@ -5,12 +5,10 @@ import { useRouter } from "next/navigation";
 import BackHome from "@/components/back-home";
 import DropdownTurmas from "@/components/dropdown-turmas";
 
-
 export default function Cadastro() {
   const router = useRouter();
-  const [raAlunoMentor, setRaAlunoMentor] = React.useState<number>();
-  const [telefoneAlunoMentor, setTelefoneAlunoMentor] =
-    React.useState<number>();
+  const [raAlunoMentor, setRaAlunoMentor] = React.useState("");
+  const [telefoneAlunoMentor, setTelefoneAlunoMentor] = React.useState("");
   const [nomeAlunoMentor, setNomeAlunoMentor] = React.useState("");
   const [turma, setTurma] = React.useState("");
   const [emailAlunoMentor, setEmailAlunoMentor] = React.useState("");
@@ -19,14 +17,29 @@ export default function Cadastro() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
-    
+
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+    if (!backendUrl) {
+      console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
+      alert("Erro de configuração. Entre em contato com o suporte.");
+      return;
+    }
+
+    const apiUrl = backendUrl.endsWith("/")
+      ? `${backendUrl}api/register`
+      : `${backendUrl}/api/register`;
+
+    console.log("Tentando conectar em:", apiUrl);
+
     try {
-      const res = await fetch(`${backend_url}/api/register`, {
+      const res = await fetch(apiUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          RaUsuario: raAlunoMentor,
+          RaUsuario: Number(raAlunoMentor),
           NomeUsuario: nomeAlunoMentor,
           EmailUsuario: emailAlunoMentor,
           SenhaUsuario: senhaAlunoMentor,
@@ -36,19 +49,30 @@ export default function Cadastro() {
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        alert("Erro: " + err.error);
+        const err = await res
+          .json()
+          .catch(() => ({ error: "Erro desconhecido" }));
+        console.error("Erro da API:", err);
+        alert("Erro: " + (err.error || `Status ${res.status}`));
         return;
       }
 
       const newUser = await res.json();
       console.log("Usuário cadastrado:", newUser);
 
-      // redireciona para contribuições passando o id
-      router.push(`/${newUser.RaUsuario}/new-contribution`);
+      alert("Usuário cadastrado com sucesso!");
+
+      router.push(`/$/new-contribution?userId=${newUser.RaUsuario}`);
     } catch (error) {
-      console.error(error);
-      alert("Erro ao cadastrar usuário");
+      console.error("Erro ao cadastrar usuário:", error);
+
+      if (error instanceof TypeError && error.message === "Failed to fetch") {
+        alert(
+          "Erro de conexão. Verifique se o backend está rodando e se a URL está correta."
+        );
+      } else {
+        alert("Erro ao cadastrar usuário: " + error);
+      }
     }
   };
 
@@ -62,7 +86,9 @@ export default function Cadastro() {
         <div className="flex flex-col md:flex-row w-full max-w-3xl">
           <section className="bg-[#1C7C61] h-120 m-1 flex flex-col rounded-lg items-center justify-center md:w-1/2 p-6 text-white">
             <h1 className="flex text-center font-bold text-[#fff] text-[22px] mb-1">
-              Cadastro de<br/>Alunos-mentores
+              Cadastro de
+              <br />
+              Alunos-mentores
             </h1>
             <img
               src="https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=180,fit=crop,q=95/dOq4lP0kVLiEl8Z3/lideranaas-empaticas-logo-AoPWG9oBrrt3QGv0.png"
@@ -108,9 +134,9 @@ export default function Cadastro() {
                   <input
                     id="ra"
                     name="ra"
-                    type="number"
+                    type="text"
                     value={raAlunoMentor}
-                    onChange={(e) => setRaAlunoMentor(Number(e.target.value))}
+                    onChange={(e) => setRaAlunoMentor(e.target.value)}
                     placeholder="Insira seu R.A"
                     className="block w-full bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
                   />
@@ -121,11 +147,9 @@ export default function Cadastro() {
                   <input
                     id="telefone"
                     name="telefone"
-                    type="number"
+                    type="string"
                     value={telefoneAlunoMentor}
-                    onChange={(e) =>
-                      setTelefoneAlunoMentor(Number(e.target.value))
-                    }
+                    onChange={(e) => setTelefoneAlunoMentor(e.target.value)}
                     placeholder="Insira seu Número"
                     className="block w-full bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
                   />
