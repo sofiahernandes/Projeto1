@@ -1,5 +1,5 @@
-import bcrypt from "bcrypt";
-import { prisma } from "../../prisma/lib/prisma.js"
+//import bcrypt from "bcrypt";
+import { prisma } from "../../prisma/lib/prisma.js";
 
 const usersController = {
   //GET http://localhost:3001/api/users
@@ -65,7 +65,7 @@ const usersController = {
       Turma,
     } = req.body;
 
-    const hashedPassword = await bcrypt.hash(SenhaUsuario, 10);
+   // const hashedPassword = await bcrypt.hash(SenhaUsuario, 16);
 
     if (
       !RaUsuario ||
@@ -81,18 +81,33 @@ const usersController = {
     try {
       const usuario = await prisma.usuario.create({
         data: {
-          RaUsuario,
+          RaUsuario: Number(RaUsuario),
           NomeUsuario,
           EmailUsuario,
-          SenhaUsuario: hashedPassword,
+          SenhaUsuario,
           TelefoneUsuario,
           Turma,
         },
       });
       res.json(usuario);
     } catch (err) {
-      res.status(409).json({
-        error: "Aluno Mentor já existente",
+      // Verifica duplicidade (erro de campo único)
+      const isDuplicateError =
+        err.message?.toLowerCase().includes("unique constraint") ||
+        err.meta?.target?.length > 0 ||
+        err.message?.toLowerCase().includes("unique failure");
+
+      if (isDuplicateError) {
+        return res.status(409).json({
+          error: "Aluno Mentor já existente",
+          details: err.meta?.target || err.message,
+        });
+      }
+
+      // Loga e retorna erro genérico
+      console.error("Erro ao cadastrar Aluno Mentor:", err);
+      return res.status(500).json({
+        error: "Erro ao cadastrar Aluno Mentor.",
         details: err.message,
       });
     }
@@ -130,18 +145,23 @@ const usersController = {
           SenhaUsuario: SenhaUsuario,
         },
       });
-       const senhaValida = await bcrypt.compare(SenhaUsuario, usuario.SenhaUsuario);
 
-    if (!senhaValida) {
-      return res.status(401).json({ error: "Senha incorreta" });
+      res.json({ message: "Login realizado com sucesso", usuario });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Erro no login" });
     }
+  },
 
-    res.json({ message: "Login realizado com sucesso", usuario });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erro no login" });
-  }
-  }, 
+      // const senhaValida = await bcrypt.compare(
+      //   SenhaUsuario,
+      //   usuario.SenhaUsuario
+      // );
+
+      // if (!senhaValida) {
+      //   return res.status(401).json({ error: "Senha incorreta" });
+      // }
+
   // try {
   //   const [rows] = await pool.query(
   //     "SELECT * FROM usuario WHERE RaUsuario = ? AND SenhaUsuario = ?",
@@ -167,12 +187,10 @@ const usersController = {
       });
       res.json({ message: "Aluno Mentor deletado com sucesso!", usuario });
     } catch (err) {
-      if (err.code == P2025) {
-        return res.status(404).json({ error: "Aluno Mentor não encontrado" });
-      }
-      res.status(500).json({
+      console.error("Erro ao deletar aluno mentor:", err);
+      return res.status(500).json({
         error: "Erro ao deletar aluno mentor",
-        details: err.message,
+        details: err.message || "Erro desconhecido",
       });
     }
   },
