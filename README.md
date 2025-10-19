@@ -25,8 +25,8 @@
 # Entregas
 | Disciplina | Entrega 1 | Entrega 2 |  
 | :-------: | :------: | :-------: |
-| web dev fullstack | [https://arkana-projeto1.vercel.app/](https://arkana-projeto1.vercel.app/) |   
-| calculo II | - | [https://arkana-projeto1.vercel.app/](https://arkana-projeto1.vercel.app/) |  
+| web dev fullstack | - | [https://arkana-projeto1.vercel.app/](https://arkana-projeto1.vercel.app/) |   
+| calculo II | [/entregas/entrega-1/calculo-2/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/calculo-2) | [/entregas/entrega-2/calculo-2/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-2/calculo-2) |    
 | banco de dados | [/entregas/entrega-1/banco-de-dados/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/banco-de-dados) | [/entregas/entrega-2/banco-de-dados/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-2/banco-de-dados) |  
 | gestao empresarial | [/entregas/entrega-1/gestao-empresarial/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/gestao-empresarial) | [/entregas/entrega-2/gestao-empresarial/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-2/gestao-empresarial) |  
 | projeto interdisciplinar | [/entregas/entrega-1/proj-interdisciplinar/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/proj-interdisciplinar) | [/entregas/entrega-2/proj-interdisciplinar/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-2/proj-interdisciplinar) |   
