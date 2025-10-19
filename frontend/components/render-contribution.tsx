@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
-
 interface Contribution {
   RaUsuario: number;
   TipoDoacao: string;
@@ -17,18 +16,33 @@ interface Contribution {
 }
 
 interface RenderContributionProps {
-  onSelect?: (contribution: Contribution) => void
+  onSelect?: (contribution: Contribution) => void;  
+  refreshKey?: number; 
 }
 
-export default function RenderContribution({ onSelect }: RenderContributionProps) {
+export default function RenderContribution({
+  onSelect,
+  refreshKey = 0
+}: RenderContributionProps) {
   const [contributions, setContributions] = useState<Contribution[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const params = useParams();
   const userId = Number(params.userId);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     async function fetchContributions() {
       try {
-        const res = await fetch(`http://localhost:3001/api/contributions/${userId}`);
+        setLoading(true);
+        setError(null);
+
+        const res = await fetch(
+          `http://localhost:3001/api/contributions/${userId}`,
+          { cache: "no-store", signal: controller.signal }
+        );
 
         if (!res.ok) throw new Error("Erro ao buscar contribuições");
         const data = await res.json();
@@ -39,7 +53,7 @@ export default function RenderContribution({ onSelect }: RenderContributionProps
       }
     }
     fetchContributions();
-  }, [userId]);
+  }, [userId, refreshKey]);
 
   if (contributions.length === 0) {
     return <p className="text-gray-800">Nenhuma contribuição encontrada!</p>;
@@ -50,20 +64,17 @@ export default function RenderContribution({ onSelect }: RenderContributionProps
       {contributions.map((c) => (
         <div
           key={c.IdContribuicao}
-          className="  p-4 rounded flex flex-col gap-1 
-             cursor-pointer hover:bg-[#cd6184]/15 border border-[#cd6184]/40 shadow-xl"
+          className="p-3 rounded-xl bg-[#f4f3f1]/80 hover:bg-[#cc3983]/15 border border-gray-200 shadow-md  hover:shadow-2xl transition-shadow duration-300 cursor-pointer"
           onClick={() => onSelect?.(c)}
         >
-          <div className="font-semibold text-lg">{c.Fonte}</div>
-          <div className="text-gray-500 text-sm">
+          <p className="font-semibold text-lg ">{c.Fonte}</p>
+          <p className="text-sm text-gray-900">
             Data: {new Date(c.DataContribuicao).toLocaleDateString()}
-          </div>
-          <div>Tipo de Doação: {c.TipoDoacao}</div>
-          <div>Quantidade: R$/kg {c.Quantidade}</div>
-          <div>Gastos: R${c.Gastos}</div> 
+          </p>
+          <p className="text-base text-gray-600">Tipo de Doação: {c.TipoDoacao}</p>
+          <p className="text-base text-gray-600">Quantidade: R$/kg {c.Quantidade}</p>
+          <p className="text-base text-gray-600">Gastos: R${c.Gastos}</p>
         </div>
-
-        
       ))}
     </>
   );

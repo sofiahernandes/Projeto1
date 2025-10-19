@@ -36,10 +36,6 @@ const contributionController = {
       [RaUsuario]
     );
 
-    if (!rows || rows.length === 0) {
-      return res.status(404).json({ message: "Nenhuma contribuição encontrada" });
-    }
-
     res.json(rows);
   } catch (err) {
     console.error("Erro ao buscar contribuições:", err);
