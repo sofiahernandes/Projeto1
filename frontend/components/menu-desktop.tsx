@@ -18,18 +18,28 @@ export default function MenuDesktop({
         ✖
       </button>
       <nav>
+        <Link href="/">
+          <button className="p-2 m-2 rounded-xl bg-[#f4f3f1]/80 hover:bg-[#cc3983]/20 border border-gray-200 shadow-md hover:shadow-2xl transition-shadow duration-300 cursor-pointer hover:!text-black text-base w-55">
+            Voltar ao Dashboard
+          </button>
+        </Link>
+
+        <Link href={`/${raUsuario}/user-profile`}>
+          <button className="p-2 m-2 rounded-xl bg-[#f4f3f1]/80 hover:bg-[#cc3983]/20 border border-gray-200 shadow-md hover:shadow-2xl transition-shadow duration-300 cursor-pointer hover:!text-black text-base w-55">
+            Meu perfil
+          </button>
+        </Link>
+
+        <Link href={`/${raUsuario}/new-contribution`}>
+          <button className="p-2 m-2 rounded-xl bg-[#f4f3f1]/80 hover:bg-[#cc3983]/20 border border-gray-200 shadow-md hover:shadow-2xl transition-shadow duration-300 cursor-pointer hover:!text-black text-base w-55">
+            Cadastrar novas contribuições
+          </button>
+        </Link>
+
         <Link href={`/${raUsuario}/team-history`}>
-          <button className="donation-menu-button">
+          <button className="p-2 m-2 rounded-xl bg-[#f4f3f1]/80 hover:bg-[#cc3983]/20 border border-gray-200 shadow-md hover:shadow-2xl transition-shadow duration-300 cursor-pointer hover:!text-black text-base w-55">
             Histórico de contribuições
           </button>
-        </Link>
-        <Link href={`/${raUsuario}/new-contribution`}>
-          <button className="donation-menu-button">
-            Cadastrar nova contribuição
-          </button>
-        </Link>
-        <Link href={`/${raUsuario}/user-profile`}>
-          <button className="donation-menu-button">Meu perfil</button>
         </Link>
       </nav>
     </aside>

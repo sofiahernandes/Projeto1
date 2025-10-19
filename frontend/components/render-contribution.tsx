@@ -68,12 +68,12 @@ export default function RenderContribution({
           onClick={() => onSelect?.(c)}
         >
           <p className="font-semibold text-lg ">{c.Fonte}</p>
-          <p className="text-sm text-gray-900">
+          <p className="text-sm text-gray-950">
             Data: {new Date(c.DataContribuicao).toLocaleDateString()}
           </p>
-          <p className="text-base text-gray-600">Tipo de Doação: {c.TipoDoacao}</p>
-          <p className="text-base text-gray-600">Quantidade: R$/kg {c.Quantidade}</p>
-          <p className="text-base text-gray-600">Gastos: R${c.Gastos}</p>
+          <p className="text-base text-gray-800">Tipo de Doação: {c.TipoDoacao}</p>
+          <p className="text-base text-gray-800">Quantidade: R$/kg {c.Quantidade}</p>
+          <p className="text-base text-gray-800">Gastos: R${c.Gastos}</p>
         </div>
       ))}
     </>

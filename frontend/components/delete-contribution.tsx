@@ -70,7 +70,7 @@ export default function DeleteContribution({
                     ${
                       loading
                         ? "bg-[#b41333]/60 cursor-not-allowed"
-                        : "bg-[#b41333] hover:bg-[#f04f4f]"
+                        : "bg-[#b41333] hover:bg-[#d54646]"
                     }
                     text-white font-medium transition-colors duration-200 cursor-pointer
                     shadow-[0_6px_20px_rgba(247,201,212,0.5)] hover:shadow-[0_10px_28px_rgba(247,201,212,0.6)]`}
@@ -108,11 +108,10 @@ export default function DeleteContribution({
           <AlertDialogFooter>
             <AlertDialogCancel disabled={loading}>Cancelar</AlertDialogCancel>
 
-            {/* Botão que EXECUTA o DELETE */}
             <AlertDialogAction
               onClick={handleConfirm}
               disabled={loading}
-              className="bg-[#b41333] text-white hover:bg-[#f04f4f] focus:ring-0 cursor-pointer"
+              className="bg-[#b41333] text-white hover:bg-[#d54646] focus:ring-0 cursor-pointer"
             >
               {loading ? "Excluindo..." : "Deletar"}
             </AlertDialogAction>
