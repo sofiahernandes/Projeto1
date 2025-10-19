@@ -11,32 +11,55 @@ interface User {
 }
 
 export async function fetchData(userId: number): Promise<{ team: Team; user: User } | undefined> {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+    if (!backendUrl) {
+      console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
+      alert("Erro de configuração. Entre em contato com o suporte.");
+      return;
+    }
+
+    const userApiUrl = `${backendUrl}/api/user/${userId}`;
+    const teamApiUrl = `${backendUrl}/api/team/${userId}`;
+
     try {
-      const res = await fetch(`http://localhost:3001/api/team/${userId}`, {
+      const userRes = await fetch(userApiUrl, {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
-      const userRes = await fetch(`http://localhost:3001/api/user/${userId}`, {
+      const teamRes = await fetch(teamApiUrl, {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
-      if (!res.ok || !userRes.ok) {
-        const err = await res.json();
-        alert("Erro: " + err.error);
+      if (!userRes.ok || !teamRes.ok) {
+        const err = await res
+          .json()
+          .catch(() => ({ error: "Erro desconhecido" }));
+        console.error("Erro da API:", err);
+        alert("Erro: " + (err.error || `Status ${res.status}`));
         return;
       }
+      
+      const Team = await teamRes.json();
+      const User = await userRes.json();
 
-      const team = await res.json();
-      const user = await userRes.json();
+      return { User, Team };
 
-      console.log("Time:", team);
-      console.log("Aluno Mentor:", user);
-
-      return { team, user };
     } catch (error) {
-      console.error(error);
-      alert("Erro ao buscar time.");
+      console.error("Erro ao encontrar usuário:", error);
+
+      if (error instanceof TypeError && error.message === "Failed to fetch") {
+        alert(
+          "Erro de conexão. Verifique se o backend está rodando e se a URL está correta."
+        );
+      } else {
+        alert("Erro ao encontrar usuário: " + error);
+      }
     }
-  }
+}

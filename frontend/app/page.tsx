@@ -103,7 +103,7 @@ export default function PublicDashboard() {
           <Card className="border-none shadow-none bg-transparent">
             <CardContent className="px-0">
               <div className="grid grid-cols-2 gap-4">
-                <Button className="overflow-hidden h-18 flex-col gap-2 bg-secondary/20 hover:bg-secondary/40 hover:border-secondary/60 border border-secondary/40 transition-colors">
+                <Button className="overflow-hidden h-18 flex-col gap-2 bg-secondary/40 hover:bg-secondary/50 hover:border-secondary/60 border border-secondary/40 transition-colors">
                   <Link
                     href="/register/login"
                     className="flex flex-col gap-2 items-center"
@@ -114,9 +114,9 @@ export default function PublicDashboard() {
                     </span>
                   </Link>
                 </Button>
-                <Button className="bg-secondary/20 overflow-hidden h-18 gap-2 hover:bg-secondary/40 border border-secondary/40">
+                <Button className="bg-secondary/40 overflow-hidden h-18 gap-2 hover:bg-secondary/50 border border-secondary/40">
                   <Link
-                    href="/user-profile" // "/public-reports"
+                    href="/public-reports"
                     className="flex flex-col gap-2 items-center"
                   >
                     <FileText className="w-6 h-6 text-gray-600" />
