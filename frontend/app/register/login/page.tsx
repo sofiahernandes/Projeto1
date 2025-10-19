@@ -83,7 +83,7 @@ export default function Login() {
               />
               <button
                 type="submit"
-                className="border-transparent bg-secondary text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-secondary/70 rounded-lg"
+                className="border-transparent bg-secondary hover:text-white! text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-secondary/80 rounded-lg"
               >
                 Entrar
               </button>
