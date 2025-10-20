@@ -7,20 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Contribuicao {
-  IdContribuicao   Int       @id @default(autoincrement())
-  DataContribuicao DateTime? @default(now()) @db.Timestamp(0)
-  Quantidade       Int
-  TipoDoacao       String    @db.VarChar(10)
-  Gastos           Int
-  Meta             Int?
-  Fonte            String?   @db.VarChar(200)
-  Comprovante      String?   @db.VarChar(200)
-  RaUsuario        Int?
-
-  @@index([RaUsuario], map: "RaUsuario")
-}
-
 model Mentor {
   IdMentor Int      @id @default(autoincrement())
   Email    String   @db.VarChar(250)
@@ -30,18 +16,9 @@ model Mentor {
 model Time {
   IdTime    Int    @id @default(autoincrement())
   NomeTime  String @db.VarChar(250)
-  IdMentor  Int
-  RaUsuario Int
-  RaAluno1 Int 
-  RaAluno2 Int 
-  RaAluno3 Int 
-  RaAluno4 Int 
-  RaAluno5 Int 
-  RaAluno6 Int 
-  RaAluno7 Int 
-  RaAluno8 Int
-  RaAluno9 Int?
-  RaAluno10 Int?
+  IdMentor  Int?
+  RaUsuario Int?
+  RaAlunos  Int?
 
   @@index([IdMentor], map: "IdMentor")
   @@index([RaUsuario], map: "RaUsuario")
@@ -54,4 +31,18 @@ model Usuario {
   SenhaUsuario    String  @db.VarChar(16)
   Turma           String  @db.VarChar(20)
   TelefoneUsuario String? @db.VarChar(20)
+}
+
+model Contribuicao {
+  IdContribuicao   Int       @id @default(autoincrement())
+  DataContribuicao DateTime? @default(now()) @db.Timestamp(0)
+  Quantidade       Int
+  TipoDoacao       String    @db.VarChar(10)
+  Gastos           Int
+  Meta             Int?
+  Fonte            String?   @db.VarChar(200)
+  Comprovante      String?   @db.VarChar(200)
+  RaUsuario        Int?
+
+  @@index([RaUsuario], map: "RaUsuario")
 }
