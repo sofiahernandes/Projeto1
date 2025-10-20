@@ -30,9 +30,18 @@ model Mentor {
 model Time {
   IdTime    Int    @id @default(autoincrement())
   NomeTime  String @db.VarChar(250)
-  IdMentor  Int?
-  RaUsuario Int?
-  RaAlunos  Int?
+  IdMentor  Int
+  RaUsuario Int
+  RaAluno1 Int 
+  RaAluno2 Int 
+  RaAluno3 Int 
+  RaAluno4 Int 
+  RaAluno5 Int 
+  RaAluno6 Int 
+  RaAluno7 Int 
+  RaAluno8 Int
+  RaAluno9 Int?
+  RaAluno10 Int?
 
   @@index([IdMentor], map: "IdMentor")
   @@index([RaUsuario], map: "RaUsuario")
@@ -42,7 +51,7 @@ model Usuario {
   RaUsuario       Int     @id
   NomeUsuario     String  @db.VarChar(250)
   EmailUsuario    String  @db.VarChar(250)
-  SenhaUsuario    String  @db.VarChar(80)
+  SenhaUsuario    String  @db.VarChar(16)
   Turma           String  @db.VarChar(20)
   TelefoneUsuario String? @db.VarChar(20)
 }

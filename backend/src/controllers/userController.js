@@ -14,15 +14,6 @@ const usersController = {
       });
     }
   },
-  // try {
-  //   const [rows] = await pool.query("SELECT * FROM usuario");
-  //   res.json(rows);
-  // } catch (err) {
-  //   res.status(500).json({
-  //     error: "Erro ao listar Alunos Mentores",
-  //     details: err.message,
-  //   });
-  // }
 
   //GET http://localhost:3001/api/user/:RaUsuario
   userByRA: async (req, res) => {
@@ -42,17 +33,6 @@ const usersController = {
       }
     }
   },
-  // try {
-  //   const [rows] = await pool.query("SELECT * FROM usuario WHERE RaUsuario = ?", [
-  //     RaUsuario,
-  //   ]);
-  //   if (rows.length === 0) {
-  //     return res.status(404).json({ error: "Aluno mentor não encontrado" });
-  //   }
-  //   res.json(rows[0]);
-  // } catch (err) {
-  //   res.status(500).json({ error: "Erro no servidor", details: err.message });
-  // }
 
   //POST http://localhost:3001/api/register
   createUser: async (req, res) => {
@@ -113,23 +93,6 @@ const usersController = {
     }
   },
 
-  // try {
-  //   const [insert] = await pool.query(
-  //     "INSERT INTO usuario (RaUsuario, NomeUsuario, EmailUsuario, SenhaUsuario, TelefoneUsuario, Turma) VALUES (?, ?, ?, ?, ?, ?)",
-  //     [RaUsuario, NomeUsuario, EmailUsuario, SenhaUsuario, TelefoneUsuario, Turma]
-  //   );
-
-  //   const [rows] = await pool.query(
-  //     "SELECT * FROM usuario WHERE RaUsuario = ?",
-  //     [RaUsuario]
-  //   );
-  //   res.status(201).json(rows[0]);
-  // } catch (err) {
-  //   res.status(409).json({
-  //     error: "Aluno Mentor já existente",
-  //     details: err.message,
-  //   });
-  // }
 
   //POST http://localhost:3001/api/user/login
   loginUser: async (req, res) => {
@@ -162,20 +125,6 @@ const usersController = {
       //   return res.status(401).json({ error: "Senha incorreta" });
       // }
 
-  // try {
-  //   const [rows] = await pool.query(
-  //     "SELECT * FROM usuario WHERE RaUsuario = ? AND SenhaUsuario = ?",
-  //     [RaUsuario, SenhaUsuario]
-  //   );
-
-  //   if (rows.length === 0) {
-  //     return res.status(401).json({ error: "Credenciais inválidas" });
-  //   }
-
-  //   res.json(rows[0]);
-  // } catch (err) {
-  //   res.status(500).json({ error: "Erro no login", details: err.message });
-  // }
 
   //DELETE http://localhost:3001/api/deleteUser/:RaUsuario
   deleteUser: async (req, res) => {
@@ -196,18 +145,4 @@ const usersController = {
   },
 };
 
-// try {
-//   const [result] = await pool.query("DELETE FROM usuario WHERE RaUsuario = ?", [
-//     RaUsuario,
-//   ]);
-//   if (result.affectedRows === 0) {
-//     return res.status(404).json({ error: "Aluno Mentor não encontrado" });
-//   }
-//   res.json({ message: "Aluno Mentor deletado com sucesso!" });
-// } catch (err) {
-//   res.status(500).json({
-//     error: "Erro ao deletar aluno mentor",
-//     details: err.message,
-//   });
-// }
 export default usersController;
