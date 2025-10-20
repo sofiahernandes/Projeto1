@@ -24,6 +24,23 @@ const contributionController = {
   //   }
   // },
 
+  //GET http://localhost:3001/api/contributions/:RaUsuario
+  getContributionsByRa: async (req, res) => {
+  try {
+    const { RaUsuario } = req.params;
+
+    const [rows] = await pool.query(
+      "SELECT * FROM contribuicao WHERE RaUsuario = ? ORDER BY DataContribuicao DESC",
+      [RaUsuario]
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error("Erro ao buscar contribuições:", err);
+    res.status(500).json({ error: "Erro no servidor" });
+  }
+},
+
   //POST http://localhost:3001/api/createContribution
   createContribution: async (req, res) => {
     const {
