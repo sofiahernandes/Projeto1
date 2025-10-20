@@ -67,7 +67,7 @@ export default function TeamHistory() {
         <MenuMobile raUsuario={team?.RaUsuario || 10000000} />
 
         {/* main page do historico - todas as contribuições do grupo baseado no RA logado */}
-        <main className="w-full max-w-[1300px] p-1.5 md:mt-0 border rounded-lg border-gray-50 shadow-2xl">
+        <main className="w-full max-w-[1300px] p-1.5 md:mt-0">
           {selectedContribution && (
             <RecordsModal
               data={selectedContribution}
