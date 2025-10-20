@@ -46,6 +46,23 @@ const teamsController = {
   //   res.status(500).json({ error: "Time não encontrado" });
   // }
 
+  //GET http://localhost:3001/api/team/:RaUsuario
+  teamByUserRA: async (req, res) => {
+    const { RaUsuario } = req.params;
+    try {
+      const time = await prisma.time.findUnique({
+        where: { RaUsuario: Number(RaUsuario) },
+      });
+      if (!time) {
+        return res.status(404).json({ message: "Time não encontrado" });
+      }
+
+      res.json(time);
+    } catch (err) {
+      res.status(500).json({ error: "Time não encontrado" });
+    }
+  },
+
   //POST http://localhost:3001/api/createTeam
   createTeam: async (req, res) => {
     const { NomeTime, RaUsuario, RaAlunos } = req.body;

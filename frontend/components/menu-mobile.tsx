@@ -1,14 +1,31 @@
 import Link from "next/link";
 
+import userIcon from "@/assets/user.png";
+import addIcon from "@/assets/add.png";
+import newspaperIcon from "@/assets/newspaper.png";
+
 interface Properties {
-  idTime: number
+  raUsuario: number;
 }
 
-export default function MenuMobile({idTime}: Properties) {
+export default function MenuMobile({ raUsuario }: Properties) {
   return (
     <nav className="mobile-nav">
-      <Link href={`/(restricted)/${idTime}/new-contribution`}><button className="donation-menu-button">Cadastrar novas contribuições</button></Link>
-      <Link href={`/(restricted)/${idTime}/team-history`}><button className="donation-menu-button">Histórico de contribuições</button></Link>
+      <Link className="w-full" href={`/${raUsuario}/team-history`}>
+        <button type="button" className="donation-menu-button">
+          <img className="mx-auto" src={newspaperIcon.src} />
+        </button>
+      </Link>
+      <Link className="w-full" href={`/${raUsuario}/new-contribution`}>
+        <button type="button" className="donation-menu-button bg-primary!">
+          <img className="mx-auto invert" src={addIcon.src} />
+        </button>
+      </Link>
+      <Link className="w-full" href={`/${raUsuario}/user-profile`}>
+        <button className="donation-menu-button">
+          <img className="mx-auto" src={userIcon.src} />
+        </button>
+      </Link>
     </nav>
   );
 }

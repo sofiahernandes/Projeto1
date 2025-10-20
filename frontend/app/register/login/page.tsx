@@ -75,7 +75,7 @@ export default function Login() {
 
       <div className="min-h-screen flex items-center justify-center p-6">
         <div className="flex flex-col md:flex-row w-full max-w-3xl">
-          <section className="bg-[#1C7C61] m-1 flex flex-col rounded-lg items-center justify-center md:w-1/2 p-6 text-white">
+          <section className="bg-primary m-1 flex flex-col rounded-lg items-center justify-center md:w-1/2 p-6 text-white">
             <img
               src="https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=180,fit=crop,q=95/dOq4lP0kVLiEl8Z3/lideranaas-empaticas-logo-AoPWG9oBrrt3QGv0.png"
               alt="logo lideranças empáticas"
@@ -84,7 +84,7 @@ export default function Login() {
             <p className="mb-1 text-sm">É aluno e não tem cadastro?</p>
             <Link
               href="/register/sign-up"
-              className="bg-[#eeeeee] text-black px-4 py-1 font-medium hover:bg-[#354F52] hover:text-white mb-4 rounded"
+              className="bg-background text-black px-4 py-1 font-medium hover:bg-background/70 mb-4 rounded"
             >
               Cadastre-se
             </Link>
@@ -94,8 +94,8 @@ export default function Login() {
             </p>
           </section>
 
-          <section className="bg-[#eeeeee] border border-[#b4b4b4] rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2 px-6 py-8">
-            <h2 className="text-black font-bold text-xl md:text-xl mb-2 mt-4">
+          <section className="border border-gray-300 rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2 px-6 py-8">
+            <h2 className="text-secondary text-center font-bold text-xl md:text-xl my-4">
               Login Alunos-Mentores, Professores e Mentores
             </h2>
             <form
@@ -110,7 +110,7 @@ export default function Login() {
               />
               <button
                 type="submit"
-                className="border-transparent bg-primary text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-[#354F52] rounded-lg"
+                className="border-transparent bg-secondary hover:text-white! text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-secondary/80 rounded-lg"
               >
                 Entrar
               </button>

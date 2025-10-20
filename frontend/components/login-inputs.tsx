@@ -22,15 +22,15 @@ const CustomInputs: React.FC<Props> = ({
           type="text"
           placeholder="Registro Acadêmico (RA)"
           value={usuario}
-          className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
-          onChange={(e) => setUsuario(e.target.value)}
+          className="w-[80%] bg-[white] border border-gray-300 rounded-lg text-black placeholder-gray-700 px-3 py-1.5 text-base focus:outline-none"
+          onChange={(e) => setUsuario(Number(e.target.value))}
         />
 
         <input
           type={mostrarSenha ? "text" : "password"}
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
-          className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
+          className="w-[80%] bg-[white] border border-gray-300 rounded-lg text-black placeholder-gray-700 px-3 py-1.5 text-base focus:outline-none"
           placeholder="Senha"
         />
         <button
