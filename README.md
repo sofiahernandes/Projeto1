@@ -23,17 +23,18 @@
 <br/>
 
 # Entregas
-- web dev fullstack: [https://arkana-projeto1.vercel.app/](https://arkana-projeto1.vercel.app/)  
-- calculo II: [/entregas/entrega-1/calculo-2/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/calculo-2)  
-- banco de dados: [/entregas/entrega-1/banco-de-dados/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/banco-de-dados)  
-- gestao empresarial: [/entregas/entrega-1/gestao-empresarial/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/gestao-empresarial)  
-- projeto interdisciplinar [/entregas/entrega-1/proj-interdisciplinar/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/proj-interdisciplinar)
+| Disciplina | Entrega 1 | Entrega 2 |  
+| :-------: | :------: | :-------: |
+| web dev fullstack | - | [https://arkana-projeto1.vercel.app/](https://arkana-projeto1.vercel.app/) |   
+| calculo II | [/entregas/entrega-1/calculo-2/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/calculo-2) | [/entregas/entrega-2/calculo-2/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-2/calculo-2) |    
+| banco de dados | [/entregas/entrega-1/banco-de-dados/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/banco-de-dados) | [/entregas/entrega-2/banco-de-dados/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-2/banco-de-dados) |  
+| gestao empresarial | [/entregas/entrega-1/gestao-empresarial/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/gestao-empresarial) | [/entregas/entrega-2/gestao-empresarial/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-2/gestao-empresarial) |  
+| projeto interdisciplinar | [/entregas/entrega-1/proj-interdisciplinar/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/proj-interdisciplinar) | [/entregas/entrega-2/proj-interdisciplinar/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-2/proj-interdisciplinar) |   
 <br/>
 
 # Descrição
-## 🎮 Proposta Principal
-Desenvolvimento de uma Aplicação Web para o [Projeto Lideranças Empáticas](https://liderancasempaticas.com/), uma iniciativa do Centro Universitário FECAP que une impacto social e educação empreendedora através da arrecadação de alimentos e recursos financeiros.
-- Essa aplicação objetiva gerenciar as edições deste projeto, incluindo controle de equipes, atividades, metas e resultados.
+## 🤝 Proposta Principal
+Desenvolvimento de uma Aplicação Web para o [Projeto Lideranças Empáticas](https://liderancasempaticas.com/), uma iniciativa do Centro Universitário FECAP que une impacto social e educação empreendedora através da arrecadação de alimentos e recursos financeiros. Essa aplicação objetiva gerenciar as edições deste projeto, incluindo controle de equipes, atividades, metas e resultados.
 
 **Features:**  
 - Cadastro e gerenciamento de edições e participantes;
@@ -44,7 +45,7 @@ Desenvolvimento de uma Aplicação Web para o [Projeto Lideranças Empáticas](h
 <br/>
 
 ## 🎨 Design Gráfico
-Procuramos desenvolver uma interface que traga a identidade visual do Projeto Lideranças Empáticas mas com o toque especial do grupo Arkana! Nossa interface preza o minimalismo sem perder a personalidade e a riqueza gráfica. Ah! E até o final do projeto esse "toque especial" vai se tornar bem mais presente e único. Fique ligado!  
+Procuramos desenvolver uma interface que traga a identidade visual do Projeto Lideranças Empáticas mas com o toque especial do grupo Arkana! Nossa interface preza o minimalismo sem perder a personalidade e a riqueza gráfica.
 <br/><br/>
 
 ## 🎥 Trailer do Projeto
@@ -52,7 +53,7 @@ Procuramos desenvolver uma interface que traga a identidade visual do Projeto Li
     <a href="https://www.youtube.com/watch?v=OoxkFQGJF7c">
     <img width="1000" alt="Screenshot Aplicação Arkana" src="https://github.com/user-attachments/assets/8257ef05-086a-4f79-a3fe-3158a136262e" />
     </a>
-    Amostra do funcionamento da aplicação localmente (clique aqui ↑)
+    Amostra do funcionamento da aplicação localmente com Postman (clique aqui ↑)
 </div>
 <br/><br/>
 

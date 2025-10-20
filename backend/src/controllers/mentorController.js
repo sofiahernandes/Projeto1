@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../prisma/lib/prisma.js";
 
 const mentorController = {
   //GET http://localhost:3001/api/mentors

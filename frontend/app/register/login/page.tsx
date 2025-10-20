@@ -9,36 +9,63 @@ import BackHome from "@/components/back-home";
 
 export default function Login() {
   const router = useRouter();
-  const [raAlunoMentor, setRaAlunoMentor] = React.useState<number>();
+  const [raAlunoMentor, setRaAlunoMentor] = React.useState("");
   const [senhaAlunoMentor, setSenhaAlunoMentor] = React.useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+    if (!backendUrl) {
+      console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
+      alert("Erro de configuração. Entre em contato com o suporte.");
+      return;
+    }
+
+    const apiUrl = `${backendUrl}/api/user/login`;
+
+    console.log("Tentando conectar em:", apiUrl);
+
     try {
-      const res = await fetch("http://localhost:3001/api/user/login", {
+      const res = await fetch(apiUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          RaUsuario: raAlunoMentor,
+          RaUsuario: Number(raAlunoMentor),
           SenhaUsuario: senhaAlunoMentor,
         }),
       });
-  
+
       if (!res.ok) {
-        const errorData = await res.json();
-        alert(errorData.error || "Erro no login");
+        const err = await res
+          .json()
+          .catch(() => ({ error: "Erro desconhecido" }));
+        console.error("Erro da API:", err);
+        alert("Erro: " + (err.error || `Status ${res.status}`));
         return;
       }
-  
-      const user = await res.json();
 
-      router.push(`/${user.RaUsuario}/new-contribution`);
-    } catch (err) {
-      console.error("Erro de conexão:", err);
-      alert("Erro de conexão com o servidor");
+      const User = await res.json();
+      console.log("Usuário Logado:", User);
+
+      alert("Usuário Logado com sucesso!");
+
+      router.push(`/$/new-contribution?userId=${User.RaUsuario}`);
+    } catch (error) {
+      console.error("Erro ao logar usuário:", error);
+
+      if (error instanceof TypeError && error.message === "Failed to fetch") {
+        alert(
+          "Erro de conexão. Verifique se o backend está rodando e se a URL está correta."
+        );
+      } else {
+        alert("Erro ao cadastrar usuário: " + error);
+      }
     }
-  };  
+  };
 
   return (
     <div className="w-full">

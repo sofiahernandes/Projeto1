@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../prisma/lib/prisma.js";
 
 const contributionController = {
   //GET http://localhost:3001/api/contributions
@@ -108,7 +106,7 @@ const contributionController = {
     const { IdContribuicao } = req.params;
     try {
       const contribuicao = await prisma.contribuicao.delete({
-        where: { IdContribuicao: parseInt(IdContribuicao) },
+        where: { IdContribuicao: String(IdContribuicao) },
       });
       res.json({ message: "Contribuição deletada com sucesso!", contribuicao });
     } catch (err) {

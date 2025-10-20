@@ -1,7 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../prisma/lib/prisma.js";
 
 { /* 2° Entrega: {IdTime, RaAlunoM, RA1, RA2, RA3, RA4, RA5, RA6, RA7, RA8, RA9, RA10} */}
-const prisma = new PrismaClient();
 
 const teamsController = {
   //GET http://localhost:3001/api/teams
@@ -102,11 +101,11 @@ const teamsController = {
     const { IdTime } = req.params;
     try {
       const time = await prisma.time.delete({
-        where: { IdTime: IdTime },
+        where: { IdTime: Number(IdTime) },
       });
       res.json({ message: "Time deletado com sucesso!", time });
     } catch (err) {
-      if (err.code == P2025) {
+      if (err.code == "P2025") {
         return res.status(404).json({ error: "Time não encontrado" });
       } else {
         res.status(500).json({ error: "Erro ao deletar time." });
