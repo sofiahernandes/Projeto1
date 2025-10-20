@@ -14,12 +14,6 @@ const teamsController = {
         .json({ error: "Erro ao buscar times", details: err.message });
     }
   },
-  // try {
-  //   const [rows] = await pool.query("SELECT * FROM times");
-  //   res.json(rows);
-  // } catch (err) {
-  //   res.status(500).json({ error: "Erro ao buscar times" });
-  // }
 
   //GET http://localhost:3001/api/team/:IdTime
   teamByID: async (req, res) => {
@@ -31,21 +25,11 @@ const teamsController = {
       if (!time) {
         return res.status(404).json({ message: "Time não encontrado" });
       }
-
       res.json(time);
     } catch (err) {
       res.status(500).json({ error: "Time não encontrado" });
     }
   },
-  // try {
-  //   const [rows] = await pool.query("SELECT * FROM time WHERE IdTime=?", [
-  //     IdTime,
-  //   ]);
-  //   res.json(rows);
-  // } catch (err) {
-  //   res.status(500).json({ error: "Time não encontrado" });
-  // }
-
   //GET http://localhost:3001/api/team/:RaUsuario
   teamByUserRA: async (req, res) => {
     const { RaUsuario } = req.params;
@@ -82,19 +66,6 @@ const teamsController = {
         .json({ error: "Erro ao criar time", details: err.message });
     }
   },
-  // try {
-  //   const [insert] = await pool.query(
-  //     "INSERT INTO time (NomeTime, RaUsuario, RaAlunos) VALUES (?,?,?)",
-  //     [NomeTime, RaUsuario, RaAlunos]
-  //   );
-  //   const [rows] = await pool.query("SELECT * FROM time where IdTime=?", [
-  //     insert.insertId,
-  //   ]);
-  // } catch (err) {
-  //   res
-  //     .status(500)
-  //     .json({ error: "Erro ao criar time", details: err.message });
-  // }
 
   //DELETE http://localhost:3001/api/deleteTeam/:IdTime
   deleteTeam: async (req, res) => {
@@ -113,15 +84,5 @@ const teamsController = {
     }
   },
 };
-// try {
-//   const [result] = await pool.query("DELETE FROM time WHERE IdTime=?", [
-//     IdTime,
-//   ]);
-//   if (result.affectedRows === 0) {
-//     return res.status(404).json({ error: "Time não encontrado" });
-//   }
-//   res.json({ message: "Time deletado com sucesso!" });
-// } catch (err) {
-//   res.status(500).json({ error: "Erro ao deletar time." });
-// }
+
 export default teamsController;
