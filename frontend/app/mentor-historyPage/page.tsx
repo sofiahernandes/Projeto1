@@ -29,8 +29,10 @@ export default function MentorVision() {
   return (
     <div className="min-h-dvh w-full overflow-y-hidden overflow-x-hidden flex flex-col bg-[#f4f3f1]/60">
       <div className="flex flex-col left-0 top-0">
-        <header className="py-4 flex items-center justify-betwee">
-         <div className="absolute left-0 top-0"><BackHome /></div>
+        <header className="py-4 flex items-center justify-between">
+          <div className="absolute left-0 top-0">
+            <BackHome />
+          </div>
 
           <h1 className="text-4xl font-semibold text-[#cc3983]">
             Histórico de contribuições
@@ -48,21 +50,19 @@ export default function MentorVision() {
           />
         )}
         <div className="flex flex-col gap-2 mx-3 ">
-          <h3 className="text-2xl uppercase font-semibold text-primary/85">
+          <h3 className="text-2xl uppercase font-semibold text-primary text-center">
             {team?.NomeTime ? team?.NomeTime : "Nome do time aparecerá aqui"}
           </h3>
-          <h4 className="mb-3 text-xl text-[#ab3570]">
+          <h4 className="mb-3 text-xl text-primary text-center">
             Turma {user?.Turma ? user?.Turma : "X"} | Yº Edição
           </h4>
         </div>
-        <div className="mx-4 grid grid-cols-1 md:grid-cols-3 gap-4.5 rounded-sm p-2.5">
-          <RenderContribution
-            onSelect={(contribution: any) => {
-              setSelectedContribution(contribution);
-              setIsOpen(true);
-            }}
-          />
-        </div>
+        <RenderContribution
+          onSelect={(contribution: any) => {
+            setSelectedContribution(contribution);
+            setIsOpen(true);
+          }}
+        />
       </main>
     </div>
   );

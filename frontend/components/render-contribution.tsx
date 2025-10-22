@@ -2,6 +2,18 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+// import { IconFolderCode } from "lucide-react"
+import { BoxIcon, Icon, ArrowUpRightIcon } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
+
 
 interface Contribution {
   RaUsuario: number;
@@ -16,13 +28,13 @@ interface Contribution {
 }
 
 interface RenderContributionProps {
-  onSelect?: (contribution: Contribution) => void;  
-  refreshKey?: number; 
+  onSelect?: (contribution: Contribution) => void;
+  refreshKey?: number;
 }
 
 export default function RenderContribution({
   onSelect,
-  refreshKey = 0
+  refreshKey = 0,
 }: RenderContributionProps) {
   const [contributions, setContributions] = useState<Contribution[]>([]);
   const [loading, setLoading] = useState(false);
@@ -56,11 +68,26 @@ export default function RenderContribution({
   }, [userId, refreshKey]);
 
   if (contributions.length === 0) {
-    return <p className="text-gray-800">Nenhuma contribuição encontrada!</p>;
+    return (
+      <div className="col-start-2 border rounded-xl border-gray-200 shadow-xl w-100 mx-auto"> 
+        <Empty>
+        <EmptyHeader>
+          <EmptyMedia variant="icon"> 
+            {/* mudar o icone */}
+            <BoxIcon/>
+          </EmptyMedia>
+          <EmptyTitle>Nenhuma contribuição por enquanto!</EmptyTitle>
+          <EmptyDescription>
+            Seu grupo ainda não arrecadou nenhuma doação. Quando o aluno líder adicionar ao Arkana, ela aparecerá aqui!
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    </div>
+    );
   }
 
   return (
-    <>
+    <div className="mx-4 grid grid-cols-1 md:grid-cols-3 gap-4.5 rounded-sm p-2.5">
       {contributions.map((c) => (
         <div
           key={c.IdContribuicao}
@@ -71,11 +98,15 @@ export default function RenderContribution({
           <p className="text-sm text-gray-950">
             Data: {new Date(c.DataContribuicao).toLocaleDateString()}
           </p>
-          <p className="text-base text-gray-800">Tipo de Doação: {c.TipoDoacao}</p>
-          <p className="text-base text-gray-800">Quantidade: R$/kg {c.Quantidade}</p>
+          <p className="text-base text-gray-800">
+            Tipo de Doação: {c.TipoDoacao}
+          </p>
+          <p className="text-base text-gray-800">
+            Quantidade: R$/kg {c.Quantidade}
+          </p>
           <p className="text-base text-gray-800">Gastos: R${c.Gastos}</p>
         </div>
       ))}
-    </>
+    </div>
   );
 }
