@@ -23,6 +23,7 @@
 <br/>
 
 # Entregas
+-> [Projeto de Extensão](https://github.com/2025-2-MCC2/Projeto1/blob/main/entregas/Projeto%20de%20Extens%C3%A3o.pdf)
 | Disciplina | Entrega 1 | Entrega 2 |  
 | :-------: | :------: | :-------: |
 | web dev fullstack | - | [https://arkana-projeto1.vercel.app/](https://arkana-projeto1.vercel.app/) |   
