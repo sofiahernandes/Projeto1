@@ -2,11 +2,11 @@
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CustomInputs from "./login-inputs";
-import handleSubmit from "../app/register/login/page";
 
 type TabsLoginProps = {
   onSubmitAluno: (e: React.FormEvent) => void;
   onSubmitMentor: (e: React.FormEvent) => void;
+  onSubmitAdmin?: (e: React.FormEvent) => void;
   raAlunoMentor: string;
   setRaAlunoMentor: React.Dispatch<React.SetStateAction<string>>;
   senhaAlunoMentor: string;
