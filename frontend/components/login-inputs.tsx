@@ -20,10 +20,10 @@ const CustomInputs: React.FC<Props> = ({
       <div className="flex flex-col gap-3 items-center">
         <input
           type="text"
-          placeholder="Registro Acadêmico (RA)"
+          placeholder="Usuário"
           value={usuario}
           className="w-[80%] bg-[white] border border-gray-300 rounded-lg text-black placeholder-gray-700 px-3 py-1.5 text-base focus:outline-none"
-          onChange={(e) => setUsuario(Number(e.target.value))}
+          onChange={(e) => setUsuario(e.target.value)}
         />
 
         <input
