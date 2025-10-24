@@ -34,7 +34,7 @@ export default function TeamHistory() {
   return (
     <div className="min-h-dvh w-full overflow-y-hidden overflow-x-hidden flex flex-col bg-[#f4f3f1]/60">
       <div className="flex flex-col left-0 top-0">
-        <header className="py-4">
+        <header className="py-4 mt-6 relative flex justify-center items-center">
           <button
             type="button"
             className={`open-menu hover:text-primary/60 ${
@@ -45,7 +45,7 @@ export default function TeamHistory() {
             {" "}
             ☰{" "}
           </button>
-          <h1 className="text-4xl font-semibold text-[#cc3983] self-center">
+          <h1 className={`text-4xl font-semibold text-[#cc3983] text-center transition-all duration-300 ease-in-out ${ menuOpen ? "md:pl-[270px]" : "ml-0"}`}>
             Histórico de contribuições
           </h1>
         </header>
@@ -78,18 +78,16 @@ export default function TeamHistory() {
               setSelectedContribution(null);
               setRefreshKey((k) => k + 1); //p dar refetch depois de deletar a doaçao
             }}
-
             />
           )}
-          <div className="flex flex-col gap-2 mx-3 ">
+          <div className="flex flex-col gap-2 mx-3 text-center">
             <h3 className="text-2xl uppercase font-semibold text-primary/85">
               {team?.NomeTime ? team?.NomeTime : "Nome do time aparecerá aqui"}
             </h3>
-            <h4 className="mb-3 text-xl text-[#ab3570]">
+            <h4 className="mb-3 text-xl text-primary/80">
               Turma {user?.Turma ? user?.Turma : "X"} | Yº Edição
             </h4>
           </div>
-          <div className="mx-4 grid grid-cols-1 md:grid-cols-3 gap-4.5 rounded-sm p-2.5">
             <RenderContribution
               refreshKey={refreshKey}
               onSelect={(contribution: any) => {
@@ -97,7 +95,6 @@ export default function TeamHistory() {
                 setIsOpen(true);
               }}
             />
-          </div>
         </main>
       </div>
     </div>

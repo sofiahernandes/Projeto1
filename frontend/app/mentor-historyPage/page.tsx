@@ -17,24 +17,23 @@ export default function MentorVision() {
   const [selectedContribution, setSelectedContribution] =
     React.useState<any>(null);
 
-  //   useEffect(() => {
-  //     const fetchTeamData = async () => {
-  //       const data = await fetchData(userId);
-  //       setUser(data?.user);
-  //       setTeam(data?.team);
-  //     };
-  //     fetchTeamData();
-  //   }, [userId]);
+    useEffect(() => {
+      const fetchTeamData = async () => {
+        const data = await fetchData(userId);
+        setUser(data?.user);
+        setTeam(data?.team);
+      };
+      fetchTeamData();
+    }, [userId]);
 
   return (
     <div className="min-h-dvh w-full overflow-y-hidden overflow-x-hidden flex flex-col bg-[#f4f3f1]/60">
       <div className="flex flex-col left-0 top-0">
-        <header className="py-4 flex items-center justify-between">
-          <div className="absolute left-0 top-0">
-            <BackHome />
-          </div>
-
-          <h1 className="text-4xl font-semibold text-[#cc3983]">
+        <div className="absolute left-0 top-0">
+              <BackHome />
+        </div>
+        <header className="py-4 mt-6 relative flex justify-center items-center">
+          <h1 className="text-4xl font-semibold text-[#cc3983] text-center">
             Histórico de contribuições
           </h1>
         </header>

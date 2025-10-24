@@ -69,7 +69,7 @@ export default function RenderContribution({
 
   if (contributions.length === 0) {
     return (
-      <div className="col-start-2 border rounded-xl border-gray-200 shadow-xl w-100 mx-auto"> 
+      <div className="col-start-2 border rounded-xl border-gray-200 shadow-xl w-auto max-w-100 mx-auto"> 
         <Empty>
         <EmptyHeader>
           <EmptyMedia variant="icon"> 
