@@ -122,7 +122,7 @@ export default function PublicDashboard() {
                 </Button>
                 <Button className="bg-secondary/40 overflow-hidden h-18 gap-2 hover:bg-secondary/50 border border-secondary/40">
                   <Link
-                    href="/mentor-historyPage"
+                    href="/public-reports"
                     className="flex flex-col gap-2 items-center"
                   >
                     <FileText className="w-6 h-6 text-gray-600" />
