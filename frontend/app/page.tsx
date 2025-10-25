@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, BookOpen } from "lucide-react";
 import Link from "next/link";
-import Hero from "@/components/hero"
+
+import Hero from "@/components/hero";
+import Footer from "@/components/footer";
 
 import { overallMetrics } from "@/lib/overall-metrics";
 import { donations } from "@/lib/donations";
@@ -17,7 +19,7 @@ export default function PublicDashboard() {
     <div className="flex flex-col">
     <Hero />
 
-    <main id="public-graph" className="w-full lg:p-10 p-6 min-h-screen flex align-center justify-center">
+    <main id="public-graph" className="w-full lg:p-10 p-6 flex align-center justify-center">
       <div className="w-full">
         <div className="flex justify-center w-full pb-4">
           <h1 className="font-light text-white text-sm">
@@ -120,7 +122,7 @@ export default function PublicDashboard() {
                 </Button>
                 <Button className="bg-secondary/40 overflow-hidden h-18 gap-2 hover:bg-secondary/50 border border-secondary/40">
                   <Link
-                    href="/public-reports"
+                    href="/mentor-historyPage"
                     className="flex flex-col gap-2 items-center"
                   >
                     <FileText className="w-6 h-6 text-gray-600" />
@@ -135,6 +137,8 @@ export default function PublicDashboard() {
         </div>
       </div>
     </main>
+
+    <Footer />
     </div>
   );
 }
