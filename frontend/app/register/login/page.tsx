@@ -94,7 +94,7 @@ export default function Login() {
             </p>
           </section>
 
-          <section className="border border-gray-300 rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2 px-6 py-8">
+          <section className="border border-gray-300 rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2 px-6 py-8 bg-white">
             <h2 className="text-secondary text-center font-bold text-xl md:text-xl my-4">
               Login Alunos-Mentores, Professores e Mentores
             </h2>

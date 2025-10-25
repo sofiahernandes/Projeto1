@@ -2,18 +2,19 @@
 import Link from "next/link";
 import React from "react";
 
-import { Instagram, Facebook } from "lucide-react";
+import { Instagram, Linkedin, Youtube } from "lucide-react";
 
 const Footer = () => {
   const pages = [
     { id: 1, text: "Página Inicial", url: "/" },
-    { id: 2, text: "Registrar Doações", url: "/" },
-    { id: 3, text: "Relatórios Completos", url: "/" },
-    { id: 4, text: "Sobre Nós", url: "/" },
+    { id: 2, text: "Registrar Doações", url: "/register/login" },
+    { id: 3, text: "Relatórios Completos", url: "/public-reports" },
+    { id: 4, text: "Sobre Nós", url: "/about-us" },
   ];
   const socialLinks = [
-    { id: 1, type: "instagram", url: "/" },
-    { id: 2, type: "facebook", url: "/" },
+    { id: 1, type: "Instagram", url: "https://www.instagram.com/liderancasempaticas" },
+    { id: 2, type: "Linkedin", url: "https://www.linkedin.com/company/projeto-lideran%C3%A7as-emp%C3%A1ticas/?viewAsMember=true" },
+    { id: 3, type: "Youtube", url: "https://www.youtube.com/@Lideran%C3%A7asEmp%C3%A1ticas" },
   ];
 
   return (
@@ -50,7 +51,7 @@ const Footer = () => {
           <div className="col-span-2 md:col-span-4 grid grid-cols-1">
             <div className="w-full md:w-auto flex flex-col gap-1">
               <p className="font-bold">Nos siga nas redes</p>
-              <div className="w-full md:w-auto flex items-end gap-4 mb-6">
+              <div className="w-full md:w-auto flex items-end gap-4 mb-8">
                 {socialLinks?.map((link) => (
                   <Link
                     key={`socialLinks-${link.id}`}
@@ -58,7 +59,7 @@ const Footer = () => {
                     className="hover:opacity-50 transition-opacity"
                     aria-label={link.type}
                   >
-                    {link.type == "instagram" ? <Instagram /> : <Facebook />}
+                    {link.type == "Instagram" ? <Instagram /> : (link.type == "Linkedin" ? <Linkedin /> : <Youtube />)}
                   </Link>
                 ))}
               </div>

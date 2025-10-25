@@ -97,7 +97,7 @@ export default function Cadastro() {
             />
           </section>
 
-          <section className="border border-[#b4b4b4] rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2">
+          <section className="border border-[#b4b4b4] bg-white rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2">
             <form onSubmit={handleSubmit} className="p-8 max-w-xl w-full">
               {/*Container Esquerda*/}
               <div className="flex flex-col space-y-2">
