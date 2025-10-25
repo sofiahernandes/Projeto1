@@ -109,7 +109,7 @@ const usersController = {
         },
       });
 
-      res.json({ message: "Login realizado com sucesso", usuario });
+      res.status(201).json({ usuario});
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Erro no login" });

@@ -1,18 +1,19 @@
 "use client";
 
 import React from "react";
-import CustomInputs from "../../../components/login-inputs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
+import TabsLogin from "@/components/tabs-login";
 import BackHome from "@/components/back-home";
 
 export default function Login() {
   const router = useRouter();
   const [raAlunoMentor, setRaAlunoMentor] = React.useState("");
   const [senhaAlunoMentor, setSenhaAlunoMentor] = React.useState("");
+  const [emailMentor, setEmailMentor] = React.useState("");
+  const [senhaMentor, setSenhaMentor] = React.useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleAlunoSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -67,6 +68,11 @@ export default function Login() {
     }
   };
 
+  const handleMentorSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    //direciona para a pagina pos login do mentor 
+  };
+
   return (
     <div className="w-full">
       <div className="absolute left-0 top-0">
@@ -94,30 +100,22 @@ export default function Login() {
             </p>
           </section>
 
-          <section className="border border-gray-300 rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2 px-6 py-8 bg-white">
-            <h2 className="text-secondary text-center font-bold text-xl md:text-xl my-4">
-              Login Alunos-Mentores, Professores e Mentores
-            </h2>
-            <form
-              onSubmit={handleSubmit}
-              className="flex flex-col gap-4 w-full"
-            >
-              <CustomInputs
-                usuario={raAlunoMentor!}
-                setUsuario={setRaAlunoMentor}
-                senha={senhaAlunoMentor}
-                setSenha={setSenhaAlunoMentor}
-              />
-              <button
-                type="submit"
-                className="border-transparent bg-secondary hover:text-white! text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-secondary/80 rounded-lg"
-              >
-                Entrar
-              </button>
-            </form>
-          </section>
-        </div>
+          <section className="flex flex-col justify-center md:w-1/2">
+            <TabsLogin 
+            onSubmitAluno={handleAlunoSubmit}
+            onSubmitMentor={handleMentorSubmit}
+            raAlunoMentor={raAlunoMentor}
+            setRaAlunoMentor={setRaAlunoMentor}
+            senhaAlunoMentor={senhaAlunoMentor}
+            setSenhaAlunoMentor={setSenhaAlunoMentor}
+            emailMentor={emailMentor}
+            setEmailMentor={setEmailMentor}
+            senhaMentor={senhaMentor}
+            setSenhaMentor={setSenhaMentor}/>
+
+        </section>
       </div>
     </div>
+   </div>
   );
 }

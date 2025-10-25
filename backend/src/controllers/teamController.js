@@ -1,6 +1,5 @@
 import { prisma } from "../../prisma/lib/prisma.js";
 
-{ /* 2° Entrega: {IdTime, RaAlunoM, RA1, RA2, RA3, RA4, RA5, RA6, RA7, RA8, RA9, RA10} */}
 
 const teamsController = {
   //GET http://localhost:3001/api/teams
@@ -49,15 +48,50 @@ const teamsController = {
 
   //POST http://localhost:3001/api/createTeam
   createTeam: async (req, res) => {
-    const { NomeTime, RaUsuario, RaAlunos } = req.body;
+    const {
+      NomeTime,
+      RaUsuario,
+      RaAluno2,
+      RaAluno3,
+      RaAluno4,
+      RaAluno5,
+      RaAluno6,
+      RaAluno7,
+      RaAluno8,
+      RaAluno9,
+      RaAluno10,
+    } = req.body;
 
-    if (!NomeTime || !RaUsuario || !RaAlunos) {
+    if (
+      !NomeTime ||
+      !RaAluno2 ||
+      !RaAluno3 ||
+      !RaAluno4 ||
+      !RaAluno5 ||
+      !RaAluno6 ||
+      !RaAluno7 ||
+      !RaAluno8 ||
+      RaAluno9 ||
+      RaAluno10
+    ) {
       return res.status(400).json("Preencha todos os campos");
     }
 
     try {
       const time = await prisma.time.create({
-        data: { NomeTime, RaUsuario, RaAlunos },
+        data: {
+          NomeTime,
+          RaUsuario,
+          RaAluno2,
+          RaAluno3,
+          RaAluno4,
+          RaAluno5,
+          RaAluno6,
+          RaAluno7,
+          RaAluno8,
+          RaAluno9,
+          RaAluno10,
+        },
       });
       res.json(time);
     } catch (err) {

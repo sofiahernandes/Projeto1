@@ -7,32 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Contribuicao {
-  IdContribuicao   Int       @id @default(autoincrement())
-  DataContribuicao DateTime? @default(now()) @db.Timestamp(0)
-  Quantidade       Int
-  TipoDoacao       String    @db.VarChar(10)
-  Gastos           Int
-  Meta             Int?
-  Fonte            String?   @db.VarChar(200)
-  Comprovante      String?   @db.VarChar(200)
-  RaUsuario        Int?
-
-  @@index([RaUsuario], map: "RaUsuario")
-}
-
 model Mentor {
   IdMentor Int      @id @default(autoincrement())
   Email    String   @db.VarChar(250)
   IsAdm    Boolean?
+  SenhaMentor String @db.VarChar(80)
 }
 
 model Time {
   IdTime    Int    @id @default(autoincrement())
   NomeTime  String @db.VarChar(250)
-  IdMentor  Int
-  RaUsuario Int
-  RaAluno1 Int 
+  IdMentor  Int?
+  RaUsuario Int? 
   RaAluno2 Int 
   RaAluno3 Int 
   RaAluno4 Int 
@@ -54,4 +40,48 @@ model Usuario {
   SenhaUsuario    String  @db.VarChar(16)
   Turma           String  @db.VarChar(20)
   TelefoneUsuario String? @db.VarChar(20)
+}
+
+model Contribuicao_Financeira {
+  IdContribuicaoFinanceira   Int       @id @default(autoincrement())
+  DataContribuicao DateTime? @default(now()) @db.Timestamp(0)
+  Quantidade       Int
+  TipoDoacao       String    @db.VarChar(10)
+  Gastos           Int
+  Meta             Int?
+  Fonte            String?   @db.VarChar(200)
+  Comprovante      String?   @db.VarChar(200)
+  RaUsuario        Int?
+
+  @@index([RaUsuario], map: "RaUsuario")
+}
+
+
+model Contribuicao_Alimenticia {
+  IdContribuicaoAlimenticia   Int       @id @default(autoincrement())
+  DataContribuicao DateTime? @default(now()) @db.Timestamp(0)
+  Quantidade       Int
+  PesoUnidade      Float   
+  Gastos           Int
+  Meta             Int?
+  Fonte            String?   @db.VarChar(200)
+  Comprovante      String?   @db.VarChar(200)
+  RaUsuario        Int?
+
+  @@index([RaUsuario], map: "RaUsuario")
+}
+
+model Alimentos {
+  IdAlimento Int @id 
+  NomeAlimento String @db.VarChar(100)
+  PontuacaoAlimento Int 
+}
+
+model contribuicao_alimento{
+  IdContribuicaoAlimento  Int @id @default(autoincrement())
+  IdAlimento Int?
+  IdContribuicaoAlimenticia Int?
+
+  @@index([IdAlimento], map:"IdAlimento") 
+  @@index([IdContribuicaoAlimenticia], map:"IdContribuicaoAlimenticia")
 }
