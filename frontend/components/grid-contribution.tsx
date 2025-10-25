@@ -32,7 +32,7 @@ interface RenderContributionProps {
   refreshKey?: number;
 }
 
-export default function RenderContribution({
+export default function RenderContributionCard({
   onSelect,
   refreshKey = 0,
 }: RenderContributionProps) {
@@ -73,7 +73,7 @@ export default function RenderContribution({
         <Empty>
         <EmptyHeader>
           <EmptyMedia variant="icon"> 
-            {/* mudar o icone */}
+            {/* mudar o icone  pra maozinha vazia*/}
             <BoxIcon/>
           </EmptyMedia>
           <EmptyTitle>Nenhuma contribuição por enquanto!</EmptyTitle>
@@ -87,7 +87,7 @@ export default function RenderContribution({
   }
 
   return (
-    <div className="mx-4 grid grid-cols-1 md:grid-cols-3 gap-4.5 rounded-sm p-2.5">
+    <div className="mx-4 mb-15 grid grid-cols-1 md:grid-cols-3 gap-4.5 rounded-sm p-2.5">
       {contributions.map((c) => (
         <div
           key={c.IdContribuicao}
@@ -110,3 +110,4 @@ export default function RenderContribution({
     </div>
   );
 }
+
