@@ -171,9 +171,9 @@ export default function Cadastro() {
                     className="hidden rounded-lg"
                   >
                     {mostrarSenha ? (
-                      <img src="../assets/EyeClosed.png" />
+                      <img alt="Closed Eye" src="../assets/EyeClosed.png" />
                     ) : (
-                      <img src="../assets/EyeOpen.png" />
+                      <img alt="Open Eye" src="../assets/EyeOpen.png" />
                     )}
                   </button>
                   <button
