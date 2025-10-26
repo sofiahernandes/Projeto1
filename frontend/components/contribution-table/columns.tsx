@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,7 @@ import {
   Clipboard,
   Eye,
 } from "lucide-react";
-
+import formatBRL from "../formatBRL";
 export type Contribution = {
   RaUsuario: number;
   TipoDoacao: string;
@@ -30,14 +30,11 @@ export type Contribution = {
 };
 
 export type ContributionActions = {
-  onView?: (c: Contribution) => void;        
-  onCopied?: (id: number) => void;           
+  onView?: (c: Contribution) => void;
+  onCopied?: (id: number) => void;
 };
 
-const formatBRL = (v?: number) =>
-  typeof v === "number"
-    ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v)
-    : "-"; //alterar pra kg quando necessario
+
 
 export const makeContributionColumns = (
   actions: ContributionActions = {}
@@ -47,28 +44,30 @@ export const makeContributionColumns = (
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
+          variant="prettyHeader"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Fonte da doação
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
-    cell: ({ row }) => <span className="font-medium">{row.original.Fonte ?? "-"}</span>,
+    cell: ({ row }) => (
+      <span className="font-medium">{row.original.Fonte ?? "-"}</span>
+    ),
   },
   {
     accessorKey: "DataContribuicao",
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
+          variant="prettyHeader"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Data
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => {
       const d = row.original.DataContribuicao;
@@ -81,13 +80,13 @@ export const makeContributionColumns = (
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
+          variant="prettyHeader"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Tipo
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
   },
   {
@@ -95,17 +94,21 @@ export const makeContributionColumns = (
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
+          variant="prettyHeader"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Quantidade
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => {
       const q = row.original.Quantidade;
-      return <span>{Number.isFinite(q) ? new Intl.NumberFormat("pt-BR").format(q) : "-"}</span>;
+      return (
+        <span>
+          {Number.isFinite(q) ? new Intl.NumberFormat("pt-BR").format(q) : "-"}
+        </span>
+      );
     },
   },
   {
@@ -113,29 +116,39 @@ export const makeContributionColumns = (
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
+          variant="prettyHeader"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Gastos
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => <span>{formatBRL(row.original.Gastos)}</span>,
   },
   {
     accessorKey: "Meta",
-header: ({ column }) => {
+    header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
+          variant="prettyHeader"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Meta
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
-    },    cell: ({ row }) => <span>{formatBRL(row.original.Meta)}</span>,
+      );
+    },
+    cell: ({ row }) => {
+      const meta = row.original.Meta;
+      return (
+        <span>
+          {typeof meta === "number" && Number.isFinite(meta)
+            ? new Intl.NumberFormat("pt-BR").format(meta)
+            : "-"}
+        </span>
+      );
+    },
   },
   {
     accessorKey: "Comprovante",
@@ -195,4 +208,4 @@ header: ({ column }) => {
     },
   },
 ];
-``
+``;

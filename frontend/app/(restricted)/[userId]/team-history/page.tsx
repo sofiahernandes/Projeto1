@@ -95,9 +95,11 @@ export default function TeamHistory() {
             <div className="self-end">
               <SwitchViewButton
                 buttonSelected={buttonSelected}
-                setButtonSelected={(arg: SetStateAction<boolean>) => setButtonSelected(arg)}
+                setButtonSelected={(arg: SetStateAction<boolean>) =>
+                  setButtonSelected(arg)
+                }
               />
-            </div>   
+            </div>
           </div>
           <div className="mt-2">
             {buttonSelected ? (
@@ -118,7 +120,7 @@ export default function TeamHistory() {
               />
             )}
           </div>
-        
+          
         </main>
       </div>
     </div>

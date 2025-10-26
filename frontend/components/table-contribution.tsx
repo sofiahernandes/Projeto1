@@ -2,7 +2,6 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-// Se sua versão do lucide-react não tem BoxIcon, use Box:
 import { Box as BoxIcon } from "lucide-react";
 
 import { DataTable } from "@/components/contribution-table/data-table";
@@ -19,11 +18,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-
-/* Coisas pra mudar: coluna Meta não deixar tudo com R$ por causa dos kg de alimento
-input de procurar fonte da doação
-estilo da tabela
-*/
 
 
 interface RenderContributionProps {
@@ -101,13 +95,11 @@ export default function RenderContributionTable({
         if (err?.name === "AbortError") {
           return;
         }
-        console.error(err);
         setError(err?.message ?? "Erro inesperado");
       } finally {
         if (active) setLoading(false);
       }
     }
-
     fetchContributions();
 
     return () => {

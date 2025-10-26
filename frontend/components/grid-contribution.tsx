@@ -2,9 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-// import { IconFolderCode } from "lucide-react"
-import { BoxIcon, Icon, ArrowUpRightIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { BoxIcon } from "lucide-react"
 import {
   Empty,
   EmptyContent,
@@ -12,7 +10,8 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@/components/ui/empty"
+} from "@/components/ui/empty";
+import formatBRL from "./formatBRL";
 
 
 interface Contribution {
@@ -96,15 +95,15 @@ export default function RenderContributionCard({
         >
           <p className="font-semibold text-lg ">{c.Fonte}</p>
           <p className="text-sm text-gray-950">
-            Data: {new Date(c.DataContribuicao).toLocaleDateString()}
+            Data: {new Date(c.DataContribuicao).toLocaleDateString("pt-BR")}
           </p>
           <p className="text-base text-gray-800">
             Tipo de Doação: {c.TipoDoacao}
           </p>
           <p className="text-base text-gray-800">
-            Quantidade: R$/kg {c.Quantidade}
+            Quantidade: {Intl.NumberFormat("pt-BR").format(c.Quantidade)}
           </p>
-          <p className="text-base text-gray-800">Gastos: R${c.Gastos}</p>
+          <p className="text-base text-gray-800">Gastos: {formatBRL(c.Gastos)}</p>
         </div>
       ))}
     </div>

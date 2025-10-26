@@ -1,6 +1,6 @@
 import placeholderComprovante from "@/assets/placeholderComprovante.jpg";
 import Modal from "../hooks/use-modal";
-import DeleteContribution from "@/components/delete-contribution";
+import formatBRL from "./formatBRL";
 
 interface ContributionData {
   RaUsuario: number;
@@ -14,18 +14,16 @@ interface ContributionData {
   DataContribuicao: string;
 }
 
-interface RecordsModalProps {
+interface RecordsMentorProps {
   data: ContributionData;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onDeleted?: () => void
 }
 
-const RecordsModal: React.FC<RecordsModalProps> = ({
+const RecordsMentor: React.FC<RecordsMentorProps> = ({
   data,
   isOpen,
   setIsOpen,
-  onDeleted
 }) => {
   if (!data) return null;
 
@@ -60,20 +58,27 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
 
                   <div>
                     <p className="text-sm text-gray-600">Quantidade</p>
-                    <p className="font-semibold">{data.Quantidade}</p>
+                    <p className="font-semibold">
+                      {Intl.NumberFormat("pt-BR").format(data.Quantidade)}
+                    </p>
                   </div>
 
                   {data.Meta && (
                     <div>
                       <p className="text-sm text-gray-600">Meta</p>
-                      <p className="font-semibold">{data.Meta}</p>
+                      <p className="font-semibold">
+                        {typeof data.Meta === "number" &&
+                        Number.isFinite(data.Meta)
+                          ? new Intl.NumberFormat("pt-BR").format(data.Meta)
+                          : "-"}
+                      </p>
                     </div>
                   )}
 
                   {data.Gastos && (
                     <div>
                       <p className="text-sm text-gray-600">Gastos</p>
-                      <p className="font-semibold">{data.Gastos}</p>
+                      <p className="font-semibold">{formatBRL(data.Gastos)}</p>
                     </div>
                   )}
 
@@ -82,17 +87,17 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
                       <p className="text-sm text-gray-600 mb-2">Comprovantes</p>
                       <div className="flex items-start">
                         {data.Comprovante ? (
-                      <img
-                        src={data.Comprovante}
-                        alt="Anexo de comprovante"
-                        className="rounded-md w-full max-h-[300px] object-contain border border-gray-300"
-                      />
-                    ) : (
-                        <img
-                          src={placeholderComprovante.src}
-                          alt="Anexo de comprovante"
-                          className="rounded-md aspect-square max-h-[45px] object-contain border border-gray-200 mb-6"
-                        />
+                          <img
+                            src={data.Comprovante}
+                            alt="Anexo de comprovante"
+                            className="rounded-md w-full max-h-[300px] object-contain border border-gray-300"
+                          />
+                        ) : (
+                          <img
+                            src={placeholderComprovante.src}
+                            alt="Anexo de comprovante"
+                            className="rounded-md aspect-square max-h-[45px] object-contain border border-gray-200 mb-6"
+                          />
                         )}
                       </div>
                     </div>
@@ -100,14 +105,6 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
                 </div>
               </div>
             </div>
-
-            <DeleteContribution
-              IdContribuicao={data.IdContribuicao}
-              onDeleted={() => {
-                setIsOpen(false)
-                onDeleted?.();
-              }}
-            />
           </div>
         </div>
       </div>
@@ -115,4 +112,4 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
   );
 };
 
-export default RecordsModal;
+export default RecordsMentor;
