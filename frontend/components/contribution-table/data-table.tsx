@@ -24,6 +24,8 @@ import {
 import * as React from "react";
 import { Button } from "../ui/button";
 import { Input } from "@/components/ui/input";
+import type { Contribution } from "@/components/contribution-table/columns";
+
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
