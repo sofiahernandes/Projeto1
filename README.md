@@ -23,7 +23,7 @@
 <br/>
 
 # Entregas
-- [Projeto de Extensão](https://github.com/2025-2-MCC2/Projeto1/blob/main/entregas/Projeto%20de%20Extens%C3%A3o.docx.pdf)
+- [Projeto de Extensão](https://github.com/2025-2-MCC2/Projeto1/blob/main/entregas/PROJETO%20DE%20EXTEN%C3%87%C3%83O.md)
 
 | Disciplina | Entrega 1 | Entrega 2 |  
 | :-------: | :------: | :-------: |
