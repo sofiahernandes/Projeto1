@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 export default function TeamTabs() {
   const router = useRouter();
+  const [IdTime] = React.useState("");
   const RaAluno1 = localStorage.getItem("RaAluno1");
   const [NomeTime, setNomeTime] = React.useState("");
   const [RaAluno2, setRaAluno2] = React.useState("");
@@ -42,6 +43,7 @@ export default function TeamTabs() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          IdTime: IdTime,
           NomeTime: NomeTime,
           RaUsuario: Number(RaAluno1),
           RaAluno2: Number(RaAluno2),

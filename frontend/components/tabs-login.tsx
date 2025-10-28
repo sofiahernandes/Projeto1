@@ -2,32 +2,115 @@
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CustomInputs from "./login-inputs";
+import { useRouter } from "next/navigation";
 
-type TabsLoginProps = {
-  onSubmitAluno: (e: React.FormEvent) => void;
-  onSubmitMentor: (e: React.FormEvent) => void;
-  onSubmitAdmin?: (e: React.FormEvent) => void;
-  raAlunoMentor: string;
-  setRaAlunoMentor: React.Dispatch<React.SetStateAction<string>>;
-  senhaAlunoMentor: string;
-  setSenhaAlunoMentor: React.Dispatch<React.SetStateAction<string>>;
-  emailMentor: string;
-  setEmailMentor: React.Dispatch<React.SetStateAction<string>>;
-  senhaMentor: string;
-  setSenhaMentor: React.Dispatch<React.SetStateAction<string>>;
-};
-const TabsLogin: React.FC<TabsLoginProps> = ({
-  onSubmitAluno,
-  onSubmitMentor,
-  raAlunoMentor,
-  setRaAlunoMentor,
-  senhaAlunoMentor,
-  setSenhaAlunoMentor,
-  emailMentor,
-  setEmailMentor,
-  senhaMentor,
-  setSenhaMentor,
-}) => {
+export default function TabsLogin(){
+   const router = useRouter();
+    const [EmailMentor] = React.useState("");
+    const RaAluno1 = localStorage.getItem("RaAluno1")
+    const SenhaUsuario = localStorage.getItem("SenhaAlunoMentor");
+
+  const handleSubmitAluno = async (e: React.FormEvent) => {
+    e.preventDefault();
+ 
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+    if (!backendUrl) {
+      console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
+      alert("Erro de configuração. Entre em contato com o suporte.");
+      return;
+    }
+
+    const apiUrl = `${backendUrl}/api/user/login`;
+
+    console.log("Tentando conectar em:", apiUrl);
+
+    try {
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          RaUsuario: (RaAluno1),
+          SenhaUsuario: SenhaUsuario
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res
+          .json()
+          .catch(() => ({ error: "Erro desconhecido" }));
+        console.error("Erro da API:", err);
+        alert("Erro: " + (err.error || `Status ${res.status}`));
+        return;
+      }
+
+      const User = await res.json();
+      console.log("Usuário Logado:", User);
+
+      alert("Usuário Logado com sucesso!");
+
+      router.push(`/$/new-contribution?userId=${User.RaUsuario}`);
+    } catch (error) {
+      console.error("Erro ao logar usuário:", error);
+    }
+  };
+
+  const handleSubmitMentor = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+    if (!backendUrl) {
+      console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
+      alert("Erro de configuração. Entre em contato com o suporte.");
+      return;
+    }
+
+    const apiUrl = `${backendUrl}/api/user/login`;
+
+    console.log("Tentando conectar em:", apiUrl);
+
+    try {
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailMentor: EmailMentor,
+          RaUsuario: Number(RaAluno1)
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res
+          .json()
+          .catch(() => ({ error: "Erro desconhecido" }));
+        console.error("Erro da API:", err);
+        alert("Erro: " + (err.error || `Status ${res.status}`));
+        return;
+      }
+
+      const User = await res.json();
+      console.log("Usuário Logado:", User);
+
+      alert("Usuário Logado com sucesso!");
+
+      router.push("");
+      //direciona para a pagina pos login do mentor 
+    } catch (error) {
+      console.error("Erro ao logar usuário:", error);
+    }
+    
+  };
+
+  const handleSubmitAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // direcionamento para a página do admin 
+
+  }
+
   return (
     <Tabs defaultValue="Aluno" className="md:w-[700px]">
       <TabsList>
@@ -39,18 +122,14 @@ const TabsLogin: React.FC<TabsLoginProps> = ({
         </TabsTrigger>
         <TabsTrigger value="Admin"> Administrador</TabsTrigger>
       </TabsList>
+
       <TabsContent value="Aluno">
         <section className="border border-gray-300 rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2 px-6 py-8">
           <h2 className="text-secondary text-center font-bold text-xl md:text-xl my-4">
             Login de Alunos-Mentores
           </h2>
-          <form onSubmit={onSubmitAluno} className="flex flex-col gap-4 w-full">
-            <CustomInputs
-              usuario={raAlunoMentor!}
-              setUsuario={setRaAlunoMentor}
-              senha={senhaAlunoMentor}
-              setSenha={setSenhaAlunoMentor}
-            />
+          <form onSubmit={handleSubmitAluno} className="flex flex-col gap-4 w-full">
+            <CustomInputs/>
             <button
               type="submit"
               className="border-transparent bg-secondary hover:text-white! text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-secondary/80 rounded-lg"
@@ -67,14 +146,10 @@ const TabsLogin: React.FC<TabsLoginProps> = ({
             Login Professores-Mentores
           </h2>
           <form
-            onSubmit={onSubmitMentor}
+            onSubmit={handleSubmitMentor}
             className="flex flex-col gap-4 w-full"
           >
             <CustomInputs
-              usuario={emailMentor}
-              setUsuario={setEmailMentor}
-              senha={senhaMentor}
-              setSenha={setSenhaMentor}
             />
             <button
               type="submit"
@@ -91,15 +166,10 @@ const TabsLogin: React.FC<TabsLoginProps> = ({
             Login Administradores
           </h2>
           <form
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={handleSubmitAdmin}
             className="flex flex-col gap-4 w-full"
           >
-            <CustomInputs
-              usuario={""}
-              setUsuario={() => {}}
-              senha={""}
-              setSenha={() => {}}
-            />
+            <CustomInputs/>
             <button
               type="submit"
               className="border-transparent bg-secondary hover:text-white! text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-secondary/80 rounded-lg"
@@ -112,4 +182,3 @@ const TabsLogin: React.FC<TabsLoginProps> = ({
     </Tabs>
   );
 };
-export default TabsLogin;
