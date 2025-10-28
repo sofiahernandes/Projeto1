@@ -5,7 +5,7 @@ import BackHome from "@/components/back-home";
 import SigninTabs from "@/components/tabs-sign";
 
 export default function Cadastro() {
-  
+        
   return (
     <div className="w-full">
       <div className="absolute left-0 top-0">

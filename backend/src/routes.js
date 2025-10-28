@@ -5,6 +5,7 @@ import contributionController from "./controllers/contributionController.js";
 import teamController from "./controllers/teamController.js";
 import mentorController from "./controllers/mentorController.js";
 import userController from "./controllers/userController.js";
+import authController from "./controllers/authController.js";
 
 const r = Router();
 
@@ -35,10 +36,11 @@ r.get("/team/:IdTime", teamController.teamByID);
 r.get("/team/:RaUsuario", teamController.teamByUserRA);
 r.delete("/deleteTeam/:IdTime", teamController.deleteTeam);
 
-r.post("/register", userController.createUser);
+r.post("/register", authController.createUser);
 r.get("/users", userController.allUsers);
 r.get("/user/:RaUsuario", userController.userByRA);
-r.post("/user/login", userController.loginUser);
+r.post("/user/login", authController.loginUser);
+r.post("/logOutUser", authController.logOutUser);
 r.delete("/deleteUser/:RaUsuario", userController.deleteUser);
 
 export default r;
