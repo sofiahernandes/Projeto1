@@ -37,8 +37,8 @@ model Usuario {
   RaUsuario       Int     @id
   NomeUsuario     String  @db.VarChar(250)
   EmailUsuario    String  @db.VarChar(250)
-  SenhaUsuario    String  @db.VarChar(16)
-  Turma           String  @db.VarChar(20)
+  SenhaUsuario    String  @db.VarChar(255)
+  TurmaUsuario           String  @db.VarChar(20)
   TelefoneUsuario String? @db.VarChar(20)
 }
 
