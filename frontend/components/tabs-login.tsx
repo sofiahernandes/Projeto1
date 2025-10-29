@@ -1,18 +1,19 @@
 "use client";
+
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CustomInputs from "./login-inputs";
 import { useRouter } from "next/navigation";
 
-export default function TabsLogin(){
-   const router = useRouter();
-    const [EmailMentor] = React.useState("");
-    const RaAluno1 = localStorage.getItem("RaAluno1")
-    const SenhaUsuario = localStorage.getItem("SenhaAlunoMentor");
+export default function TabsLogin() {
+  const router = useRouter();
+  const [EmailMentor] = React.useState("");
+  const RaAluno1 = window.localStorage.getItem("RaAluno1")
+  const SenhaUsuario = window.localStorage.getItem("SenhaAlunoMentor");
 
   const handleSubmitAluno = async (e: React.FormEvent) => {
     e.preventDefault();
- 
+
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     if (!backendUrl) {
@@ -102,7 +103,7 @@ export default function TabsLogin(){
     } catch (error) {
       console.error("Erro ao logar usuário:", error);
     }
-    
+
   };
 
   const handleSubmitAdmin = async (e: React.FormEvent) => {
@@ -112,24 +113,24 @@ export default function TabsLogin(){
   }
 
   return (
-    <Tabs defaultValue="Aluno" className="md:w-[700px]">
-      <TabsList>
+    <Tabs defaultValue="Aluno" className="md:w-[700px] h-full mb-1">
+      <TabsList className="flex gap-1">
         <TabsTrigger value="Aluno" className="hover:cursor-pointer">
           Aluno-Mentor
         </TabsTrigger>
         <TabsTrigger value="Mentor" className="hover:cursor-pointer">
-          Professor-Mentor
+          Mentor
         </TabsTrigger>
-        <TabsTrigger value="Admin"> Administrador</TabsTrigger>
+        <TabsTrigger value="Admin"> Admin</TabsTrigger>
       </TabsList>
 
       <TabsContent value="Aluno">
-        <section className="border border-gray-300 rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2 px-6 py-8">
+        <section className="border border-gray-300 h-full rounded-lg mb-2 flex flex-col items-center justify-center md:w-[365px] px-6 py-8">
           <h2 className="text-secondary text-center font-bold text-xl md:text-xl my-4">
             Login de Alunos-Mentores
           </h2>
           <form onSubmit={handleSubmitAluno} className="flex flex-col gap-4 w-full">
-            <CustomInputs/>
+            <CustomInputs />
             <button
               type="submit"
               className="border-transparent bg-secondary hover:text-white! text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-secondary/80 rounded-lg"
@@ -141,9 +142,9 @@ export default function TabsLogin(){
       </TabsContent>
 
       <TabsContent value="Mentor">
-        <section className="border border-gray-300 rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2 px-6 py-8">
+        <section className="border border-gray-300 h-full rounded-lg mb-2 flex flex-col items-center justify-center md:w-[365px] px-6 py-8">
           <h2 className="text-secondary text-center font-bold text-xl md:text-xl my-4">
-            Login Professores-Mentores
+            Login Mentores
           </h2>
           <form
             onSubmit={handleSubmitMentor}
@@ -161,7 +162,7 @@ export default function TabsLogin(){
         </section>
       </TabsContent>
       <TabsContent value="Admin">
-        <section className="border border-gray-300 rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2 px-6 py-8">
+        <section className="border border-gray-300 h-full rounded-lg mb-2 flex flex-col items-center justify-center md:w-[365px] px-6 py-8">
           <h2 className="text-secondary text-center font-bold text-xl md:text-xl my-4">
             Login Administradores
           </h2>
@@ -169,7 +170,7 @@ export default function TabsLogin(){
             onSubmit={handleSubmitAdmin}
             className="flex flex-col gap-4 w-full"
           >
-            <CustomInputs/>
+            <CustomInputs />
             <button
               type="submit"
               className="border-transparent bg-secondary hover:text-white! text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-secondary/80 rounded-lg"
