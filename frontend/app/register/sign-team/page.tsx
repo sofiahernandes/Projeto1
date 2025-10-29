@@ -81,7 +81,7 @@ export default function TeamSign() {
     }
   };
   return (
-    <section>
+    <section className="w-screen overflow-x-clip">
       <TeamTabs />
     </section>
   );

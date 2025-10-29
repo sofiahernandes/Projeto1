@@ -74,7 +74,7 @@ export default function Login() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-clip">
       <div className="absolute left-0 top-0">
         <BackHome />
       </div>
@@ -101,21 +101,21 @@ export default function Login() {
           </section>
 
           <section className="flex flex-col justify-center md:w-1/2">
-            <TabsLogin 
-            onSubmitAluno={handleAlunoSubmit}
-            onSubmitMentor={handleMentorSubmit}
-            raAlunoMentor={raAlunoMentor}
-            setRaAlunoMentor={setRaAlunoMentor}
-            senhaAlunoMentor={senhaAlunoMentor}
-            setSenhaAlunoMentor={setSenhaAlunoMentor}
-            emailMentor={emailMentor}
-            setEmailMentor={setEmailMentor}
-            senhaMentor={senhaMentor}
-            setSenhaMentor={setSenhaMentor}/>
-
-        </section>
+            <TabsLogin
+              onSubmitAluno={handleAlunoSubmit}
+              onSubmitMentor={handleMentorSubmit}
+              raAlunoMentor={raAlunoMentor}
+              setRaAlunoMentor={setRaAlunoMentor}
+              senhaAlunoMentor={senhaAlunoMentor}
+              setSenhaAlunoMentor={setSenhaAlunoMentor}
+              emailMentor={emailMentor}
+              setEmailMentor={setEmailMentor}
+              senhaMentor={senhaMentor}
+              setSenhaMentor={setSenhaMentor}
+            />
+          </section>
+        </div>
       </div>
     </div>
-   </div>
   );
 }

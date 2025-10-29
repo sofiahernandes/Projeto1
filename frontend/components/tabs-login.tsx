@@ -29,18 +29,18 @@ const TabsLogin: React.FC<TabsLoginProps> = ({
   setSenhaMentor,
 }) => {
   return (
-    <Tabs defaultValue="Aluno" className="md:w-[700px]">
-      <TabsList>
+    <Tabs defaultValue="Aluno" className="md:w-[700px] h-full mb-1">
+      <TabsList className="flex gap-1">
         <TabsTrigger value="Aluno" className="hover:cursor-pointer">
           Aluno-Mentor
         </TabsTrigger>
         <TabsTrigger value="Mentor" className="hover:cursor-pointer">
-          Professor-Mentor
+          Mentor
         </TabsTrigger>
-        <TabsTrigger value="Admin"> Administrador</TabsTrigger>
+        <TabsTrigger value="Admin"> Admin</TabsTrigger>
       </TabsList>
       <TabsContent value="Aluno">
-        <section className="border border-gray-300 rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2 px-6 py-8">
+        <section className="border border-gray-300 h-full rounded-lg mb-2 flex flex-col items-center justify-center md:w-[365px] px-6 py-8">
           <h2 className="text-secondary text-center font-bold text-xl md:text-xl my-4">
             Login de Alunos-Mentores
           </h2>
@@ -62,9 +62,9 @@ const TabsLogin: React.FC<TabsLoginProps> = ({
       </TabsContent>
 
       <TabsContent value="Mentor">
-        <section className="border border-gray-300 rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2 px-6 py-8">
+        <section className="border border-gray-300 h-full rounded-lg mb-2 flex flex-col items-center justify-center md:w-[365px] px-6 py-8">
           <h2 className="text-secondary text-center font-bold text-xl md:text-xl my-4">
-            Login Professores-Mentores
+            Login Mentores
           </h2>
           <form
             onSubmit={onSubmitMentor}
@@ -86,7 +86,7 @@ const TabsLogin: React.FC<TabsLoginProps> = ({
         </section>
       </TabsContent>
       <TabsContent value="Admin">
-        <section className="border border-gray-300 rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2 px-6 py-8">
+        <section className="border border-gray-300 h-full rounded-lg mb-2 flex flex-col items-center justify-center md:w-[365px] px-6 py-8">
           <h2 className="text-secondary text-center font-bold text-xl md:text-xl my-4">
             Login Administradores
           </h2>
@@ -96,9 +96,9 @@ const TabsLogin: React.FC<TabsLoginProps> = ({
           >
             <CustomInputs
               usuario={""}
-              setUsuario={() => {}}
+              setUsuario={() => { }}
               senha={""}
-              setSenha={() => {}}
+              setSenha={() => { }}
             />
             <button
               type="submit"
