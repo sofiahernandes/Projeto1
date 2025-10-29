@@ -7,72 +7,6 @@ import TabsLogin from "@/components/tabs-login";
 import BackHome from "@/components/back-home";
 
 export default function Login() {
-  const router = useRouter();
-  const [raAlunoMentor, setRaAlunoMentor] = React.useState("");
-  const [senhaAlunoMentor, setSenhaAlunoMentor] = React.useState("");
-  const [emailMentor, setEmailMentor] = React.useState("");
-  const [senhaMentor, setSenhaMentor] = React.useState("");
-
-  const handleAlunoSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-    if (!backendUrl) {
-      console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
-      alert("Erro de configuração. Entre em contato com o suporte.");
-      return;
-    }
-
-    const apiUrl = `${backendUrl}/api/user/login`;
-
-    console.log("Tentando conectar em:", apiUrl);
-
-    try {
-      const res = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          RaUsuario: Number(raAlunoMentor),
-          SenhaUsuario: senhaAlunoMentor,
-        }),
-      });
-
-      if (!res.ok) {
-        const err = await res
-          .json()
-          .catch(() => ({ error: "Erro desconhecido" }));
-        console.error("Erro da API:", err);
-        alert("Erro: " + (err.error || `Status ${res.status}`));
-        return;
-      }
-
-      const User = await res.json();
-      console.log("Usuário Logado:", User);
-
-      alert("Usuário Logado com sucesso!");
-
-      router.push(`/$/new-contribution?userId=${User.RaUsuario}`);
-    } catch (error) {
-      console.error("Erro ao logar usuário:", error);
-
-      if (error instanceof TypeError && error.message === "Failed to fetch") {
-        alert(
-          "Erro de conexão. Verifique se o backend está rodando e se a URL está correta."
-        );
-      } else {
-        alert("Erro ao cadastrar usuário: " + error);
-      }
-    }
-  };
-
-  const handleMentorSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    //direciona para a pagina pos login do mentor 
-  };
-
   return (
     <div className="w-full overflow-x-clip">
       <div className="absolute left-0 top-0">
@@ -101,21 +35,12 @@ export default function Login() {
           </section>
 
           <section className="flex flex-col justify-center md:w-1/2">
-            <TabsLogin
-              onSubmitAluno={handleAlunoSubmit}
-              onSubmitMentor={handleMentorSubmit}
-              raAlunoMentor={raAlunoMentor}
-              setRaAlunoMentor={setRaAlunoMentor}
-              senhaAlunoMentor={senhaAlunoMentor}
-              setSenhaAlunoMentor={setSenhaAlunoMentor}
-              emailMentor={emailMentor}
-              setEmailMentor={setEmailMentor}
-              senhaMentor={senhaMentor}
-              setSenhaMentor={setSenhaMentor}
+            <TabsLogin 
             />
-          </section>
-        </div>
+
+        </section>
       </div>
     </div>
+   </div>
   );
 }
