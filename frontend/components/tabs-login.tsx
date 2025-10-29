@@ -1,18 +1,19 @@
 "use client";
+
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CustomInputs from "./login-inputs";
 import { useRouter } from "next/navigation";
 
-export default function TabsLogin(){
-   const router = useRouter();
-    const [EmailMentor] = React.useState("");
-    const RaAluno1 = localStorage.getItem("RaAluno1")
-    const SenhaUsuario = localStorage.getItem("SenhaAlunoMentor");
+export default function TabsLogin() {
+  const router = useRouter();
+  const [EmailMentor] = React.useState("");
+  const RaAluno1 = window.localStorage.getItem("RaAluno1")
+  const SenhaUsuario = window.localStorage.getItem("SenhaAlunoMentor");
 
   const handleSubmitAluno = async (e: React.FormEvent) => {
     e.preventDefault();
- 
+
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     if (!backendUrl) {
@@ -102,7 +103,7 @@ export default function TabsLogin(){
     } catch (error) {
       console.error("Erro ao logar usuário:", error);
     }
-    
+
   };
 
   const handleSubmitAdmin = async (e: React.FormEvent) => {
@@ -129,7 +130,7 @@ export default function TabsLogin(){
             Login de Alunos-Mentores
           </h2>
           <form onSubmit={handleSubmitAluno} className="flex flex-col gap-4 w-full">
-            <CustomInputs/>
+            <CustomInputs />
             <button
               type="submit"
               className="border-transparent bg-secondary hover:text-white! text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-secondary/80 rounded-lg"
@@ -169,7 +170,7 @@ export default function TabsLogin(){
             onSubmit={handleSubmitAdmin}
             className="flex flex-col gap-4 w-full"
           >
-            <CustomInputs/>
+            <CustomInputs />
             <button
               type="submit"
               className="border-transparent bg-secondary hover:text-white! text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-secondary/80 rounded-lg"
