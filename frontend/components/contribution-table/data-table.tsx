@@ -94,7 +94,7 @@ export function DataTable<TData, TValue>({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
-                  key={row.id}
+                  key={(row.original as Contribution).uuid}
                   data-state={row.getIsSelected() && "selected"}
                   className={onRowClick ? "cursor-pointer" : undefined}
                   onClick={() => onRowClick?.(row.original)}
@@ -106,6 +106,7 @@ export function DataTable<TData, TValue>({
                         cell.getContext()
                       )}
                     </TableCell>
+                    //{/* key={(row.original as Contribution).uuid} */}
                   ))}
                 </TableRow>
               ))

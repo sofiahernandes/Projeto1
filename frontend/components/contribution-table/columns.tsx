@@ -28,6 +28,7 @@ export type Contribution = {
   PontuacaoAlimento?: number;
   PesoTotal?: number;
   PontuacaoTotal?: number;
+  uuid: string
 };
 
 export type ContributionActions = {

@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 // Se sua versão do lucide-react não tem BoxIcon, use Box:
 import { Box as BoxIcon } from "lucide-react";
-
+import { v4 as uuidv4 } from 'uuid';
 import { DataTable } from "@/components/contribution-table/data-table";
 import {
   makeContributionColumns,
@@ -90,7 +90,9 @@ export default function RenderContributionTable({
               PesoTotal: r.PesoTotal != null ? Number(r.PesoTotal) : undefined,
               PontuacaoTotal:
                 r.PontuacaoTotal != null ? Number(r.PontuacaoTotal) : undefined,
-            }))
+              uuid: uuidv4(),
+
+              }))
           : [];
          console.log(raw);
         setContributions(data);
@@ -153,8 +155,9 @@ export default function RenderContributionTable({
   return (
     <div className="p-2.5">
 
-    <DataTable
-      columns={columns} data={contributions}
+    <DataTable<Contribution, unknown>
+      columns={columns}
+      data={contributions}
     />
     </div>
   );
