@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CustomInputs from "./login-inputs";
 import { useRouter } from "next/navigation";
@@ -8,8 +8,16 @@ import { useRouter } from "next/navigation";
 export default function TabsLogin() {
   const router = useRouter();
   const [EmailMentor] = React.useState("");
-  const RaAluno1 = window.localStorage.getItem("RaAluno1")
-  const SenhaUsuario = window.localStorage.getItem("SenhaAlunoMentor");
+  const [RaAluno1, setRaAluno1] = useState("");
+  const [SenhaUsuario, setSenhaUsuario] = useState("");
+
+  useEffect(() => {
+    const RaAluno1 = window.localStorage.getItem("RaAluno1")
+    const SenhaUsuario = window.localStorage.getItem("SenhaAlunoMentor");
+
+    if (RaAluno1) setRaAluno1(RaAluno1);
+    if (SenhaUsuario) setSenhaUsuario(SenhaUsuario);
+  }, []);
 
   const handleSubmitAluno = async (e: React.FormEvent) => {
     e.preventDefault();

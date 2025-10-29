@@ -1,13 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import BackHome from "@/components/back-home";
 import { useRouter } from "next/navigation";
 
 export default function TeamTabs() {
   const router = useRouter();
   const [IdTime] = React.useState("");
-  const RaAluno1 = window.localStorage.getItem("RaAluno1");
+  const [RaAluno1, setRaAluno1] = useState("");
   const [NomeTime, setNomeTime] = React.useState("");
   const [RaAluno2, setRaAluno2] = React.useState("");
   const [RaAluno3, setRaAluno3] = React.useState("");
@@ -18,6 +18,12 @@ export default function TeamTabs() {
   const [RaAluno8, setRaAluno8] = React.useState("");
   const [RaAluno9, setRaAluno9] = React.useState("");
   const [RaAluno10, setRaAluno10] = React.useState("");
+
+  useEffect(() => {
+    const RaAluno1 = window.localStorage.getItem("RaAluno1");
+
+    if (RaAluno1) setRaAluno1(RaAluno1);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
