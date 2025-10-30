@@ -18,7 +18,6 @@ export default function SigninTabs() {
     e.preventDefault();
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-      //"http://localhost:3001";
 
     if (!backendUrl) {
       console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
@@ -61,8 +60,7 @@ export default function SigninTabs() {
       console.log("Usuário cadastrado:", newUser);
 
       localStorage.setItem("RaAluno1", newUser.RaUsuario);
-      localStorage.setItem("SenhaAlunoMentor", newUser.SenhaUsuario);
-      
+
       router.push("/register/sign-team");
     } catch (error) {
       console.error("Erro ao cadastrar usuário:", error);

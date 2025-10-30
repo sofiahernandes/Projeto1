@@ -1,5 +1,13 @@
+import bcrypt from "bcrypt";
 import { prisma } from "../../prisma/lib/prisma.js";
+import { createToken, denyToken } from "../services/tokenServices.js";
 
+const sanitizeMentor = (u) => ({
+  IdMentor: u.IdMentor,
+  EmailMentor: u.EmailMentor,
+  IsAdmin: u.IsAdmin,
+  SenhaMentor: u.SenhaMentor,
+});
 const mentorController = {
   //GET http://localhost:3001/api/mentors
   allMentors: async (_, res) => {
@@ -20,6 +28,7 @@ const mentorController = {
         .json({ error: "Erro ao listar mentores.", details: err.message });
     }
   },
+
   //GET http://localhost:3001/api/mentor/id/:IdMentor
   mentorById: async (req, res) => {
     const { IdMentor } = req.params;
@@ -53,19 +62,25 @@ const mentorController = {
         .json({ error: "Erro ao encontrar mentor", details: err.message });
     }
   },
+
   //POST http://localhost:3001/api/createMentor
   createMentor: async (req, res) => {
-    const { EmailMentor, IsAdmin, SenhaMentor } = req.body;
+    const { IdMentor, EmailMentor, IsAdmin, SenhaMentor } = req.body;
 
-    if (!EmailMentor || !SenhaMentor || IsAdmin === undefined) {
+    if (!EmailMentor || !SenhaMentor || IsAdmin == false) {
       return res.status(400).json("Preencha todos os campos");
     }
-
+    const hashedPassword = await bcrypt.hash(SenhaMentor, 10);
     try {
       const mentor = await prisma.mentor.create({
-        data: { EmailMentor, IsAdmin: IsAdmin ?? false, SenhaMentor },
+        data: {
+          IdMentor,
+          EmailMentor,
+          IsAdmin: IsAdmin ?? false,
+          SenhaMentor: hashedPassword,
+        },
       });
-      res.json(mentor);
+      res.status(201).json(sanitizeMentor(mentor));
     } catch (err) {
       res
         .status(500)
@@ -73,6 +88,40 @@ const mentorController = {
     }
   },
 
+  //LOGIN http://localhost:3001/api/register/login
+  loginMentor: async (req, res) => {
+    const { EmailMentor, SenhaMentor } = req.body;
+    if (!EmailMentor || !SenhaMentor) {
+      return res.status(400).json({ error: "Coloque os campos corretamente" });
+    }
+    try {
+      const mentor = await prisma.findUnique({
+        where: { EmailMentor: String(EmailMentor) },
+      });
+      if (!mentor) {
+        return res.status(401).json({ error: "Credenciais inválidas" });
+      }
+      const senhaValida = await bcrypt.compare(
+      SenhaMentor, 
+      mentor.SenhaMentor
+      );
+      if (!senhaValida) {
+        return res
+          .status(401)
+          .json({ error: "Senha do mentor incorreta, tente novamente." });
+      }
+      const { token } = createToken({ EmailMentor: mentor.EmailMentor });
+
+      res.json({ token, mentor: sanitizeMentor(mentor) });
+    } catch (err) {
+      return res
+        .status(500)
+        .json({
+          error: "Erro ao fazer o login do mentor",
+          details: err.message,
+        });
+    }
+  },
   //DELETE http://localhost:3001/api/deleteMentor/:EmailMentor
   deleteMentor: async (req, res) => {
     const { EmailMentor } = req.params;

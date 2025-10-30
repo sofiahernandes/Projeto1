@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 export default function TeamTabs() {
   const router = useRouter();
   const [IdTime] = React.useState("");
-  const RaAluno1 = localStorage.getItem("RaAluno1");
+  const RaAluno1 = window.localStorage.getItem("RaAluno1");
   const [NomeTime, setNomeTime] = React.useState("");
   const [RaAluno2, setRaAluno2] = React.useState("");
   const [RaAluno3, setRaAluno3] = React.useState("");

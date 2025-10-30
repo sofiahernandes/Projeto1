@@ -8,7 +8,7 @@ import BackHome from "@/components/back-home";
 
 export default function Login() {
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-clip">
       <div className="absolute left-0 top-0">
         <BackHome />
       </div>

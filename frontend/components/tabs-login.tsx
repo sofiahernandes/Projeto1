@@ -1,18 +1,21 @@
 "use client";
+
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import CustomInputs from "./login-inputs";
+import CustomInputs from "./login-user-inputs";
+import MentorInputs from "./login-mentor-input";
 import { useRouter } from "next/navigation";
 
-export default function TabsLogin(){
-   const router = useRouter();
-    const [EmailMentor] = React.useState("");
-    const RaAluno1 = localStorage.getItem("RaAluno1")
-    const SenhaUsuario = localStorage.getItem("SenhaAlunoMentor");
+export default function TabsLogin() {
+  const router = useRouter();
+  const [EmailMentor, setEmailMentor] = React.useState("");
+  const [SenhaMentor, setSenhaMentor] = React.useState("");
+  const [RaUsuario, setRaUsuario] = React.useState(0);
+  const [SenhaUsuario, setSenhaUsuario] = React.useState("");
 
   const handleSubmitAluno = async (e: React.FormEvent) => {
     e.preventDefault();
- 
+
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     if (!backendUrl) {
@@ -32,8 +35,8 @@ export default function TabsLogin(){
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          RaUsuario: (RaAluno1),
-          SenhaUsuario: SenhaUsuario
+          RaUsuario: Number(RaUsuario),
+          SenhaUsuario,
         }),
       });
 
@@ -48,8 +51,6 @@ export default function TabsLogin(){
 
       const User = await res.json();
       console.log("Usuário Logado:", User);
-
-      alert("Usuário Logado com sucesso!");
 
       router.push(`/$/new-contribution?userId=${User.RaUsuario}`);
     } catch (error) {
@@ -78,8 +79,8 @@ export default function TabsLogin(){
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          emailMentor: EmailMentor,
-          RaUsuario: Number(RaAluno1)
+          EmailMentor: EmailMentor,
+          SenhaMentor: SenhaMentor,
         }),
       });
 
@@ -98,38 +99,44 @@ export default function TabsLogin(){
       alert("Usuário Logado com sucesso!");
 
       router.push("");
-      //direciona para a pagina pos login do mentor 
+      //direciona para a pagina pos login do mentor
     } catch (error) {
       console.error("Erro ao logar usuário:", error);
     }
-    
   };
 
   const handleSubmitAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // direcionamento para a página do admin 
-
-  }
+    // direcionamento para a página do admin
+  };
 
   return (
-    <Tabs defaultValue="Aluno" className="md:w-[700px]">
-      <TabsList>
+    <Tabs defaultValue="Aluno" className="md:w-[700px] h-full mb-1">
+      <TabsList className="flex gap-1">
         <TabsTrigger value="Aluno" className="hover:cursor-pointer">
           Aluno-Mentor
         </TabsTrigger>
         <TabsTrigger value="Mentor" className="hover:cursor-pointer">
-          Professor-Mentor
+          Mentor
         </TabsTrigger>
-        <TabsTrigger value="Admin"> Administrador</TabsTrigger>
+        <TabsTrigger value="Admin"> Admin</TabsTrigger>
       </TabsList>
 
       <TabsContent value="Aluno">
-        <section className="border border-gray-300 rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2 px-6 py-8">
+        <section className="border border-gray-300 h-full rounded-lg mb-2 flex flex-col items-center justify-center md:w-[365px] px-6 py-8">
           <h2 className="text-secondary text-center font-bold text-xl md:text-xl my-4">
             Login de Alunos-Mentores
           </h2>
-          <form onSubmit={handleSubmitAluno} className="flex flex-col gap-4 w-full">
-            <CustomInputs/>
+          <form
+            onSubmit={handleSubmitAluno}
+            className="flex flex-col gap-4 w-full"
+          >
+            <CustomInputs
+              RaUsuario={RaUsuario}
+              setRaUsuario={setRaUsuario}
+              SenhaUsuario={SenhaUsuario}
+              setSenhaUsuario={setSenhaUsuario}
+            />
             <button
               type="submit"
               className="border-transparent bg-secondary hover:text-white! text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-secondary/80 rounded-lg"
@@ -141,16 +148,19 @@ export default function TabsLogin(){
       </TabsContent>
 
       <TabsContent value="Mentor">
-        <section className="border border-gray-300 rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2 px-6 py-8">
+        <section className="border border-gray-300 h-full rounded-lg mb-2 flex flex-col items-center justify-center md:w-[365px] px-6 py-8">
           <h2 className="text-secondary text-center font-bold text-xl md:text-xl my-4">
-            Login Professores-Mentores
+            Login Mentores
           </h2>
           <form
             onSubmit={handleSubmitMentor}
             className="flex flex-col gap-4 w-full"
           >
-            <CustomInputs
-            />
+            <MentorInputs
+            EmailMentor={EmailMentor}
+            setEmailMentor={setEmailMentor}
+            SenhaMentor={SenhaMentor}
+            setSenhaMentor={setSenhaMentor}/>
             <button
               type="submit"
               className="border-transparent bg-secondary hover:text-white! text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-secondary/80 rounded-lg"
@@ -161,7 +171,7 @@ export default function TabsLogin(){
         </section>
       </TabsContent>
       <TabsContent value="Admin">
-        <section className="border border-gray-300 rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2 px-6 py-8">
+        <section className="border border-gray-300 h-full rounded-lg mb-2 flex flex-col items-center justify-center md:w-[365px] px-6 py-8">
           <h2 className="text-secondary text-center font-bold text-xl md:text-xl my-4">
             Login Administradores
           </h2>
@@ -169,7 +179,7 @@ export default function TabsLogin(){
             onSubmit={handleSubmitAdmin}
             className="flex flex-col gap-4 w-full"
           >
-            <CustomInputs/>
+           
             <button
               type="submit"
               className="border-transparent bg-secondary hover:text-white! text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-secondary/80 rounded-lg"
@@ -181,4 +191,4 @@ export default function TabsLogin(){
       </TabsContent>
     </Tabs>
   );
-};
+}
