@@ -1,8 +1,18 @@
 import React from "react";
 
-export default function CustomInputs() {
-  const[ usuario, setUsuario] = React.useState("");
-  const[Senha, setSenha] = React.useState("");
+type Props = {
+  RaUsuario: number;
+  setRaUsuario: React.Dispatch<React.SetStateAction<number>>;
+  SenhaUsuario: string;
+  setSenhaUsuario: React.Dispatch<React.SetStateAction<string>>;
+};
+
+const CustomInputs: React.FC<Props> = ({
+  RaUsuario,
+  setRaUsuario,
+  SenhaUsuario,
+  setSenhaUsuario,
+}) => {
   const [mostrarSenha, setMostrarSenha] = React.useState(false);
 
   return (
@@ -11,15 +21,15 @@ export default function CustomInputs() {
         <input
           type="text"
           placeholder="Usuário"
-          value={usuario}
+          value={RaUsuario}
           className="w-[80%] bg-[white] border border-gray-300 rounded-lg text-black placeholder-gray-700 px-3 py-1.5 text-base focus:outline-none"
-          onChange={(e) => setUsuario(e.target.value)}
+          onChange={(e) => setRaUsuario(Number(e.target.value))}
         />
 
         <input
           type={mostrarSenha ? "text" : "password"}
-          value={Senha}
-          onChange={(e) => setSenha(e.target.value)}
+          value={SenhaUsuario}
+          onChange={(e) => setSenhaUsuario(e.target.value)}
           className="w-[80%] bg-[white] border border-gray-300 rounded-lg text-black placeholder-gray-700 px-3 py-1.5 text-base focus:outline-none"
           placeholder="Senha"
         />
@@ -38,3 +48,4 @@ export default function CustomInputs() {
   );
 };
 
+export default CustomInputs;

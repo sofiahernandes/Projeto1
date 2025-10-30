@@ -77,7 +77,7 @@ model Alimentos {
   PontuacaoAlimento Int 
 }
 
-model contribuicao_alimento{
+model Contribuicao_Alimento{
   IdContribuicaoAlimento  Int @id @default(autoincrement())
   IdAlimento Int?
   IdContribuicaoAlimenticia Int?
