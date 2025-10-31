@@ -43,7 +43,7 @@ input[type="file"]::file-selector-button {
 }
 
 button:hover {
-  color: #ffffff;
+  color: #66d3bb;
 }
 
 /* ===========================
@@ -99,7 +99,7 @@ button:hover {
   margin-bottom: 1rem;
 }
 
-/* botões do side menu e do nav mobile */
+/* botoes do side menu e do nav mobile 
 .donation-menu-button {
   margin: 5px;
   padding: 8px;
@@ -117,7 +117,7 @@ button:hover {
   color: #1d7a66;
   border: 1px solid #1d7a66;
 }
-
+*/
 /* menu do mobile, fica escondido se for desktop */
 .mobile-nav {
   display: none;
@@ -164,6 +164,13 @@ button:hover {
     color: white;
     box-shadow: 0 -2px 8px rgba(24, 23, 23, 0.2);
     z-index: 1000;
+    margin: auto;
+    flex-grow: 1;
+    justify-content: space-around;
+  }
+  .donation-menu-button {
+    flex-grow: 1;
+    height: full;
   }
 }
 

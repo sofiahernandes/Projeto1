@@ -61,31 +61,34 @@ input[type="number"] {
 
 
 :root {
-  --background: #ffffff;
-  --foreground: var(#1f1f1f);
+  --primary: #254128; /* forest green */
+  --secondary: #cd6184; /* pink accent */
+  --terciary: #fad8db;
+  --muted: #fffefb; /* beige neutral */
+  --background: #fffefb; /* blush base background */
+  --foreground: #242424; /* dark text for contrast */
 
+  /* Surfaces */
   --card: #ffffff;
   --popover: #ffffff;
 
-  --primary: #1d7a66;
-  --secondary: #2a4b47;
-
-  --muted: #f5f5f5;
-  --muted-foreground: #555555;
-
+  /* Text & subtle elements */
+  --muted-foreground: #4b4b4b;
   --accent: var(--secondary);
 
-  --destructive: #dc2626;
+  /* Feedback colors */
+  --destructive: #c53030; /* slightly softened red for harmony */
 
-  --chart-1: var(--color-teal-800);
-  --chart-2: var(--color-teal-900);
-  --chart-3: #4b5563;
-  --chart-4: #79a85e;
-  --chart-5: #f59e0b;
+  /* Charts / data visuals – derived from main palette */
+  --chart-1: var(--primary);
+  --chart-2: #195b41; /* lighter green for layering */
+  --chart-3: var(--secondary);
+  --chart-4: var(--muted);
+  --chart-5: #a7b96e; /* soft complementary olive tone */
 
+  /* Common tokens */
   --radius: 1rem;
-
-  --button-hover: #354f52;
+  --button-hover: #195b41;
 }
 
 @font-face {
@@ -151,3 +154,4 @@ input[type="number"] {
 
 
 @import "../styles/new-contribution.css";
+@import "../styles/fonts.css";

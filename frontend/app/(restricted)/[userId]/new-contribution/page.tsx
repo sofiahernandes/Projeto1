@@ -16,21 +16,15 @@ export default function Donations() {
   const userId = Number((params as Record<string, string | string[] | undefined>)?.userId);
   const [activeTab, setActiveTab] = useState<'finance' | 'food'>('finance');
 
-  // Financioal
+  const [tipoDoacao, setTipoDoacao] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
-  const [idTime, setIdTime] = useState<number | undefined>(userId);
+  const [raUsuario, setRaUsuario] = useState<number | undefined>(userId);
   const [quantidade, setQuantidade] = useState<number | undefined>(undefined);
-  const [metaF, setMetaF] = useState<number | undefined>(undefined);
+  const [meta, setMeta] = useState<number | undefined>(undefined);
   const [gastos, setGastos] = useState<number | undefined>(undefined);
-  const [valorarrecadado, setValorArrecadado] = useState<number | undefined>(undefined);
   const [comprovante, setComprovante] = useState("");
-  const [nomeEventoF, setNomeEventoF] = useState("");
-
-  // Food
-  const [Kg, setKg] = useState<number | undefined>(undefined);
-  const [Unidade, setUnidade] = useState<number | undefined>(undefined);
-  const [nomeEventoA, setNomeEventoA] = useState("");
-  const [metaA, setMetaA] = useState<number | undefined>(undefined);
+  const [fonte, setFonte] = useState("");
+  const [pesoUnidade, setPesoUnidade] = useState<number | undefined>(undefined);
   const [alimentosFromChild, setAlimentosFromChild] = useState<Alimento[]>([]);
   const [totaisFromChild, setTotaisFromChild] = useState<{ kgTotal: number; pontos: number }>({ kgTotal: 0, pontos: 0 });
   const fmt = (n: number) => n.toLocaleString("pt-BR", { maximumFractionDigits: 2 });
@@ -95,13 +89,13 @@ export default function Donations() {
   <div className={`page-container ${menuOpen ? "shifted" : ""}`}>
     {/* Menu lateral desktop/tablet */}
     <MenuDesktop
-      menuOpen={menuOpen}
-      idTime={idTime!}
-      setMenuOpen={(arg: SetStateAction<boolean>) => setMenuOpen(arg)}
+       menuOpen={menuOpen}
+       raUsuario={raUsuario!}
+       setMenuOpen={(arg: SetStateAction<boolean>) => setMenuOpen(arg)}
     />
 
     {/* Menu rodapé mobile */}
-    <MenuMobile idTime={idTime!} />
+    <MenuMobile raUsuario={raUsuario!} />
 
 
     <main className="flex justify-center md:justify-center items-stretch content-start min-h-screen w-full px-9 md: mt-10"> 
@@ -119,20 +113,21 @@ export default function Donations() {
           </h2>
 
           <DonationsForm
-            nomeEventoF={nomeEventoF}
-            setNomeEventoF={setNomeEventoF}
-            metaF={metaF}
-            setMetaF={setMetaF}
-            gastos={gastos!}
-            valorarrecadado={valorarrecadado}
-            setValorArrecadado={setValorArrecadado}
+            tipoDoacao={tipoDoacao}
+            setTipoDoacao={setTipoDoacao}
+            fonte={fonte}
+            setFonte={setFonte}
+            meta={meta}
+            setMeta={setMeta}
+            gastos={gastos}
             setGastos={setGastos}
+            quantidade={quantidade}
+            setQuantidade={setQuantidade}
             comprovante={comprovante}
             setComprovante={setComprovante}
           />
         </div>
 
-        {/* CARD ALIMENTOS */}
         <div
           className={
             (activeTab === 'food' ? "block" : "hidden") +  
@@ -145,26 +140,28 @@ export default function Donations() {
             Alimentícias
           </h2>
 
-          {/* WRAPPER rolável */}
+ 
           <div className="min-h-0 flex-1 md:flex-1">
             <div className="overflow-x-hidden no-scrollbar md:h-full md:overflow-y-auto h-[380px] overflow-y-auto rounded-lg">
               <FoodDonations
-                Unidade={Unidade ?? 0}
-                setUnidade={setUnidade}
-                Kg={Kg ?? 0}
-                setKg={setKg}
-                metaA={metaA!}
-                setMetaA={setMetaA}
-                nomeEventoA={nomeEventoA}
-                setNomeEventoA={setNomeEventoA}
+                raUsuario={raUsuario}
+                setRaUsuario={setRaUsuario}
+                tipoDoacao={tipoDoacao}
+                setTipoDoacao={setTipoDoacao}
+                pesoUnidade={pesoUnidade ?? 0}
+                setPesoUnidade={setPesoUnidade}
+                quantidade={quantidade ?? 0}
+                setQuantidade={setQuantidade} 
+                meta={meta}
+                setMeta={setMeta}
+                fonte={fonte}
+                setFonte={setFonte}
                 onAlimentosChange={setAlimentosFromChild}
                 onTotaisChange={setTotaisFromChild}
               />
             </div>
           </div>
-
-
-                {/* Rodapé do card */}
+          
                 <div className="mt-4 flex items-center gap-3 justify-end">
                   <div className="bg-[#DCA4A9] border border-transparent text-sm rounded-lg py-2 px-16">
                     Pontuação:{" "}

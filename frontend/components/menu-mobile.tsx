@@ -5,26 +5,30 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 
+import userIcon from "@/assets/user.png";
+import addIcon from "@/assets/add.png";
+import newspaperIcon from "@/assets/newspaper.png";
+
 interface Properties {
-  idTime: number;
+  raUsuario: number;
 }
 
-export default function MenuMobile({ idTime }: Properties) {
+export default function MenuMobile({ raUsuario }: Properties) {
   const pathname = usePathname();
   const router = useRouter();
 
   
-  const homeHref = `/(restricted)/${idTime}/home`;
-  const createHref = `/${idTime}/new-contribution`;
-  const historyHref = `/(restricted)/${idTime}/team-history`;
+  const homeHref = `/${raUsuario}/team-history;
+  const createHref = `/${raUsuario}/new-contribution`;
+  const historyHref = `/${raUsuario}/user-profile`;
 
   const isActive = (href: string) => pathname?.startsWith(href);
   
   useEffect(() => {
-    if (idTime === undefined || idTime === null || Number.isNaN(Number(idTime))) {
-      console.warn("MenuMobile: idTime inválido → verifique de onde está vindo esse valor.", { idTime, pathname });
+    if (raUsuario === undefined || raUsuario === null || Number.isNaN(Number(raUsuario))) {
+      console.warn("MenuMobile: raUsuario inválido → verifique de onde está vindo esse valor.", { raUsuario, pathname });
     }
-  }, [idTime, pathname]);
+  }, [raUsuario, pathname]);
 
 
   const onCreateClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
@@ -50,7 +54,6 @@ export default function MenuMobile({ idTime }: Properties) {
 
   return (
     <>
-      {/* === MOBILE: rodapé inteiro verde === */}
       <nav
         className="
           md:hidden

@@ -4,14 +4,15 @@ const prisma = new PrismaClient();
 
 async function tryConnection() {
   try {
-    
     const newUser = await prisma.usuario.create({
-      data: {  RaUsuario: 25027757,
-      NomeUsuario:"",
-      EmailUsuario:"",
-      SenhaUsuario:"",
-      TelefoneUsuario:"",
-      Turma:"",},
+      data: {
+        RaUsuario: 0, //inserir algo para teste,
+        NomeUsuario: "",
+        EmailUsuario: "",
+        SenhaUsuario: "",
+        TelefoneUsuario: "",
+        Turma: "",
+      },
     });
 
     console.log("Usuário criado:", newUser);
