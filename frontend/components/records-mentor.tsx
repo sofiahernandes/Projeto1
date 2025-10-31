@@ -12,6 +12,10 @@ interface ContributionData {
   Comprovante?: string;
   IdContribuicao: number;
   DataContribuicao: string;
+  NomeAlimento?: string;
+  PontuacaoAlimento: number;
+  PesoUnidade: number;
+  uuid: string;
 }
 
 interface RecordsMentorProps {
@@ -33,7 +37,7 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
 
   return (
     <Modal isActive={isOpen} onClose={toggleModal}>
-      <div className="overscroll-none overflow-hidden  drop-shadow-2xl items-center relative bg-[#FFFDF5] rounded-2xl ">
+      <div className="overflow-y-scroll max-h-300  drop-shadow-2xl items-center relative bg-[#FFFDF5] rounded-2xl ">
         <div className="flex max-w-[95vw] flex-col gap-5 z-10 px-10 py-8 w-90 text-left">
           <div className="">
             <div>
@@ -82,6 +86,26 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
                     </div>
                   )}
 
+{data.NomeAlimento && (
+                    <div className="flex justify-between">
+                      <div>
+                        <p className="text-sm text-gray-600"> Alimentos: </p>
+                        <p className="font-semibold ">{data.NomeAlimento} </p>
+                      </div>
+
+                      <div>
+                        <p className="text-sm text-gray-600">
+                          {" "}
+                          Peso unitário:{" "}
+                        </p>
+                        <p className="font-semibold ">
+                          {" "}
+                          {data.PesoUnidade} kg/g
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  
                   {data.Comprovante && (
                     <div>
                       <p className="text-sm text-gray-600 mb-2">Comprovantes</p>

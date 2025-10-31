@@ -106,7 +106,6 @@ export function DataTable<TData, TValue>({
                         cell.getContext()
                       )}
                     </TableCell>
-                    //{/* key={(row.original as Contribution).uuid} */}
                   ))}
                 </TableRow>
               ))

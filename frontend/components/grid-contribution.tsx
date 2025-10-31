@@ -72,12 +72,11 @@ let active = true;
                   : undefined,
               Fonte: r.Fonte ?? "",
               Comprovante: r.Comprovante ?? undefined,
-              IdContribuicao: String(r.IdContribuicao),
+              IdContribuicao: Number(r.IdContribuicao),
               DataContribuicao: String(r.DataContribuicao ?? ""),
               NomeAlimento: r.NomeAlimento ?? undefined,
-              PesoTotal: r.PesoTotal != null ? Number(r.PesoTotal) : undefined,
-              PontuacaoTotal:
-                r.PontuacaoTotal != null ? Number(r.PontuacaoTotal) : undefined,
+              PontuacaoAlimento: r.PontuacaoAlimento ?? undefined,
+              PesoUnidade: r.PesoUnidade ?? undefined,
               uuid: uuidv4(),
             }))
           : [];
@@ -100,28 +99,6 @@ let active = true;
       controller.abort();
     };
   }, [userId, refreshKey]);
-
-
-  //   async function fetchContributions() {
-  //     try {
-  //       setLoading(true);
-  //       setError(null);
-
-  //       const res = await fetch(
-  //         `http://localhost:3001/api/contributions/${userId}`,
-  //         { cache: "no-store", signal: controller.signal }
-  //       );
-
-  //       if (!res.ok) throw new Error("Erro ao buscar contribuições");
-  //       const data = await res.json();
-
-  //       setContributions(data);
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   }
-  //   fetchContributions();
-  // }, [userId, refreshKey]);
 
   if (contributions.length === 0) {
     return (

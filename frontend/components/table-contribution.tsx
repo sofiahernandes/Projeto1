@@ -3,8 +3,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 // Se sua versão do lucide-react não tem BoxIcon, use Box:
+
+import { v4 as uuidv4 } from "uuid";
+
 import { Box as BoxIcon } from "lucide-react";
-import { v4 as uuidv4 } from 'uuid';
+
 import { DataTable } from "@/components/contribution-table/data-table";
 import {
   makeContributionColumns,
@@ -39,7 +42,7 @@ export default function RenderContributionTable({
   const columns = useMemo(
     () =>
       makeContributionColumns({
-        onView: (c) => onSelect?.(c)
+        onView: (c) => onSelect?.(c),
       }),
     [onSelect]
   );
@@ -55,7 +58,6 @@ export default function RenderContributionTable({
         const res = await fetch(
           `http://localhost:3001/api/contributions/${userId}`,
           { cache: "no-store", signal: controller.signal }
-          
         );
 
         if (!res.ok) throw new Error("Erro ao buscar contribuições");
@@ -84,17 +86,15 @@ export default function RenderContributionTable({
                   : undefined,
               Fonte: r.Fonte ?? "",
               Comprovante: r.Comprovante ?? undefined,
-              IdContribuicao: String(r.IdContribuicao),
+              IdContribuicao: Number(r.IdContribuicao),
               DataContribuicao: String(r.DataContribuicao ?? ""),
               NomeAlimento: r.NomeAlimento ?? undefined,
-              PesoTotal: r.PesoTotal != null ? Number(r.PesoTotal) : undefined,
-              PontuacaoTotal:
-                r.PontuacaoTotal != null ? Number(r.PontuacaoTotal) : undefined,
+              PontuacaoAlimento: r.PontuacaoAlimento ?? undefined,
+              PesoUnidade: r.PesoUnidade ?? undefined,
               uuid: uuidv4(),
-
-              }))
+            }))
           : [];
-         console.log(raw);
+        console.log(raw);
         setContributions(data);
       } catch (err: any) {
         if (err?.name === "AbortError") {
@@ -105,7 +105,7 @@ export default function RenderContributionTable({
         if (active) setLoading(false);
       }
     }
-    
+
     fetchContributions();
 
     return () => {
@@ -123,15 +123,6 @@ export default function RenderContributionTable({
       </div>
     );
   }
-
-  if (error) {
-    return (
-      <div className="p-4">
-        <div className="text-sm text-red-600">Erro: {error}</div>
-      </div>
-    );
-  }
-
   if (!contributions.length) {
     return (
       <div className="col-start-2 border rounded-xl border-gray-200 shadow-xl w-auto max-w-100 mx-auto">
@@ -154,11 +145,10 @@ export default function RenderContributionTable({
 
   return (
     <div className="p-2.5">
-
-    <DataTable<Contribution, unknown>
-      columns={columns}
-      data={contributions}
-    />
+      <DataTable<Contribution, unknown>
+        columns={columns}
+        data={contributions}
+      />
     </div>
   );
 }
