@@ -1,6 +1,5 @@
 import { prisma } from "../../prisma/lib/prisma.js";
 
-
 const teamsController = {
   //GET http://localhost:3001/api/teams
   allTeams: async (_, res) => {
@@ -49,6 +48,7 @@ const teamsController = {
   //POST http://localhost:3001/api/createTeam
   createTeam: async (req, res) => {
     const {
+      IdMentor,
       NomeTime,
       RaUsuario,
       RaAluno2,
@@ -80,7 +80,13 @@ const teamsController = {
     try {
       const time = await prisma.time.create({
         data: {
-          NomeTime,
+          NomeTime: NomeTime,
+          IdMentor: IdMentor,
+        },
+      });
+      const timeUsuario = await prisma.time_Usuario.create({
+        data: {
+          IdTime: time.IdTime,
           RaUsuario,
           RaAluno2,
           RaAluno3,
@@ -93,7 +99,7 @@ const teamsController = {
           RaAluno10,
         },
       });
-      res.json(time);
+      res.json({sucess: true, time, timeUsuario});
     } catch (err) {
       res
         .status(500)
