@@ -38,18 +38,18 @@ export async function fetchData(userId: number): Promise<{ team: Team; user: Use
       });
 
       if (!userRes.ok || !teamRes.ok) {
-        const err = await res
+        const err = userRes && teamRes
           .json()
           .catch(() => ({ error: "Erro desconhecido" }));
         console.error("Erro da API:", err);
-        alert("Erro: " + (err.error || `Status ${res.status}`));
+        alert("Erro: " + (err));
         return;
       }
       
       const Team = await teamRes.json();
       const User = await userRes.json();
 
-      return { User, Team };
+      return { user: User, team: Team };
 
     } catch (error) {
       console.error("Erro ao encontrar usuário:", error);

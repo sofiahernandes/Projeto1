@@ -89,7 +89,7 @@ export default function TabsLogin() {
       }
 
       const Mentor = await res.json();
-      router.push(`/$/mentor-history/${Mentor.SenhaMentor}`);
+      router.push(`/$/mentor-history?teamId=${Mentor.SenhaMentor}`);
     } catch (error) {
       console.error("Erro ao logar mentor:", error);
     }
@@ -129,7 +129,7 @@ export default function TabsLogin() {
       }
 
       const Admin = await res.json();
-      router.push(`/$/mentor-history/${Admin.SenhaMentor}`);
+      router.push(`/$/allHistory?admin=true`);
     } catch (error) {
       console.error("Erro ao logar admin:", error);
     }
