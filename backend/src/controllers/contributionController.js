@@ -98,10 +98,11 @@ const contributionController = {
       Fonte,
       Comprovante,
       PesoUnidade,  // Only for food donations
+      IdAlimento,   // Only for food donations
     } = req.body;
 
     // Validate required fields
-    if (!RaUsuario || !TipoDoacao || !Quantidade || !Gastos || !Fonte || !Comprovante) {
+    if (!RaUsuario || !TipoDoacao || !Quantidade || !Fonte || !Comprovante) {
       return res.status(400).json({ error: "Preencha todos os campos obrigatórios." });
     }
 
