@@ -1,7 +1,6 @@
 import { prisma } from "../../prisma/lib/prisma.js";
 import bcrypt from "bcrypt";
 import { createToken, denyToken } from "../services/tokenServices.js";
-import { error } from "console";
 
 const sanitizeUser = (u) => ({
   RaUsuario: u.RaUsuario,
@@ -54,6 +53,7 @@ const authController = {
           TelefoneUsuario,
         },
       });
+
       res.status(201).json(sanitizeUser(newUser));
     } catch (err) {
       const isDuplicateError =
@@ -74,7 +74,7 @@ const authController = {
     }
   },
 
-  //POST http://localhost:3001/api/user/login
+  //POST http://localhost:3001/api/register/login
   loginUser: async (req, res) => {
     const { RaUsuario, SenhaUsuario } = req.body;
 
@@ -91,19 +91,16 @@ const authController = {
         return res.status(401).json({ error: "Credenciais inválidas" });
       }
 
+      const senhaValida = await bcrypt.compare(
+        SenhaUsuario,
+        usuario.SenhaUsuario
+      );
 
-      //resolver essa parte do bcrypt para o login
-      // const senhaValida = await bcrypt.compare(
-      //   String(SenhaUsuario),
-      //   String(usuario.SenhaUsuario)
-      // );
-
-      // if (!senhaValida) {
-      //   return res
-      //     .status(401)
-      //     .json({ error: "Senha errada, tente novamente." });
-      // }
-
+      if (!senhaValida) {
+        return res
+          .status(401)
+          .json({ error: "Senha incorreta, tente novamente." });
+      }
       const { token } = createToken({ RaUsuario: usuario.RaUsuario });
 
       res.json({ token, usuario: sanitizeUser(usuario) });
@@ -122,7 +119,7 @@ const authController = {
       return res.status(400).json({ error: "Coloque os campos corretamente" });
     }
     try {
-      const hashedPassword = await bcrypt.hash(newPassword, 80);
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
       await prisma.usuario.update({
         where: { RaUsuario: Number(rausuario) },
         data: { SenhaUsuario: hashedPassword },

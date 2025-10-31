@@ -18,6 +18,12 @@ model Time {
   IdTime    Int    @id @default(autoincrement())
   NomeTime  String @db.VarChar(250)
   IdMentor  Int?
+  @@index([IdMentor], map: "IdMentor")
+}
+
+model Time_Usuario{
+  IdTimeUsuario Int @id @default(autoincrement())
+  IdTime Int?
   RaUsuario Int? 
   RaAluno2 Int 
   RaAluno3 Int 
@@ -28,8 +34,7 @@ model Time {
   RaAluno8 Int
   RaAluno9 Int?
   RaAluno10 Int?
-
-  @@index([IdMentor], map: "IdMentor")
+  @@index([IdTime], map: "IdTime")
   @@index([RaUsuario], map: "RaUsuario")
 }
 
@@ -45,10 +50,10 @@ model Usuario {
 model Contribuicao_Financeira {
   IdContribuicaoFinanceira   Int       @id @default(autoincrement())
   DataContribuicao DateTime? @default(now()) @db.Timestamp(0)
-  Quantidade       Int
-  TipoDoacao       String    @db.VarChar(10)
-  Gastos           Int
-  Meta             Int?
+  Quantidade       Decimal
+  TipoContribuicao       String    @db.VarChar(20)
+  Gastos           Decimal
+  Meta             Decimal?
   Fonte            String?   @db.VarChar(200)
   Comprovante      String?   @db.VarChar(200)
   RaUsuario        Int?
@@ -60,10 +65,11 @@ model Contribuicao_Financeira {
 model Contribuicao_Alimenticia {
   IdContribuicaoAlimenticia   Int       @id @default(autoincrement())
   DataContribuicao DateTime? @default(now()) @db.Timestamp(0)
-  Quantidade       Int
+  TipoContribuicao String @db.VarChar(20)
+  Quantidade       Decimal
   PesoUnidade      Float   
-  Gastos           Int
-  Meta             Int?
+  Gastos           Decimal
+  Meta             Decimal?
   Fonte            String?   @db.VarChar(200)
   Comprovante      String?   @db.VarChar(200)
   RaUsuario        Int?
@@ -71,13 +77,13 @@ model Contribuicao_Alimenticia {
   @@index([RaUsuario], map: "RaUsuario")
 }
 
-model Alimentos {
-  IdAlimento Int @id 
+model Alimento {
+  IdAlimento Int @id @default(autoincrement())
   NomeAlimento String @db.VarChar(100)
   PontuacaoAlimento Int 
 }
 
-model contribuicao_alimento{
+model Contribuicao_Alimento{
   IdContribuicaoAlimento  Int @id @default(autoincrement())
   IdAlimento Int?
   IdContribuicaoAlimenticia Int?
