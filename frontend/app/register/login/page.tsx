@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import TabsLogin from "@/components/tabs-login";
 import BackHome from "@/components/back-home";
 
@@ -29,18 +28,15 @@ export default function Login() {
               Cadastre-se
             </Link>
             <p className="text-center text-sm max-w-[220px]">
-              Registre-se com seus dados institucionais para utilizar os
-              recursos do site.
+              Registre-se com seus dados institucionais para utilizar os recursos do site.
             </p>
           </section>
 
           <section className="flex flex-col justify-center md:w-1/2">
-            <TabsLogin 
-            />
-
-        </section>
+            <TabsLogin />
+          </section>
+        </div>
       </div>
     </div>
-   </div>
   );
 }

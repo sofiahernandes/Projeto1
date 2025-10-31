@@ -73,7 +73,9 @@ model Contribuicao_Alimenticia {
   Fonte            String?   @db.VarChar(200)
   Comprovante      String?   @db.VarChar(200)
   RaUsuario        Int?
+  IdAlimento       Int?
 
+  @@index([IdAlimento], map:"IdAlimento")
   @@index([RaUsuario], map: "RaUsuario")
 }
 

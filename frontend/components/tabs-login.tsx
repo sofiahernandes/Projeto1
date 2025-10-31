@@ -13,10 +13,11 @@ export default function TabsLogin() {
   const [RaUsuario, setRaUsuario] = React.useState(0);
   const [SenhaUsuario, setSenhaUsuario] = React.useState("");
 
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  // Login Student
   const handleSubmitAluno = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     if (!backendUrl) {
       console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
@@ -52,15 +53,16 @@ export default function TabsLogin() {
       const User = await res.json();
       console.log("Usuário Logado:", User);
 
+      // Redirect to user page
       router.push(`/$/new-contribution?userId=${User.RaUsuario}`);
     } catch (error) {
       console.error("Erro ao logar usuário:", error);
     }
   };
 
+  // Login Mentor
   const handleSubmitMentor = async (e: React.FormEvent) => {
     e.preventDefault();
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     if (!backendUrl) {
       console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
@@ -99,7 +101,7 @@ export default function TabsLogin() {
       alert("Usuário Logado com sucesso!");
 
       router.push("");
-      //direciona para a pagina pos login do mentor
+      // Rediect to mentor page
     } catch (error) {
       console.error("Erro ao logar usuário:", error);
     }
@@ -157,10 +159,11 @@ export default function TabsLogin() {
             className="flex flex-col gap-4 w-full"
           >
             <MentorInputs
-            EmailMentor={EmailMentor}
-            setEmailMentor={setEmailMentor}
-            SenhaMentor={SenhaMentor}
-            setSenhaMentor={setSenhaMentor}/>
+              EmailMentor={EmailMentor}
+              setEmailMentor={setEmailMentor}
+              SenhaMentor={SenhaMentor}
+              setSenhaMentor={setSenhaMentor}
+            />
             <button
               type="submit"
               className="border-transparent bg-secondary hover:text-white! text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-secondary/80 rounded-lg"
@@ -179,7 +182,6 @@ export default function TabsLogin() {
             onSubmit={handleSubmitAdmin}
             className="flex flex-col gap-4 w-full"
           >
-           
             <button
               type="submit"
               className="border-transparent bg-secondary hover:text-white! text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-secondary/80 rounded-lg"
