@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { BoxIcon } from "lucide-react"
+import { HandHeart } from "lucide-react"
 import {
   Empty,
   EmptyContent,
@@ -107,7 +107,7 @@ let active = true;
         <EmptyHeader>
           <EmptyMedia variant="icon"> 
             {/* mudar o icone  pra maozinha vazia*/}
-            <BoxIcon/>
+            <HandHeart size={44} strokeWidth={1.2} />
           </EmptyMedia>
           <EmptyTitle>Nenhuma contribuição por enquanto!</EmptyTitle>
           <EmptyDescription>

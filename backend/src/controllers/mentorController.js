@@ -55,21 +55,83 @@ const mentorController = {
   },
   //POST http://localhost:3001/api/createMentor
   createMentor: async (req, res) => {
-    const { EmailMentor, IsAdmin, SenhaMentor } = req.body;
+    const { EmailMentor, RaUsuario } = req.body;
 
-    if (!EmailMentor || !SenhaMentor || IsAdmin === undefined) {
+    if (!EmailMentor || !RaUsuario) {
       return res.status(400).json("Preencha todos os campos");
     }
 
     try {
-      const mentor = await prisma.mentor.create({
-        data: { EmailMentor, IsAdmin: IsAdmin ?? false, SenhaMentor },
+      const existing = await prisma.mentor.findUnique({
+        where: { EmailMentor },
       });
+
+      if (existing) {
+        return res.status(409).json({
+          error: "Mentor já cadastrado",
+          IdMentor: existing.IdMentor,
+        });
+      }
+
+      const mentor = await prisma.mentor.create({
+        data: {
+          EmailMentor,
+          SenhaMentor: RaUsuario.toString(),
+          IsAdmin: false,
+        },
+      });
+      //para atualizar a tabela de time, e adicionar no time, o id do mentor (que é o que falta quando o time é cadastrado)
+      await prisma.time.updateMany({
+        where: { RaUsuario },
+        data: { IdMentor: mentor.IdMentor },
+      });
+
       res.json(mentor);
     } catch (err) {
       res
         .status(500)
         .json({ error: "Erro ao cadastrar mentor", details: err.message });
+    }
+  },
+
+  //login do mentor, porque não tinha nenhuma rota pra ele logar!!
+
+  loginMentor: async (req, res) => {
+    const { EmailMentor, SenhaMentor } = req.body;
+
+    if (!EmailMentor || !SenhaMentor) {
+      return res.status(400).json({ error: "Coloque os campos corretamente" });
+    }
+
+    try {
+      const mentor = await prisma.mentor.findUnique({
+        where: { EmailMentor },
+      });
+
+      if (!mentor || mentor.SenhaMentor !== SenhaMentor) {
+        return res
+          .status(401)
+          .json({ error: "Mentor não encontrado ou senha incorreta" });
+      }
+//para procurar no db, na tabela time, o time que esse mentor está alocado (o id dele)
+      const time = await prisma.time.findFirst({
+        where: { IdMentor: mentor.IdMentor },
+      });
+
+      if (!time) {
+        return res
+          .status(404)
+          .json({ error: "Time não encontrado para este mentor" });
+      }
+
+      res.json({ RaAlunoCriador: mentor.SenhaMentor, IdTime: time.IdTime });
+    } catch (err) {
+      res
+        .status(500)
+        .json({
+          error: "Erro ao fazer o login do mentor",
+          details: err.message,
+        });
     }
   },
 

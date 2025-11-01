@@ -27,12 +27,13 @@ r.post("/createMentor", mentorController.createMentor);
 r.get("/mentors", mentorController.allMentors);
 r.get("/mentor/id/:IdMentor", mentorController.mentorById);
 r.get("/mentor/email/:EmailMentor", mentorController.mentorByEmail);
+r.post("/loginMentor", mentorController.loginMentor);
 r.delete("/deleteMentor/:EmailMentor", mentorController.deleteMentor);
 
 r.post("/createTeam", teamController.createTeam);
 r.get("/teams", teamController.allTeams);
 r.get("/team/:IdTime", teamController.teamByID);
-r.get("/team/:RaUsuario", teamController.teamByUserRA);
+r.get("/userTeam/:RaUsuario", teamController.teamByUserRA);
 r.delete("/deleteTeam/:IdTime", teamController.deleteTeam);
 
 r.post("/register", userController.createUser);

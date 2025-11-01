@@ -52,7 +52,8 @@ export const makeContributionColumns = (
       );
     },
     cell: ({ row }) => (
-      <span className="font-medium">{row.original.Fonte ?? "-"}</span>
+      <span className="font-medium w-[220px] block truncate">
+        {row.original.Fonte ?? "-"}</span>
     ),
   },
   {
@@ -104,7 +105,7 @@ export const makeContributionColumns = (
     cell: ({ row }) => {
       const q = row.original.Quantidade;
       return (
-        <span>
+        <span className="w-[80px] block truncate">
           {Number.isFinite(q) ? new Intl.NumberFormat("pt-BR").format(q) : "-"}
         </span>
       );
@@ -131,7 +132,8 @@ export const makeContributionColumns = (
   cell: ({ getValue, row }) => {
     const v = getValue<number | null>();
     return row.original.TipoDoacao === "Alimenticia" && v != null
-      ? <span>{new Intl.NumberFormat("pt-BR").format(v)} kg</span>
+      ? <span className="w-[80px] block truncate">
+        {new Intl.NumberFormat("pt-BR").format(v)} kg</span>
       : <span> - </span>;
   },
 },
@@ -157,7 +159,8 @@ export const makeContributionColumns = (
   cell: ({ getValue, row }) => {
     const v = getValue<number | null>();
     return row.original.TipoDoacao === "Alimenticia" && v != null
-      ? <span>{new Intl.NumberFormat("pt-BR").format(v)}</span>
+      ? <span className="w-[60px] block truncate">
+        {new Intl.NumberFormat("pt-BR").format(v)}</span>
       : <span> - </span>;
   },
 },

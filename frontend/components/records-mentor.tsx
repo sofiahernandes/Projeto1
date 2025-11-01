@@ -86,7 +86,7 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
                     </div>
                   )}
 
-{data.NomeAlimento && (
+                  {data.NomeAlimento && (
                     <div className="flex justify-between">
                       <div>
                         <p className="text-sm text-gray-600"> Alimentos: </p>
@@ -95,11 +95,9 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
 
                       <div>
                         <p className="text-sm text-gray-600">
-                          {" "}
-                          Peso unitário:{" "}
+                          Peso unitário:
                         </p>
                         <p className="font-semibold ">
-                          {" "}
                           {data.PesoUnidade} kg/g
                         </p>
                       </div>

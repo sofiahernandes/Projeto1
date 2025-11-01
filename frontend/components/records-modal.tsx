@@ -75,7 +75,8 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
                       <p className="font-semibold">{typeof data.Meta === "number" &&
                         Number.isFinite(data.Meta)
                           ? new Intl.NumberFormat("pt-BR").format(data.Meta)
-                          : "-"}</p>
+                          : "-"}
+                        </p>
                     </div>
                   )}
 
@@ -95,11 +96,9 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
 
                       <div>
                         <p className="text-sm text-gray-600">
-                          {" "}
-                          Peso unitário:{" "}
+                          Peso unitário:
                         </p>
                         <p className="font-semibold ">
-                          {" "}
                           {data.PesoUnidade} kg/g
                         </p>
                       </div>
@@ -129,7 +128,6 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
                 </div>
               </div>
             </div>
-
             <DeleteContribution
               IdContribuicao={data.IdContribuicao}
               onDeleted={() => {
@@ -143,5 +141,4 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
     </Modal>
   );
 };
-
 export default RecordsModal;

@@ -2,12 +2,8 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-// Se sua versão do lucide-react não tem BoxIcon, use Box:
-
 import { v4 as uuidv4 } from "uuid";
-
-import { Box as BoxIcon } from "lucide-react";
-
+import { HandHeart as HandHeart } from "lucide-react";
 import { DataTable } from "@/components/contribution-table/data-table";
 import {
   makeContributionColumns,
@@ -129,7 +125,7 @@ export default function RenderContributionTable({
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
-              <BoxIcon />
+              <HandHeart size={44} strokeWidth={1.2} />
             </EmptyMedia>
             <EmptyTitle>Nenhuma contribuição por enquanto!</EmptyTitle>
             <EmptyDescription>
