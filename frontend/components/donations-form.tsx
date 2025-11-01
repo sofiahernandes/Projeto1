@@ -22,8 +22,6 @@ interface Properties {
 export default function DonationsForm({
   raUsuario,
   setRaUsuario,
-  tipoDoacao,
-  setTipoDoacao,
   quantidade,
   setQuantidade,
   fonte,
@@ -36,17 +34,7 @@ export default function DonationsForm({
   setComprovante,
   
 }: Properties) {
-  const [loading, setLoading] = useState(false);
-  const [ok, setOk] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Estados locais como string para inputs numéricos (digitação mais suave)
-  const [metaStr, setMetaStr] = useState(metaF != null ? String(metaF) : "");
-  const [gastosStr, setGastosStr] = useState(gastos != null ? String(gastos) : "");
-  const [valorStr, setValorStr] = useState(
-    valorarrecadado != null ? String(valorarrecadado) : ""
-  );
-
+const [tipoDoacao, setTipoDoacao] = useState<"Financeira" | "Alimenticia">("Financeira");
   // helper para converter string -> número (aceita vazio)
   const toNum = (s: string): number | undefined => {
     const trimmed = s.trim();
@@ -101,7 +89,7 @@ export default function DonationsForm({
         className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
         type="text"
         placeholder="Ex: Instituto Alma"
-        value={Fonte}                 
+        value={fonte}                 
         onChange={(e) => setFonte(e.target.value)} 
       />
 
@@ -111,7 +99,7 @@ export default function DonationsForm({
         type="number"
         placeholder="Ex: R$100"
         value={meta}                    
-        onChange={(e) => setMeta(e.target.value)}
+        onChange={(e) => setMeta(toNum(e.target.value))}
         inputMode="decimal"
       />
 
@@ -121,7 +109,7 @@ export default function DonationsForm({
         type="number"
         placeholder="Ex: R$100"
         value={gastos}                   
-        onChange={(e) => setGastos(e.target.value)}
+        onChange={(e) => setGastos(toNum(e.target.value))}
         inputMode="decimal"
       />
 
@@ -131,10 +119,10 @@ export default function DonationsForm({
         type="number"
         placeholder="Ex: R$1000"
         value={quantidade}                    
-        onChange={(e) => setQuantidade(e.target.value)}
+        onChange={(e) => setQuantidade(toNum(e.target.value))}
         inputMode="decimal"
       />
-
+ 
       <label>Comprovante (link do arquivo)</label>
       <input
         className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
@@ -147,6 +135,7 @@ export default function DonationsForm({
       <button
         type="submit"
         disabled={loading}
+        onClick={() => setTipoDoacao("Financeira")}
         className="mt-2 w-fit bottom-10 right-14 px-10 py-2 rounded-lg bg-[#B27477] houver: bg-[#9B5B60] text-white disabled:opacity-50"
       >
         {loading ? "Casdastrando..." : "Cadastrar"}

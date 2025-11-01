@@ -117,11 +117,11 @@ export default function Donations() {
             setTipoDoacao={setTipoDoacao}
             fonte={fonte}
             setFonte={setFonte}
-            meta={meta}
+            meta={meta ?? 0}
             setMeta={setMeta}
-            gastos={gastos}
+            gastos={gastos ?? 0}
             setGastos={setGastos}
-            quantidade={quantidade}
+            quantidade={quantidade ?? 0}
             setQuantidade={setQuantidade}
             comprovante={comprovante}
             setComprovante={setComprovante}
