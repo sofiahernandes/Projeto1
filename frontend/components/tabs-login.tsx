@@ -48,7 +48,7 @@ export default function TabsLogin() {
       }
 
       const User = await res.json();
-      router.push(`/$/new-contribution?userId=${User.RaUsuario}`);
+      router.push(`/${User.RaUsuario}/new-contribution`);
     } catch (error) {
       alert("Erro ao logar usuário");
     }
@@ -89,11 +89,13 @@ export default function TabsLogin() {
       }
 
       const Mentor = await res.json();
-      router.push(`/$/mentor-history?teamId=${Mentor.SenhaMentor}`);
+      router.push(`/${Mentor.RaAlunoCriador}/${Mentor.IdTime}/mentor-history`);
     } catch (error) {
       console.error("Erro ao logar mentor:", error);
     }
   };
+
+  //login admin
 
   const handleSubmitAdmin = async (e: React.FormEvent) => {
     e.preventDefault();

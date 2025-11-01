@@ -24,6 +24,8 @@ import {
 import * as React from "react";
 import { Button } from "../ui/button";
 import { Input } from "@/components/ui/input";
+import type { Contribution } from "@/components/contribution-table/columns";
+
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -66,10 +68,10 @@ export function DataTable<TData, TValue>({
           onChange={(event) =>
             table.getColumn("Fonte")?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="max-w-sm border border-gray-300"
         />
       </div>
-      <div className="overflow-hidden rounded-md border">
+      <div className="overflow-hidden rounded-md border border-gray-200 shadow-xl">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -92,7 +94,7 @@ export function DataTable<TData, TValue>({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
-                  key={row.id}
+                  key={(row.original as Contribution).uuid}
                   data-state={row.getIsSelected() && "selected"}
                   className={onRowClick ? "cursor-pointer" : undefined}
                   onClick={() => onRowClick?.(row.original)}
@@ -121,17 +123,18 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
 
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-end space-x-2 py-4 mb-10">
         <Button
-          variant="outline"
+          variant="prettyButton"
           size="sm"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
           Página anterior
         </Button>
+        
         <Button
-          variant="outline"
+          variant="prettyButton"
           size="sm"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}

@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="PT-BR">
       <head>
         <style>{`html {
             font-family: ${GeistSans.style.fontFamily};

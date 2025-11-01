@@ -2,9 +2,8 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-// Se sua versão do lucide-react não tem BoxIcon, use Box:
-import { Box as BoxIcon } from "lucide-react";
-
+import { v4 as uuidv4 } from "uuid";
+import { HandHeart as HandHeart } from "lucide-react";
 import { DataTable } from "@/components/contribution-table/data-table";
 import {
   makeContributionColumns,
@@ -19,12 +18,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-
-/* Coisas pra mudar: coluna Meta não deixar tudo com R$ por causa dos kg de alimento
-input de procurar fonte da doação
-estilo da tabela
-*/
-
 
 interface RenderContributionProps {
   onSelect?: (contribution: Contribution) => void;
@@ -45,7 +38,7 @@ export default function RenderContributionTable({
   const columns = useMemo(
     () =>
       makeContributionColumns({
-        onView: (c) => onSelect?.(c)
+        onView: (c) => onSelect?.(c),
       }),
     [onSelect]
   );
@@ -79,9 +72,7 @@ export default function RenderContributionTable({
                   : 0,
               Meta:
                 r.Meta != null
-                  ? Number(
-                      String(r.Meta).replace(/\./g, "").replace(",", ".")
-                    )
+                  ? Number(String(r.Meta).replace(/\./g, "").replace(",", "."))
                   : undefined,
               Gastos:
                 r.Gastos != null
@@ -93,15 +84,18 @@ export default function RenderContributionTable({
               Comprovante: r.Comprovante ?? undefined,
               IdContribuicao: Number(r.IdContribuicao),
               DataContribuicao: String(r.DataContribuicao ?? ""),
+              NomeAlimento: r.NomeAlimento ?? undefined,
+              PontuacaoAlimento: r.PontuacaoAlimento ?? undefined,
+              PesoUnidade: r.PesoUnidade ?? undefined,
+              uuid: uuidv4(),
             }))
           : [];
-
+        console.log(raw);
         setContributions(data);
       } catch (err: any) {
         if (err?.name === "AbortError") {
           return;
         }
-        console.error(err);
         setError(err?.message ?? "Erro inesperado");
       } finally {
         if (active) setLoading(false);
@@ -125,22 +119,13 @@ export default function RenderContributionTable({
       </div>
     );
   }
-
-  if (error) {
-    return (
-      <div className="p-4">
-        <div className="text-sm text-red-600">Erro: {error}</div>
-      </div>
-    );
-  }
-
   if (!contributions.length) {
     return (
       <div className="col-start-2 border rounded-xl border-gray-200 shadow-xl w-auto max-w-100 mx-auto">
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
-              <BoxIcon />
+              <HandHeart size={44} strokeWidth={1.2} />
             </EmptyMedia>
             <EmptyTitle>Nenhuma contribuição por enquanto!</EmptyTitle>
             <EmptyDescription>
@@ -156,8 +141,11 @@ export default function RenderContributionTable({
 
   return (
     <div className="p-2.5">
-      <DataTable columns={columns} data={contributions} />
+      <DataTable<Contribution, unknown>
+        columns={columns}
+        data={contributions}
+      />
     </div>
   );
 }
-``
+``;

@@ -65,22 +65,38 @@ const mentorController = {
 
   //POST http://localhost:3001/api/createMentor
   createMentor: async (req, res) => {
-    const { IdMentor, EmailMentor, IsAdmin, SenhaMentor } = req.body;
+    const { EmailMentor, RaUsuario } = req.body;
 
-    if (!EmailMentor || !SenhaMentor || IsAdmin == false) {
+    if (!EmailMentor || !RaUsuario) {
       return res.status(400).json("Preencha todos os campos");
     }
     const hashedPassword = await bcrypt.hash(SenhaMentor, 10);
     try {
+      const existing = await prisma.mentor.findUnique({
+        where: { EmailMentor },
+      });
+
+      if (existing) {
+        return res.status(409).json({
+          error: "Mentor já cadastrado",
+          IdMentor: existing.IdMentor,
+        });
+      }
+
       const mentor = await prisma.mentor.create({
         data: {
-          IdMentor,
           EmailMentor,
-          IsAdmin: IsAdmin ?? false,
-          SenhaMentor: hashedPassword,
+          SenhaMentor: RaUsuario.toString(),
+          IsAdmin: false,
         },
       });
-      res.status(201).json(sanitizeMentor(mentor));
+      //para atualizar a tabela de time, e adicionar no time, o id do mentor (que é o que falta quando o time é cadastrado)
+      await prisma.time.updateMany({
+        where: { RaUsuario },
+        data: { IdMentor: mentor.IdMentor },
+      });
+
+      res.json(mentor);
     } catch (err) {
       res
         .status(500)
@@ -110,6 +126,19 @@ const mentorController = {
           .status(401)
           .json({ error: "Senha do mentor incorreta, tente novamente." });
       }
+      //para procurar no db, na tabela time, o time que esse mentor está alocado (o id delex'')
+      const time = await prisma.time.findFirst({
+        where: { IdMentor: mentor.IdMentor },
+      });
+
+      if (!time) {
+        return res
+          .status(404)
+          .json({ error: "Time não encontrado para este mentor" });
+      }
+      //res.json({ RaAlunoCriador: mentor.SenhaMentor, IdTime: time.IdTime });
+      //MARIAH, revisa essa linha: pra retornar o login do mentor com o RaAlunoCriador (ra do aluno que cadastrou o mentor) e o id time, deixamos essa linha de res json ou a debaixo do token?
+
       const { token } = createToken({ EmailMentor: mentor.EmailMentor });
 
       res.json({ token, mentor: sanitizeMentor(mentor) });

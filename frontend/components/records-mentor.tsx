@@ -1,6 +1,5 @@
 import placeholderComprovante from "@/assets/placeholderComprovante.jpg";
 import Modal from "../hooks/use-modal";
-import DeleteContribution from "@/components/delete-contribution";
 import formatBRL from "./formatBRL";
 
 interface ContributionData {
@@ -19,18 +18,16 @@ interface ContributionData {
   uuid: string;
 }
 
-interface RecordsModalProps {
+interface RecordsMentorProps {
   data: ContributionData;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onDeleted?: () => void;
 }
 
-const RecordsModal: React.FC<RecordsModalProps> = ({
+const RecordsMentor: React.FC<RecordsMentorProps> = ({
   data,
   isOpen,
   setIsOpen,
-  onDeleted,
 }) => {
   if (!data) return null;
 
@@ -65,18 +62,20 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
 
                   <div>
                     <p className="text-sm text-gray-600">Quantidade</p>
-                    <p className="font-semibold">{Intl.NumberFormat("pt-BR").format(data.Quantidade)} 
+                    <p className="font-semibold">
+                      {Intl.NumberFormat("pt-BR").format(data.Quantidade)}
                     </p>
                   </div>
 
                   {data.Meta && (
                     <div>
                       <p className="text-sm text-gray-600">Meta</p>
-                      <p className="font-semibold">{typeof data.Meta === "number" &&
+                      <p className="font-semibold">
+                        {typeof data.Meta === "number" &&
                         Number.isFinite(data.Meta)
                           ? new Intl.NumberFormat("pt-BR").format(data.Meta)
                           : "-"}
-                        </p>
+                      </p>
                     </div>
                   )}
 
@@ -104,7 +103,7 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
                       </div>
                     </div>
                   )}
-
+                  
                   {data.Comprovante && (
                     <div>
                       <p className="text-sm text-gray-600 mb-2">Comprovantes</p>
@@ -128,17 +127,11 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
                 </div>
               </div>
             </div>
-            <DeleteContribution
-              IdContribuicao={data.IdContribuicao}
-              onDeleted={() => {
-                setIsOpen(false);
-                onDeleted?.();
-              }}
-            />
           </div>
         </div>
       </div>
     </Modal>
   );
 };
-export default RecordsModal;
+
+export default RecordsMentor;
