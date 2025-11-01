@@ -24,7 +24,7 @@ model Time {
 model Time_Usuario{
   IdTimeUsuario Int @id @default(autoincrement())
   IdTime Int?
-  RaUsuario Int? 
+  RaUsuario Int?
   RaAluno2 Int 
   RaAluno3 Int 
   RaAluno4 Int 
@@ -73,7 +73,9 @@ model Contribuicao_Alimenticia {
   Fonte            String?   @db.VarChar(200)
   Comprovante      String?   @db.VarChar(200)
   RaUsuario        Int?
+  IdAlimento       Int?
 
+  @@index([IdAlimento], map:"IdAlimento")
   @@index([RaUsuario], map: "RaUsuario")
 }
 

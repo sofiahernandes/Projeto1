@@ -25,6 +25,7 @@ r.get("/contributions/:RaUsuario", contributionController.getContributionsByRa);
 r.delete("/deleteContribution/:IdContribuicao", contributionController.deleteContribution);
 
 r.post("/createMentor", mentorController.createMentor);
+r.post("/loginMentor", mentorController.loginMentor);
 r.get("/mentors", mentorController.allMentors);
 r.get("/mentor/id/:IdMentor", mentorController.mentorById);
 r.get("/mentor/email/:EmailMentor", mentorController.mentorByEmail);

@@ -10,13 +10,14 @@ export default function TabsLogin() {
   const router = useRouter();
   const [EmailMentor, setEmailMentor] = React.useState("");
   const [SenhaMentor, setSenhaMentor] = React.useState("");
-  const [RaUsuario, setRaUsuario] = React.useState(0);
+  const [RaUsuario, setRaUsuario] = React.useState<number>();
   const [SenhaUsuario, setSenhaUsuario] = React.useState("");
 
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  // Login Student
   const handleSubmitAluno = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     if (!backendUrl) {
       console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
@@ -25,8 +26,6 @@ export default function TabsLogin() {
     }
 
     const apiUrl = `${backendUrl}/api/user/login`;
-
-    console.log("Tentando conectar em:", apiUrl);
 
     try {
       const res = await fetch(apiUrl, {
@@ -44,23 +43,20 @@ export default function TabsLogin() {
         const err = await res
           .json()
           .catch(() => ({ error: "Erro desconhecido" }));
-        console.error("Erro da API:", err);
         alert("Erro: " + (err.error || `Status ${res.status}`));
         return;
       }
 
       const User = await res.json();
-      console.log("Usuário Logado:", User);
-
       router.push(`/$/new-contribution?userId=${User.RaUsuario}`);
     } catch (error) {
-      console.error("Erro ao logar usuário:", error);
+      alert("Erro ao logar usuário");
     }
   };
 
+  // Login Mentor
   const handleSubmitMentor = async (e: React.FormEvent) => {
     e.preventDefault();
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     if (!backendUrl) {
       console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
@@ -68,9 +64,7 @@ export default function TabsLogin() {
       return;
     }
 
-    const apiUrl = `${backendUrl}/api/user/login`;
-
-    console.log("Tentando conectar em:", apiUrl);
+    const apiUrl = `${backendUrl}/api/loginMentor`;
 
     try {
       const res = await fetch(apiUrl, {
@@ -81,6 +75,7 @@ export default function TabsLogin() {
         body: JSON.stringify({
           EmailMentor: EmailMentor,
           SenhaMentor: SenhaMentor,
+          isAdmin: false,
         }),
       });
 
@@ -93,21 +88,51 @@ export default function TabsLogin() {
         return;
       }
 
-      const User = await res.json();
-      console.log("Usuário Logado:", User);
-
-      alert("Usuário Logado com sucesso!");
-
-      router.push("");
-      //direciona para a pagina pos login do mentor
+      const Mentor = await res.json();
+      router.push(`/$/mentor-history?teamId=${Mentor.SenhaMentor}`);
     } catch (error) {
-      console.error("Erro ao logar usuário:", error);
+      console.error("Erro ao logar mentor:", error);
     }
   };
 
   const handleSubmitAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // direcionamento para a página do admin
+
+    if (!backendUrl) {
+      console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
+      alert("Erro de configuração. Entre em contato com o suporte.");
+      return;
+    }
+
+    const apiUrl = `${backendUrl}/api/loginMentor`;
+
+    try {
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          EmailMentor: EmailMentor,
+          SenhaMentor: SenhaMentor,
+          isAdmin: true,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res
+          .json()
+          .catch(() => ({ error: "Erro desconhecido" }));
+        console.error("Erro da API:", err);
+        alert("Erro: " + (err.error || `Status ${res.status}`));
+        return;
+      }
+
+      const Admin = await res.json();
+      router.push(`/$/allHistory?admin=true`);
+    } catch (error) {
+      console.error("Erro ao logar admin:", error);
+    }
   };
 
   return (
@@ -132,7 +157,7 @@ export default function TabsLogin() {
             className="flex flex-col gap-4 w-full"
           >
             <CustomInputs
-              RaUsuario={RaUsuario}
+              RaUsuario={RaUsuario!}
               setRaUsuario={setRaUsuario}
               SenhaUsuario={SenhaUsuario}
               setSenhaUsuario={setSenhaUsuario}
@@ -157,10 +182,11 @@ export default function TabsLogin() {
             className="flex flex-col gap-4 w-full"
           >
             <MentorInputs
-            EmailMentor={EmailMentor}
-            setEmailMentor={setEmailMentor}
-            SenhaMentor={SenhaMentor}
-            setSenhaMentor={setSenhaMentor}/>
+              EmailMentor={EmailMentor}
+              setEmailMentor={setEmailMentor}
+              SenhaMentor={SenhaMentor}
+              setSenhaMentor={setSenhaMentor}
+            />
             <button
               type="submit"
               className="border-transparent bg-secondary hover:text-white! text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-secondary/80 rounded-lg"
@@ -179,7 +205,12 @@ export default function TabsLogin() {
             onSubmit={handleSubmitAdmin}
             className="flex flex-col gap-4 w-full"
           >
-           
+            <MentorInputs
+              EmailMentor={EmailMentor}
+              setEmailMentor={setEmailMentor}
+              SenhaMentor={SenhaMentor}
+              setSenhaMentor={setSenhaMentor}
+            />
             <button
               type="submit"
               className="border-transparent bg-secondary hover:text-white! text-white text-base py-2 px-6 w-[90px] md:w-28 self-center hover:bg-secondary/80 rounded-lg"
