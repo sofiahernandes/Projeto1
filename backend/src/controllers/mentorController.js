@@ -1,5 +1,13 @@
+import bcrypt from "bcrypt";
 import { prisma } from "../../prisma/lib/prisma.js";
+import { createToken, denyToken } from "../services/tokenServices.js";
 
+const sanitizeMentor = (u) => ({
+  IdMentor: u.IdMentor,
+  EmailMentor: u.EmailMentor,
+  IsAdmin: u.IsAdmin,
+  SenhaMentor: u.SenhaMentor,
+});
 const mentorController = {
   //GET http://localhost:3001/api/mentors
   allMentors: async (_, res) => {
@@ -20,6 +28,7 @@ const mentorController = {
         .json({ error: "Erro ao listar mentores.", details: err.message });
     }
   },
+
   //GET http://localhost:3001/api/mentor/id/:IdMentor
   mentorById: async (req, res) => {
     const { IdMentor } = req.params;
@@ -53,6 +62,7 @@ const mentorController = {
         .json({ error: "Erro ao encontrar mentor", details: err.message });
     }
   },
+
   //POST http://localhost:3001/api/createMentor
   createMentor: async (req, res) => {
     const { EmailMentor, RaUsuario } = req.body;
@@ -60,7 +70,7 @@ const mentorController = {
     if (!EmailMentor || !RaUsuario) {
       return res.status(400).json("Preencha todos os campos");
     }
-
+    const hashedPassword = await bcrypt.hash(SenhaMentor, 10);
     try {
       const existing = await prisma.mentor.findUnique({
         where: { EmailMentor },
@@ -94,26 +104,29 @@ const mentorController = {
     }
   },
 
-  //login do mentor, porque não tinha nenhuma rota pra ele logar!!
-
+  //LOGIN http://localhost:3001/api/register/login
   loginMentor: async (req, res) => {
     const { EmailMentor, SenhaMentor } = req.body;
-
     if (!EmailMentor || !SenhaMentor) {
       return res.status(400).json({ error: "Coloque os campos corretamente" });
     }
-
     try {
-      const mentor = await prisma.mentor.findUnique({
-        where: { EmailMentor },
+      const mentor = await prisma.findUnique({
+        where: { EmailMentor: String(EmailMentor) },
       });
-
-      if (!mentor || mentor.SenhaMentor !== SenhaMentor) {
+      if (!mentor) {
+        return res.status(401).json({ error: "Credenciais inválidas" });
+      }
+      const senhaValida = await bcrypt.compare(
+      SenhaMentor, 
+      mentor.SenhaMentor
+      );
+      if (!senhaValida) {
         return res
           .status(401)
-          .json({ error: "Mentor não encontrado ou senha incorreta" });
+          .json({ error: "Senha do mentor incorreta, tente novamente." });
       }
-//para procurar no db, na tabela time, o time que esse mentor está alocado (o id dele)
+      //para procurar no db, na tabela time, o time que esse mentor está alocado (o id delex'')
       const time = await prisma.time.findFirst({
         where: { IdMentor: mentor.IdMentor },
       });
@@ -123,10 +136,14 @@ const mentorController = {
           .status(404)
           .json({ error: "Time não encontrado para este mentor" });
       }
+      //res.json({ RaAlunoCriador: mentor.SenhaMentor, IdTime: time.IdTime });
+      //MARIAH, revisa essa linha: pra retornar o login do mentor com o RaAlunoCriador (ra do aluno que cadastrou o mentor) e o id time, deixamos essa linha de res json ou a debaixo do token?
 
-      res.json({ RaAlunoCriador: mentor.SenhaMentor, IdTime: time.IdTime });
+      const { token } = createToken({ EmailMentor: mentor.EmailMentor });
+
+      res.json({ token, mentor: sanitizeMentor(mentor) });
     } catch (err) {
-      res
+      return res
         .status(500)
         .json({
           error: "Erro ao fazer o login do mentor",
@@ -134,7 +151,6 @@ const mentorController = {
         });
     }
   },
-
   //DELETE http://localhost:3001/api/deleteMentor/:EmailMentor
   deleteMentor: async (req, res) => {
     const { EmailMentor } = req.params;

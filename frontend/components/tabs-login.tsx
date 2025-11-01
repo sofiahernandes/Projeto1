@@ -13,7 +13,8 @@ export default function TabsLogin() {
   const [RaUsuario, setRaUsuario] = React.useState<number>();
   const [SenhaUsuario, setSenhaUsuario] = React.useState("");
 
-const backendUrl = "http://localhost:3001";
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
   // Login Student
   const handleSubmitAluno = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +25,8 @@ const backendUrl = "http://localhost:3001";
       return;
     }
 
-const apiUrl = `${backendUrl}/api/user/login`
+    const apiUrl = `${backendUrl}/api/user/login`;
+
     try {
       const res = await fetch(apiUrl, {
         method: "POST",

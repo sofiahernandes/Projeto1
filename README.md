@@ -23,7 +23,7 @@
 <br/>
 
 # Entregas
-- [Projeto de Extensão](https://github.com/2025-2-MCC2/Projeto1/blob/main/entregas/Projeto%20de%20Extens%C3%A3o.docx.pdf)
+- [Projeto de Extensão](https://github.com/2025-2-MCC2/Projeto1/blob/main/entregas/PROJETO%20DE%20EXTEN%C3%87%C3%83O.md)
 
 | Disciplina | Entrega 1 | Entrega 2 |  
 | :-------: | :------: | :-------: |
@@ -99,11 +99,10 @@ Procuramos desenvolver uma interface que traga a identidade visual do Projeto Li
 - [Yarn](https://classic.yarnpkg.com/lang/en/) ou `npm`
 <br/>
 
-1. Clone o Repositório e vá para a branch `local-development`
+1. Clone o Repositório e se direcione à pasta
 ```
 git clone https://github.com/2025-2-MCC2/Projeto1.git  
 cd Projeto1
-git checkout local-development
 ```
 
 2. Instale as Dependências

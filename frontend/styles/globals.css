@@ -1,6 +1,65 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+
+
+/* ====== Animação de seleção (pop) ====== */
+@keyframes selected-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+.animate-selected-pop {
+  animation: selected-pop 180ms ease-out both;
+}
+
+/* ====== Ripple no toque (estilo Google) ====== */
+.pill {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.pill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 200%;
+  height: 200%;
+  border-radius: 9999px;
+  background: currentColor;
+  transform: scale(0);
+  opacity: 0;
+  transition: transform 280ms ease-out, opacity 400ms ease-out;
+  z-index: -1;
+}
+.pill:active::after {
+  transform: scale(1);
+  opacity: 0.12;
+}
+
+
+  /* Chrome, Safari, Edge (webkit) */
+  .no-scrollbar::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+    background: transparent;
+  }
+  
+/* Remove setas do input type="number" */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+
+
 :root {
   --primary: #254128; /* forest green */
   --secondary: #cd6184; /* pink accent */
@@ -31,6 +90,15 @@
   --radius: 1rem;
   --button-hover: #195b41;
 }
+
+@font-face {
+  font-family: 'MinhaFonte';
+  src: url('/fonts/MinhaFonte.woff2') format('woff2'),
+       url('/fonts/MinhaFonte.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 
 @theme inline {
   --color-background: var(--background);
@@ -83,6 +151,7 @@
     @apply min-h-screen bg-background text-foreground flex items-center justify-center;
   }
 }
+
 
 @import "../styles/new-contribution.css";
 @import "../styles/fonts.css";

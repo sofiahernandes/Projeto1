@@ -35,7 +35,6 @@ export async function fetchData(userId: number): Promise<{ team: Team; user: Use
       }
       const team = await res.json();
       const user = await userRes.json();
-
       console.log("Time:", team);
       console.log("Aluno Mentor:", user);
 

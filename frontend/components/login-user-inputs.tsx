@@ -1,17 +1,17 @@
 import React from "react";
 
 type Props = {
-  usuario: string;
-  setUsuario: React.Dispatch<React.SetStateAction<string>>;
-  senha: string;
-  setSenha: React.Dispatch<React.SetStateAction<string>>;
+  RaUsuario: number;
+  setRaUsuario: React.Dispatch<React.SetStateAction<number | undefined>>;
+  SenhaUsuario: string;
+  setSenhaUsuario: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const CustomInputs: React.FC<Props> = ({
-  usuario,
-  setUsuario,
-  senha,
-  setSenha,
+  RaUsuario,
+  setRaUsuario,
+  SenhaUsuario,
+  setSenhaUsuario,
 }) => {
   const [mostrarSenha, setMostrarSenha] = React.useState(false);
 
@@ -21,15 +21,15 @@ const CustomInputs: React.FC<Props> = ({
         <input
           type="text"
           placeholder="Usuário"
-          value={usuario}
+          value={RaUsuario}
           className="w-[80%] bg-[white] border border-gray-300 rounded-lg text-black placeholder-gray-700 px-3 py-1.5 text-base focus:outline-none"
-          onChange={(e) => setUsuario(e.target.value)}
+          onChange={(e) => setRaUsuario(Number(e.target.value))}
         />
 
         <input
           type={mostrarSenha ? "text" : "password"}
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
+          value={SenhaUsuario}
+          onChange={(e) => setSenhaUsuario(e.target.value)}
           className="w-[80%] bg-[white] border border-gray-300 rounded-lg text-black placeholder-gray-700 px-3 py-1.5 text-base focus:outline-none"
           placeholder="Senha"
         />

@@ -22,8 +22,6 @@ interface Properties {
 export default function DonationsForm({
   raUsuario,
   setRaUsuario,
-  tipoDoacao,
-  setTipoDoacao,
   quantidade,
   setQuantidade,
   fonte,
@@ -34,10 +32,19 @@ export default function DonationsForm({
   setGastos,
   comprovante,
   setComprovante,
+  
 }: Properties) {
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
+const [tipoDoacao, setTipoDoacao] = useState<"Financeira" | "Alimenticia">("Financeira");
+  // helper para converter string -> número (aceita vazio)
+  const toNum = (s: string): number | undefined => {
+    const trimmed = s.trim();
+    if (trimmed === "") return undefined;
+    const n = Number(trimmed.replace(",", ".")); // aceita 1,5
+    return Number.isFinite(n) ? n : undefined;
+  };
+  
+ const [loading, setLoading] = useState(false);
+ const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL + "/api/createContribution";
@@ -73,67 +80,67 @@ export default function DonationsForm({
       setLoading(false);
     }
   };
-
+    
+  
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3 w-full max-w-xl">
+      <label className="text-[#3B2A1A]">Nome do Evento / nome do doador</label>
       <input
-        className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none "
-        type="number"
-        placeholder="Id do Time"
-        value={raUsuario}
-        onChange={(e) => setRaUsuario(Number(e.target.value))
-        }
-      />
-      <input
-        className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none "
+        className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
         type="text"
-        placeholder="Tipo da Doação"
-        value={tipoDoacao}
-        onChange={(e) => setTipoDoacao(e.target.value)}
+        placeholder="Ex: Instituto Alma"
+        value={fonte}                 
+        onChange={(e) => setFonte(e.target.value)} 
       />
+
+      <label>Meta</label>
       <input
-        className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none "
+        className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
         type="number"
-        placeholder="Quantidade"
-        value={quantidade}
-        onChange={(e) => setQuantidade(Number(e.target.value))}
+        placeholder="Ex: R$100"
+        value={meta}                    
+        onChange={(e) => setMeta(toNum(e.target.value))}
+        inputMode="decimal"
       />
+
+      <label>Gastos</label>
       <input
-        className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none "
+        className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
+        type="number"
+        placeholder="Ex: R$100"
+        value={gastos}                   
+        onChange={(e) => setGastos(toNum(e.target.value))}
+        inputMode="decimal"
+      />
+
+      <label>Valor Arrecadado</label>
+      <input
+        className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
+        type="number"
+        placeholder="Ex: R$1000"
+        value={quantidade}                    
+        onChange={(e) => setQuantidade(toNum(e.target.value))}
+        inputMode="decimal"
+      />
+ 
+      <label>Comprovante (link do arquivo)</label>
+      <input
+        className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
         type="text"
-        placeholder="Fonte"
-        value={fonte}
-        onChange={(e) => setFonte(e.target.value)}
-      />
-      <input
-        className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none "
-        type="number"
-        placeholder="Meta"
-        value={meta}
-        onChange={(e) => setMeta(Number(e.target.value))}
-      />
-      <input
-        className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none "
-        type="number"
-        placeholder="Gastos"
-        value={gastos}
-        onChange={(e) => setGastos(Number(e.target.value))}
-      />
-      <input
-        className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none "
-        type="text"
-        placeholder="Comprovante (link do arquivo)"
+        placeholder="URL do comprovante"
         value={comprovante}
         onChange={(e) => setComprovante(e.target.value)}
       />
-
+         <div className = "flex justify-end">
       <button
         type="submit"
-        className="bg-primary text-white rounded-lg py-2 px-6 hover:bg-[#354F52]"
         disabled={loading}
+        onClick={() => setTipoDoacao("Financeira")}
+        className="mt-2 w-fit bottom-10 right-14 px-10 py-2 rounded-lg bg-[#B27477] houver: bg-[#9B5B60] text-white disabled:opacity-50"
       >
-        {loading ? "Enviando..." : "Cadastrar"}
+        {loading ? "Casdastrando..." : "Cadastrar"}
       </button>
+         </div>
     </form>
   );
 }
