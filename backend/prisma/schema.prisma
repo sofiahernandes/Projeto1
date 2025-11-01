@@ -24,7 +24,7 @@ model Time {
 model Time_Usuario{
   IdTimeUsuario Int @id @default(autoincrement())
   IdTime Int?
-  RaUsuario Int? 
+  RaUsuario Int?
   RaAluno2 Int 
   RaAluno3 Int 
   RaAluno4 Int 

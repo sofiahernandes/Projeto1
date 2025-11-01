@@ -59,9 +59,9 @@ export default function SigninTabs() {
       const newUser = await res.json();
       console.log("Usuário cadastrado:", newUser);
 
-      localStorage.setItem("RaAluno1", newUser.RaUsuario);
+      //localStorage.setItem("RaAluno1", newUser.RaUsuario);
 
-      router.push("/register/sign-team");
+      router.push(`/register/sign-team?raUsuario=${newUser.RaUsuario}`);
     } catch (error) {
       console.error("Erro ao cadastrar usuário:", error);
 
