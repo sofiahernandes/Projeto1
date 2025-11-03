@@ -24,7 +24,7 @@ r.get("/contributions", contributionController.allContributions);
 r.get("/contributions/:RaUsuario", contributionController.getContributionsByRa);
 r.delete("/deleteContribution/:IdContribuicao", contributionController.deleteContribution);
 
-r.post("/createMentor", mentorController.createMentor);
+r.post("/createMentor/:RaUsuario", mentorController.createMentor);
 r.post("/loginMentor", mentorController.loginMentor);
 r.get("/mentors", mentorController.allMentors);
 r.post("/createAdmin", mentorController.createAdmin);
@@ -36,10 +36,11 @@ r.delete("/deleteMentor/:EmailMentor", mentorController.deleteMentor);
 r.post("/createTeam", teamController.createTeam);
 r.get("/teams", teamController.allTeams);
 r.get("/team/:IdTime", teamController.teamByID);
-r.get("/userTeam/:RaUsuario", teamController.teamByUserRA);
+r.get("/:RaUsuario/userTeam", teamController.teamByUserRA);
 r.delete("/deleteTeam/:IdTime", teamController.deleteTeam);
 
 r.post("/register", authController.createUser);
+
 r.get("/users", userController.allUsers);
 r.get("/user/:RaUsuario", userController.userByRA);
 r.post("/user/login", authController.loginUser);

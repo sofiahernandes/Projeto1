@@ -11,7 +11,7 @@ import RenderContributionTable from "@/components/table-contribution";
 
 export default function MentorVision() {
   const params = useParams();
-  const userId = parseInt(params.userId as string, 10);
+  const userId = parseInt(params.RaUsuario as string, 10);
   const teamId = parseInt(params.teamId as string, 10);
   const [team, setTeam] = React.useState<any>(null);
   const [user, setUser] = React.useState<any>(null);
