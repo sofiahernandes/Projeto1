@@ -6,7 +6,7 @@ import heroBackground from "@/assets/texture.png";
 
 const Hero = () => {
   return (
-    <section className="relative h-screen z-auto overflow-x-clip w-screen bg-primary">
+    <section className="relative h-[600px] z-auto overflow-x-clip w-screen bg-primary">
       <div className="relative pt-10 z-300 bg-transparent h-full mx-auto flex flex-col justify-between items-center">
         <div className="pointer-events-none select-none h-full flex flex-col justify-center gap-2 items-center">
           <h1 className="changa-one-bold text-responsive text-5xl md:text-7xl text-white max-w-4xl text-center mx-auto">
