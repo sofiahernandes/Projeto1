@@ -9,8 +9,8 @@ datasource db {
 
 model Mentor {
   IdMentor Int      @id @default(autoincrement())
-  Email    String   @db.VarChar(250)
-  IsAdm    Boolean?
+  EmailMentor    String   @db.VarChar(250)
+  IsAdmin    Boolean?
   SenhaMentor String @db.VarChar(80)
 }
 
@@ -82,7 +82,7 @@ model Contribuicao_Alimenticia {
 model Alimento {
   IdAlimento Int @id @default(autoincrement())
   NomeAlimento String @db.VarChar(100)
-  PontuacaoAlimento Int 
+  Pontuacao Int 
 }
 
 model Contribuicao_Alimento{

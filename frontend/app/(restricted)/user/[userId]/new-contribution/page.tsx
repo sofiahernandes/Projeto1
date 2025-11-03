@@ -13,7 +13,7 @@ type Alimento = { nome: string; Unidade: string; Kg: string };
 
 export default function Donations() {
   const params = useParams();
-  const userId = Number((params as Record<string, string | string[] | undefined>)?.userId);
+  const userId = Number(params.userId);
   const [activeTab, setActiveTab] = useState<'finance' | 'food'>('finance');
 
   const [tipoDoacao, setTipoDoacao] = useState("");
@@ -90,12 +90,12 @@ export default function Donations() {
     {/* Menu lateral desktop/tablet */}
     <MenuDesktop
        menuOpen={menuOpen}
-       raUsuario={raUsuario!}
+       RaUsuario={raUsuario!}
        setMenuOpen={(arg: SetStateAction<boolean>) => setMenuOpen(arg)}
     />
 
     {/* Menu rodapé mobile */}
-    <MenuMobile raUsuario={raUsuario!} />
+    <MenuMobile RaUsuario={userId!} />
 
 
     <main className="flex justify-center md:justify-center items-stretch content-start min-h-screen w-full px-9 md: mt-10"> 
@@ -144,7 +144,7 @@ export default function Donations() {
           <div className="min-h-0 flex-1 md:flex-1">
             <div className="overflow-x-hidden no-scrollbar md:h-full md:overflow-y-auto h-[380px] overflow-y-auto rounded-lg">
               <FoodDonations
-                raUsuario={raUsuario}
+                RaUsuario={raUsuario}
                 setRaUsuario={setRaUsuario}
                 tipoDoacao={tipoDoacao}
                 setTipoDoacao={setTipoDoacao}

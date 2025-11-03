@@ -12,7 +12,7 @@ import RenderContributionTable from "@/components/table-contribution";
 
 export default function TeamHistory() {
   const params = useParams();
-  const userId = Number(params.userId);
+  const raUsuario = Number(params.raUsuario);
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [team, setTeam] = React.useState<any>(null);
   const [user, setUser] = React.useState<any>(null);
@@ -25,12 +25,12 @@ export default function TeamHistory() {
 
   useEffect(() => {
     const fetchTeamData = async () => {
-      const data = await fetchData(userId);
+      const data = await fetchData(raUsuario);
       setUser(data?.user);
       setTeam(data?.team);
     };
     fetchTeamData();
-  }, [userId]);
+  }, [raUsuario]);
 
   return (
     <div className="min-h-dvh w-full overflow-y-hidden overflow-x-hidden flex flex-col bg-[#f4f3f1]/60">
@@ -64,12 +64,12 @@ export default function TeamHistory() {
         {/* Menu lateral quando está no desktop/tablet */}
         <MenuDesktop
           menuOpen={menuOpen}
-          raUsuario={team?.RaUsuario || 10000000}
+          RaUsuario={team?.RaUsuario}
           setMenuOpen={(arg: SetStateAction<boolean>) => setMenuOpen(arg)}
         />
 
         {/* Menu rodapé quando está no mobile */}
-        <MenuMobile raUsuario={team?.RaUsuario || 10000000} />
+        <MenuMobile RaUsuario={team?.RaUsuario} />
 
         {/* main page do historico - todas as contribuições do grupo baseado no RA logado */}
         <main className="w-full max-w-[1300px] p-1.5 md:mt-0 ">

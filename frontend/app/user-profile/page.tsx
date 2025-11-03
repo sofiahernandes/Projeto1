@@ -15,7 +15,7 @@ interface Contribution {
 
 export default function UserProfile() {
   const params = useParams();
-  const userId = Number(params.userId);
+  const RaUsuario = Number(params.RaUsuario);
 
   const [menuOpen, setMenuOpen] = React.useState(false);
 
@@ -25,9 +25,10 @@ export default function UserProfile() {
   const [user, setUser] = React.useState<any>(null);
   const [team, setTeam] = React.useState<any>(null);
 
+  const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
   useEffect(() => {
     const fetchTeamData = async () => {
-      const data = await fetchData(userId);
+      const data = await fetchData(RaUsuario);
       setUser(data?.user);
       setTeam(data?.team);
     };
@@ -47,7 +48,7 @@ export default function UserProfile() {
     const fetchContributions = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3001/api/contributions/${userId}`
+          `${backend_url}/contributions/${RaUsuario}`
         );
         const contributions = await res.json();
 
@@ -62,7 +63,7 @@ export default function UserProfile() {
       if (!team?.IdMentor) return;
       try {
         const res = await fetch(
-          `http://localhost:3001/api/mentor/id/${team.IdMentor}`
+          `${backend_url}/mentor/id/${team.IdMentor}`
         );
         const emailM = await res.json();
 
@@ -72,7 +73,7 @@ export default function UserProfile() {
       }
     };
     fetchEmailMentor();
-  }, [userId, team?.IdMentor]);
+  }, [RaUsuario, team?.IdMentor]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,7 +84,7 @@ export default function UserProfile() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("http://localhost:3001/api/createMentor", {
+      const response = await fetch(`${backend_url}/createMentor`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -130,11 +131,11 @@ export default function UserProfile() {
       >
         <MenuDesktop
           menuOpen={menuOpen}
-          raUsuario={team?.RaUsuario || 10000000}
+          raUsuario={team?.RaUsuario}
           setMenuOpen={(arg: SetStateAction<boolean>) => setMenuOpen(arg)}
         />
 
-        <MenuMobile raUsuario={team?.RaUsuario || 10000000} />
+        <MenuMobile RaUsuario={team?.RaUsuario} />
 
         <section className="w-screen max-w-[1300px] mt-20 md:mt-0 grid grid-cols-1 md:grid-cols-3">
           <div className="flex flex-col gap-2 mx-3">

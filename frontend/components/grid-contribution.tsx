@@ -19,6 +19,7 @@ interface RenderContributionProps {
   onSelect?: (contribution: Contribution) => void;
   refreshKey?: number;
 }
+  const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL
 
 export default function RenderContributionCard({
   onSelect,
@@ -27,7 +28,6 @@ export default function RenderContributionCard({
   const [contributions, setContributions] = useState<Contribution[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const params = useParams();
   const userId = Number(params.userId);
 
@@ -41,7 +41,7 @@ let active = true;
         setLoading(true);
         setError(null);
         const res = await fetch(
-          `http://localhost:3001/api/contributions/${userId}`,
+          `${backend_url}/contributions/${userId}`,
           { cache: "no-store", signal: controller.signal }
           
         );

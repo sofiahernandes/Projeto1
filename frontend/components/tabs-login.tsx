@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 
 export default function TabsLogin() {
   const router = useRouter();
+  const [IdMentor] = React.useState("");
+  const [IdTime] = React.useState("");
   const [EmailMentor, setEmailMentor] = React.useState("");
   const [SenhaMentor, setSenhaMentor] = React.useState("");
   const [RaUsuario, setRaUsuario] = React.useState<number>();
@@ -47,8 +49,8 @@ export default function TabsLogin() {
         return;
       }
 
-      const User = await res.json();
-      router.push(`/${User.RaUsuario}/new-contribution`);
+      const userId = await res.json();
+      router.push(`/user/${RaUsuario}/new-contribution`);
     } catch (error) {
       alert("Erro ao logar usuário");
     }
@@ -88,8 +90,8 @@ export default function TabsLogin() {
         return;
       }
 
-      const Mentor = await res.json();
-      router.push(`/${Mentor.IdTime}/mentor-history`);
+      const userId = await res.json();
+      router.push(`/user/${userId}=${IdMentor}/${IdTime}/mentor-history`);
     } catch (error) {
       console.error("Erro ao logar mentor:", error);
     }
@@ -131,8 +133,7 @@ export default function TabsLogin() {
       }
 
       const Admin = await res.json();
-      // router.push(`/$/allHistory?admin=true`);
-      router.push("/admin/admin-history");
+      router.push(`/admin/${IdMentor}/admin-history`);
     } catch (error) {
       console.error("Erro ao logar admin:", error);
     }

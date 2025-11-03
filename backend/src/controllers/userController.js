@@ -35,28 +35,6 @@ const usersController = {
     }
   },
 
-  // PUT http:localhost:3001/api/updateUserAcc/:RaUsuario
-
-  // updateUserAcc: async (req,res) =>{
-  //   const { RaUsuario, SenhaUsuario, NovaSenhaUsuario } = req.body
-  //   if (!RaUsuario && NovaSenhaUsuario){
-  //     return res.status(400).json({error: "Coloque o seu Ra e nova senha"})
-  //   }
-  //   try{
-  //     const usuario = await prisma.usuario.findUnique({
-  //       where: {RaUsuario: Number(RaUsuario)}
-  //     }); 
-  //     if (!usuario.length) return res.status(404).json({error: "Usuario não encontrado"})
-  //       const update = []
-  //       const params = []
-  //       if (NovaSenhaUsuario){
-  //         if(!SenhaUsuario){
-  //           update.prisma.push()
-  //         }
-  //       }
-  //   }catch(err){}
-  // },
-  
   //DELETE http://localhost:3001/api/deleteUser/:RaUsuario
   deleteUser: async (req, res) => {
     const { RaUsuario } = req.params;

@@ -1,7 +1,15 @@
 interface Team {
   NomeTime: string
   RaUsuario: number
-  RaAlunos: string
+  RaAluno2: number
+  RaAluno3: number
+  RaAluno4: number
+  RaAluno5: number
+  RaAluno6: number
+  RaAluno7: number
+  RaAluno8: number
+  RaAluno9: number
+  RaAluno10: number
   IdMentor: number
 }
 
@@ -10,14 +18,15 @@ interface User {
   Turma: string
 }
 
-export async function fetchData(userId: number): Promise<{ team: Team; user: User } | undefined> {
+const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL
+export async function fetchData(RaUsuario: number): Promise<{ team: Team; user: User } | undefined> {
     try {
-      const res = await fetch(`http://localhost:3001/api/userTeam/${userId}`, {
+      const res = await fetch(`${backend_url}/api/userTeam/${RaUsuario}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
 
-      const userRes = await fetch(`http://localhost:3001/api/user/${userId}`, {
+      const userRes = await fetch(`${backend_url}/api/user/${RaUsuario}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });

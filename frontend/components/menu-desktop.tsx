@@ -4,13 +4,13 @@ import Link from "next/link";
 interface Properties {
   menuOpen: Boolean;
   setMenuOpen: (arg: SetStateAction<boolean>) => void;
-  raUsuario: number;
+  RaUsuario: number;
 }
 
 export default function MenuDesktop({
   menuOpen,
   setMenuOpen,
-  raUsuario,
+  RaUsuario,
 }: Properties) {
   return (
     <aside className={`side-menu ${menuOpen ? "open" : ""}`}>
@@ -24,19 +24,19 @@ export default function MenuDesktop({
           </button>
         </Link>
 
-        <Link href={`/${raUsuario}/user-profile`}>
+        <Link href={`/user/${RaUsuario}/user-profile`}>
           <button className="p-2 m-2 rounded-xl bg-[#f4f3f1]/80 hover:bg-[#cc3983]/20 border border-gray-200 shadow-md hover:shadow-2xl transition-shadow duration-300 cursor-pointer hover:!text-black text-base w-55">
             Meu perfil
           </button>
         </Link>
 
-        <Link href={`/${raUsuario}/new-contribution`}>
+        <Link href={`/user/${RaUsuario}/new-contribution`}>
           <button className="p-2 m-2 rounded-xl bg-[#f4f3f1]/80 hover:bg-[#cc3983]/20 border border-gray-200 shadow-md hover:shadow-2xl transition-shadow duration-300 cursor-pointer hover:!text-black text-base w-55">
             Cadastrar novas contribuições
           </button>
         </Link>
 
-        <Link href={`/${raUsuario}/team-history`}>
+        <Link href={`/user/${RaUsuario}/team-history`}>
           <button className="p-2 m-2 rounded-xl bg-[#f4f3f1]/80 hover:bg-[#cc3983]/20 border border-gray-200 shadow-md hover:shadow-2xl transition-shadow duration-300 cursor-pointer hover:!text-black text-base w-55">
             Histórico de contribuições
           </button>
