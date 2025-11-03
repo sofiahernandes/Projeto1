@@ -65,7 +65,7 @@ const mentorController = {
 
   //POST http://localhost:3001/api/createMentor
   createMentor: async (req, res) => {
-    const { EmailMentor, RaUsuario, SenhaMentor } = req.body;
+    const { EmailMentor, RaUsuario } = req.body;
 
     if (!EmailMentor || !RaUsuario) {
       return res.status(400).json("Preencha todos os campos");
