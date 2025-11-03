@@ -9,7 +9,7 @@ import addIcon from "@/assets/add.png";
 import newspaperIcon from "@/assets/newspaper.png";
 
 interface Properties {
-  RaUsuario: string;
+  RaUsuario: number;
 }
 
 export default function MenuMobile({ RaUsuario }: Properties) {
@@ -23,7 +23,7 @@ export default function MenuMobile({ RaUsuario }: Properties) {
   const isActive = (href: string) => pathname?.startsWith(href);
 
   useEffect(() => {
-    if (RaUsuario === undefined || RaUsuario === null || RaUsuario) {
+    if (RaUsuario === undefined || RaUsuario === null || Number.isNaN(Number(RaUsuario))) {
       console.warn(
         "MenuMobile: RaUsuario inválido → verifique de onde está vindo esse valor.",
         { RaUsuario, pathname }

@@ -19,19 +19,30 @@ const usersController = {
   //GET http://localhost:3001/api/user/:RaUsuario
   userByRA: async (req, res) => {
     const { RaUsuario } = req.params;
+
     try {
       const usuario = await prisma.usuario.findUnique({
         where: { RaUsuario: Number(RaUsuario) },
+        include: {
+          time_usuarios: {
+            include: {
+              time: true, 
+            },
+          },
+        },
       });
+
+      if (!usuario) {
+        return res.status(404).json({ error: "Usuário não encontrado" });
+      }
+
       res.json(usuario);
     } catch (err) {
-      if (err.code == P2025) {
-        return res.status(404).json({ error: "Aluno mentor não encontrado" });
-      } else {
-        res
-          .status(500)
-          .json({ error: "Erro no servidor", details: err.message });
-      }
+      console.error(err);
+      res.status(500).json({
+        error: "Erro no servidor",
+        details: err.message,
+      });
     }
   },
 

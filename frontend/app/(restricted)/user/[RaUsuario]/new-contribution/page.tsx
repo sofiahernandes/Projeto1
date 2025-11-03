@@ -13,7 +13,7 @@ type Alimento = { nome: string; Unidade: string; Kg: string };
 
 export default function Donations() {
   const params = useParams();
-  const userId = Number(params.userId);
+  const userId = Number(params.RaUsuario);
   const [activeTab, setActiveTab] = useState<'finance' | 'food'>('finance');
 
   const [tipoDoacao, setTipoDoacao] = useState("");

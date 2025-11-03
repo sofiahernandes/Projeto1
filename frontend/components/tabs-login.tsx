@@ -90,8 +90,8 @@ export default function TabsLogin() {
         return;
       }
 
-      const userId = await res.json();
-      router.push(`/user/${userId}=${IdMentor}/${IdTime}/mentor-history`);
+      const Mentor = await res.json();
+      router.push(`/user/${IdTime.Mentor}/mentor-history`);
     } catch (error) {
       console.error("Erro ao logar mentor:", error);
     }

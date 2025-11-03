@@ -31,20 +31,28 @@ const teamsController = {
   //GET http://localhost:3001/api/team/:RaUsuario
   teamByUserRA: async (req, res) => {
     const { RaUsuario } = req.params;
+
     try {
-      const time = await prisma.time.findUnique({
+      const timeUsuario = await prisma.time_Usuario.findFirst({
         where: { RaUsuario: Number(RaUsuario) },
+        include: {
+          time: true,
+        },
       });
-      if (!time) {
-        return res.status(404).json({ message: "Time não encontrado" });
+
+      if (!timeUsuario || !timeUsuario.time) {
+        return res
+          .status(404)
+          .json({ message: "Time não encontrado para este usuário" });
       }
 
-      res.json(time);
+      res.json(timeUsuario.time);
     } catch (err) {
-      res.status(500).json({ error: "Time não encontrado" });
+      console.error(err);
+      res.status(500).json({ error: "Erro ao buscar o time do usuário" });
     }
   },
-
+  
   //POST http://localhost:3001/api/createTeam
   createTeam: async (req, res) => {
     const {
@@ -99,7 +107,7 @@ const teamsController = {
           RaAluno10,
         },
       });
-      res.json({sucess: true, time, timeUsuario});
+      res.json({ sucess: true, time, timeUsuario });
     } catch (err) {
       res
         .status(500)
