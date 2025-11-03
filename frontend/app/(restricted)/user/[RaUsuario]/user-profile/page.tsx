@@ -47,9 +47,7 @@ export default function UserProfile() {
 
     const fetchContributions = async () => {
       try {
-        const res = await fetch(
-          `${backend_url}/contributions/${RaUsuario}`
-        );
+        const res = await fetch(`${backend_url}/contributions/${RaUsuario}`);
         const contributions = await res.json();
 
         if (res.ok) setContributions(contributions);
@@ -62,9 +60,7 @@ export default function UserProfile() {
     const fetchEmailMentor = async () => {
       if (!team?.IdMentor) return;
       try {
-        const res = await fetch(
-          `${backend_url}/mentor/id/${team.IdMentor}`
-        );
+        const res = await fetch(`${backend_url}/mentor/id/${team.IdMentor}`);
         const emailM = await res.json();
 
         if (res.ok) setEmailMentor(emailM.EmailMentor);
@@ -84,26 +80,34 @@ export default function UserProfile() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${backend_url}/createMentor`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ EmailMentor: emailMentor, RaUsuario: team?.RaUsuario, }),
-      });
+      const response = await fetch(
+        `${backend_url}/api/${RaUsuario}/createMentor`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            EmailMentor: emailMentor,
+            RaUsuario: RaUsuario,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Erro ao salvar o mentor no banco de dados.");
       }
       const MentorData = await response.json();
-      setTeam((prevTeam: any) => ({ ...prevTeam, IdMentor: MentorData.IdMentor,        
-      })) 
+      setTeam((prevTeam: any) => ({
+        ...prevTeam,
+        IdMentor: MentorData.IdMentor,
+      }));
       alert("Mentor adicionado com sucesso!");
     } catch (error) {
       console.error(error);
       alert("Ocorreu um erro ao salvar o mentor.");
     } finally {
-      setIsSubmitting(false); 
+      setIsSubmitting(false);
     }
   };
 
@@ -131,7 +135,7 @@ export default function UserProfile() {
       >
         <MenuDesktop
           menuOpen={menuOpen}
-          raUsuario={team?.RaUsuario}
+          RaUsuario={team?.RaUsuario}
           setMenuOpen={(arg: SetStateAction<boolean>) => setMenuOpen(arg)}
         />
 
@@ -148,7 +152,7 @@ export default function UserProfile() {
 
             <p className="font-semibold">Email Mentor</p>
             <div className="block min-h-9 border rounded-md border-gray-400 px-2 mb-3 w-full text-black placeholder-gray-400 pt-1 text-base focus:outline-none">
-              {team?.IdMentor && emailMentor? (
+              {team?.IdMentor && emailMentor ? (
                 <p>{emailMentor}</p>
               ) : (
                 <form onSubmit={handleSubmit} className="flex justify-between">

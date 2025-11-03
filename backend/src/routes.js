@@ -24,7 +24,7 @@ r.get("/contributions", contributionController.allContributions);
 r.get("/contributions/:RaUsuario", contributionController.getContributionsByRa);
 r.delete("/deleteContribution/:IdContribuicao", contributionController.deleteContribution);
 
-r.post("/createMentor", mentorController.createMentor);
+r.post(":RaUsuario/createMentor", mentorController.createMentor);
 r.post("/loginMentor", mentorController.loginMentor);
 r.get("/mentors", mentorController.allMentors);
 r.post("/createAdmin", mentorController.createAdmin);

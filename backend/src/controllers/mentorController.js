@@ -63,12 +63,15 @@ const mentorController = {
     }
   },
 
-  //POST http://localhost:3001/api/createMentor
+  //POST http://localhost:3001/api/createMentor/:RaUsuario
   createMentor: async (req, res) => {
-    const { EmailMentor, RaUsuario } = req.body;
+  const { EmailMentor, RaUsuario } = req.body;
 
-    if (!EmailMentor || !RaUsuario) {
-      return res.status(400).json("Preencha todos os campos");
+    if (!EmailMentor) {
+      return res.status(400).json({
+        error: "Preencha o campo do email mentor",
+        received: { EmailMentor },
+      });
     }
     try {
       const existing = await prisma.mentor.findUnique({
@@ -85,30 +88,34 @@ const mentorController = {
       const mentor = await prisma.mentor.create({
         data: {
           EmailMentor,
-          SenhaMentor: RaUsuario.toString(),
+          SenhaMentor: Number(RaUsuario),
           IsAdmin: false,
         },
       });
-      //busca o time onde o usuario está alocado pelo IdTime
-      const user = await prisma.Usuario.findUnique({
-        where: { RaUsuario },
-        include: { IdTime: IdTime },
+      //busca o time onde o usuario está alocado pelo time
+      const timeUsuario = await prisma.time_Usuario.findFirst({
+        where: { RaUsuario: Number(RaUsuario) },
+        include: { time: true },
       });
 
-      // utiliza o id time do usuario e aloca ele dentro da tabela de time no qual o usuario está inserido
-      await prisma.time.update({
-        where: { IdTime: user.IdTime },
+      // atualiza a tabela do time com o mentor
+      const updatedTime = await prisma.time.update({
+        where: { IdTime: timeUsuario.IdTime },
         data: {
           mentor: { connect: { IdMentor: mentor.IdMentor } },
         },
       });
-      res.json({ sucess: true, time, mentor });
+
+      res.json({ success: true, time: updatedTime, mentor });
     } catch (err) {
-      res
-        .status(500)
-        .json({ error: "Erro ao cadastrar mentor", details: err.message });
+      console.error("Erro detalhado:", err);
+      res.status(500).json({
+        error: "Erro ao cadastrar mentor",
+        details: err.message,
+      });
     }
   },
+
   //LOGIN http://localhost:3001/api/register/login
   loginMentor: async (req, res) => {
     const { EmailMentor, SenhaMentor } = req.body;

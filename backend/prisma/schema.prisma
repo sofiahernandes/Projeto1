@@ -9,7 +9,7 @@ datasource db {
 
 model Mentor {
   IdMentor    Int      @id @default(autoincrement())
-  EmailMentor String   @db.VarChar(250)
+  EmailMentor String  @unique @db.VarChar(250) 
   IsAdmin     Boolean?
   SenhaMentor String   @db.VarChar(80)
   times       Time[]   // Relação com Time

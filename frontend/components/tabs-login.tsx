@@ -91,7 +91,7 @@ export default function TabsLogin() {
       }
 
       const Mentor = await res.json();
-      router.push(`/user/${IdTime.Mentor}/mentor-history`);
+      router.push(`/mentor/${IdMentor}/mentor-history`);
     } catch (error) {
       console.error("Erro ao logar mentor:", error);
     }
@@ -108,7 +108,7 @@ export default function TabsLogin() {
       return;
     }
 
-    const apiUrl = `${backendUrl}/api/loginMentor`;
+    const apiUrl = `${backendUrl}/api/loginAdmin`;
 
     try {
       const res = await fetch(apiUrl, {
