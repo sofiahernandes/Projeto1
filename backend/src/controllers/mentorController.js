@@ -70,6 +70,7 @@ const mentorController = {
     if (!EmailMentor || !RaUsuario) {
       return res.status(400).json("Preencha todos os campos");
     }
+    const hashedPassword = await bcrypt.hash(SenhaMentor, 10);
     try {
       const existing = await prisma.mentor.findUnique({
         where: { EmailMentor },
@@ -89,20 +90,13 @@ const mentorController = {
           IsAdmin: false,
         },
       });
-      //busca o time onde o usuario está alocado pelo IdTime
-      const user = await prisma.Usuario.findUnique({
-      where: { RaUsuario },
-      include: { IdTime: IdTime }
-    });
-
-    // utiliza o id time do usuario e aloca ele dentro da tabela de time no qual o usuario está inserido 
-      await prisma.time.update({
-        where: { IdTime: user.IdTime },
-        data: {
-          mentor: { connect: { IdMentor: mentor.IdMentor } },
-        },
+      //para atualizar a tabela de time, e adicionar no time, o id do mentor (que é o que falta quando o time é cadastrado)
+      await prisma.time.updateMany({
+        where: { RaUsuario },
+        data: { IdMentor: mentor.IdMentor },
       });
-      res.json({ sucess:true, time, mentor});
+
+      res.json(mentor);
     } catch (err) {
       res
         .status(500)
@@ -117,14 +111,13 @@ const mentorController = {
       return res.status(400).json({ error: "Coloque os campos corretamente" });
     }
     try {
-      const mentor = await prisma.mentor.findUnique({
+      const mentor = await prisma.findUnique({
         where: { EmailMentor: String(EmailMentor) },
       });
-
       if (!mentor) {
         return res.status(401).json({ error: "Credenciais inválidas" });
       }
-      const senhaValida = await prisma.compare( 
+      const senhaValida = await bcrypt.compare(
       SenhaMentor, 
       mentor.SenhaMentor
       );
@@ -133,6 +126,7 @@ const mentorController = {
           .status(401)
           .json({ error: "Senha do mentor incorreta, tente novamente." });
       }
+      //para procurar no db, na tabela time, o time que esse mentor está alocado (o id delex'')
       const time = await prisma.time.findFirst({
         where: { IdMentor: mentor.IdMentor },
       });
@@ -143,7 +137,10 @@ const mentorController = {
           .json({ error: "Time não encontrado para este mentor" });
       }
       //res.json({ RaAlunoCriador: mentor.SenhaMentor, IdTime: time.IdTime });
+      //MARIAH, revisa essa linha: pra retornar o login do mentor com o RaAlunoCriador (ra do aluno que cadastrou o mentor) e o id time, deixamos essa linha de res json ou a debaixo do token?
+
       const { token } = createToken({ EmailMentor: mentor.EmailMentor });
+
       res.json({ token, mentor: sanitizeMentor(mentor) });
     } catch (err) {
       return res
