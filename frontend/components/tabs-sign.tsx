@@ -2,10 +2,13 @@
 
 import React from "react";
 import DropdownTurmas from "./dropdown-turmas";
-import { useRouter } from "next/navigation";
 
-export default function SigninTabs() {
-  const router = useRouter();
+interface Props {
+  setIsLogged: React.Dispatch<React.SetStateAction<boolean>>;
+  setRaUsuario: React.Dispatch<React.SetStateAction<number>>;
+}
+
+export default function SigninTabs({ setIsLogged, setRaUsuario }: Props) {
   const [raAlunoMentor, setRaAlunoMentor] = React.useState("");
   const [telefoneAlunoMentor, setTelefoneAlunoMentor] = React.useState("");
   const [nomeAlunoMentor, setNomeAlunoMentor] = React.useState("");
@@ -59,9 +62,10 @@ export default function SigninTabs() {
       const newUser = await res.json();
       console.log("Usuário cadastrado:", newUser);
 
-      //localStorage.setItem("RaAluno1", newUser.RaUsuario);
+      setRaUsuario(Number(raAlunoMentor)) // State used on the sign team route
+      setIsLogged(true); // Go to sign team page
 
-      router.push(`/register/sign-team?raUsuario=${newUser.RaUsuario}`);
+      //localStorage.setItem("RaAluno1", newUser.RaUsuario);
     } catch (error) {
       console.error("Erro ao cadastrar usuário:", error);
 

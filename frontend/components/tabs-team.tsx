@@ -4,10 +4,12 @@ import React, { useEffect } from "react";
 import BackHome from "@/components/back-home";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function TeamTabs() {
+interface Props {
+  raUsuario: number;
+}
+
+export default function TeamTabs({ raUsuario }: Props) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [IdTime] = React.useState("");
   const [NomeTime, setNomeTime] = React.useState("");
   const [RaAluno2, setRaAluno2] = React.useState("");
   const [RaAluno3, setRaAluno3] = React.useState("");
@@ -19,73 +21,69 @@ export default function TeamTabs() {
   const [RaAluno9, setRaAluno9] = React.useState("");
   const [RaAluno10, setRaAluno10] = React.useState("");
 
-  const raUsuarioFromUrl = searchParams.get('raUsuario');
-  const [RaUsuario, setRaUsuario] = React.useState<number>(
-    raUsuarioFromUrl ? Number(raUsuarioFromUrl) : 0
-  );
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  if (!backendUrl) {
-    console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
-    alert("Erro de configuração. Entre em contato com o suporte.");
-    return;
-  }
-
-  const apiUrl = backendUrl.endsWith("/")
-    ? `${backendUrl}api/createTeam`
-    : `${backendUrl}/api/createTeam`;
-
-  console.log("Tentando conectar em:", apiUrl);
-
-  try {
-    const res = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        // Dados da tabela Time
-        NomeTime: NomeTime,
-        RaUsuario: Number(RaUsuario),
-        RaAluno2: Number(RaAluno2) || 0,
-        RaAluno3: Number(RaAluno3) || 0,
-        RaAluno4: Number(RaAluno4) || 0,
-        RaAluno5: Number(RaAluno5) || 0,
-        RaAluno6: Number(RaAluno6) || 0,
-        RaAluno7: Number(RaAluno7) || 0,
-        RaAluno8: Number(RaAluno8) || 0,
-        RaAluno9: Number(RaAluno9) || null,
-        RaAluno10: Number(RaAluno10) || null,
-      }),
-    });
-
-    if (!res.ok) {
-      const err = await res
-        .json()
-        .catch(() => ({ error: "Erro desconhecido" }));
-      console.error("Erro da API:", err);
-      alert("Erro: " + (err.error || `Status ${res.status}`));
+    if (!backendUrl) {
+      console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
+      alert("Erro de configuração. Entre em contato com o suporte.");
       return;
     }
 
-    const newTeam = await res.json();
-    
-    router.push(`/$/new-contribution?userId=${RaUsuario}`);
-  } catch (error) {
-    console.error("Erro ao cadastrar time:", error);
+    const apiUrl = backendUrl.endsWith("/")
+      ? `${backendUrl}api/createTeam`
+      : `${backendUrl}/api/createTeam`;
 
-    if (error instanceof TypeError && error.message === "Failed to fetch") {
-      alert(
-        "Erro de conexão. Verifique se o backend está rodando e se a URL está correta."
-      );
-    } else {
-      alert("Erro ao cadastrar time: " + error);
+    console.log("Tentando conectar em:", apiUrl);
+
+    try {
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          // Dados da tabela Time
+          NomeTime: NomeTime,
+          RaUsuario: Number(raUsuario),
+          RaAluno2: Number(RaAluno2) || 0,
+          RaAluno3: Number(RaAluno3) || 0,
+          RaAluno4: Number(RaAluno4) || 0,
+          RaAluno5: Number(RaAluno5) || 0,
+          RaAluno6: Number(RaAluno6) || 0,
+          RaAluno7: Number(RaAluno7) || 0,
+          RaAluno8: Number(RaAluno8) || 0,
+          RaAluno9: Number(RaAluno9) || null,
+          RaAluno10: Number(RaAluno10) || null,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res
+          .json()
+          .catch(() => ({ error: "Erro desconhecido" }));
+        console.error("Erro da API:", err);
+        alert("Erro: " + (err.error || `Status ${res.status}`));
+        return;
+      }
+
+      const newTeam = await res.json();
+
+      router.push(`/$/new-contribution?userId=${raUsuario}`);
+    } catch (error) {
+      console.error("Erro ao cadastrar time:", error);
+
+      if (error instanceof TypeError && error.message === "Failed to fetch") {
+        alert(
+          "Erro de conexão. Verifique se o backend está rodando e se a URL está correta."
+        );
+      } else {
+        alert("Erro ao cadastrar time: " + error);
+      }
     }
-  }
-};
+  };
 
   return (
     <div className="w-full">
@@ -108,15 +106,15 @@ export default function TeamTabs() {
             />
           </section>
 
-          <section className="border border-[#040404] rounded-lg m-1 flex flex-col items-start justify-start md:w-[400px] overflow-y-scroll h-[480px] max-w-screen ">
-            <form onSubmit={handleSubmit}>
+          <section className="border border-gray-300 py-5 rounded-lg m-1 flex flex-col items-start justify-start md:w-[400px] overflow-y-scroll h-[480px] max-w-screen">
+            <form onSubmit={handleSubmit} className="w-full">
               <div className="text-base mb-1 mt-1 mr-4 ml-4">
                 Nome fantasia do grupo
                 <input
                   type="text"
                   name="NomeTime"
                   placeholder="Insira o nome aqui"
-                  className="block  w-full mr-2 bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-2 text-base focus:outline-none"
+                  className="block w-full mr-2 bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-2 text-base focus:outline-none"
                   value={NomeTime}
                   onChange={(e) => setNomeTime(e.target.value)}
                 />
@@ -223,7 +221,7 @@ export default function TeamTabs() {
               </div>
               <button
                 type="submit"
-                className="border-transparent text-white hover:text-white! hover:bg-secondary/80 py-2 px-6 m-2 bg-secondary self-end rounded-lg"
+                className="border-transparent text-white hover:text-white! hover:bg-secondary/80 py-2 px-6 m-4 bg-secondary self-end rounded-lg"
               >
                 Cadastrar
               </button>
