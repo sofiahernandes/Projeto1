@@ -81,7 +81,7 @@ export default function UserProfile() {
 
     try {
       const response = await fetch(
-        `${backend_url}/api/${RaUsuario}/createMentor`,
+        `${backend_url}/api/createMentor/${RaUsuario}`,
         {
           method: "POST",
           headers: {

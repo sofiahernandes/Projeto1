@@ -65,7 +65,7 @@ const mentorController = {
 
   //POST http://localhost:3001/api/createMentor/:RaUsuario
   createMentor: async (req, res) => {
-  const { EmailMentor, RaUsuario } = req.body;
+    const { EmailMentor, RaUsuario } = req.body;
 
     if (!EmailMentor) {
       return res.status(400).json({
@@ -88,7 +88,7 @@ const mentorController = {
       const mentor = await prisma.mentor.create({
         data: {
           EmailMentor,
-          SenhaMentor: Number(RaUsuario),
+          SenhaMentor: String(RaUsuario),
           IsAdmin: false,
         },
       });
@@ -130,12 +130,10 @@ const mentorController = {
       if (!mentor) {
         return res.status(401).json({ error: "Credenciais inválidas" });
       }
-      const senhaValida = await prisma.compare(SenhaMentor, mentor.SenhaMentor);
-      if (!senhaValida) {
-        return res
-          .status(401)
-          .json({ error: "Senha do mentor incorreta, tente novamente." });
+      if (mentor.SenhaMentor !== String(SenhaMentor)) {
+        return { error: "Senha incorreta" };
       }
+
       const time = await prisma.time.findFirst({
         where: { IdMentor: mentor.IdMentor },
       });
