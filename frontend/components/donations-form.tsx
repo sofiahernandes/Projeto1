@@ -96,6 +96,7 @@ export default function DonationsForm({
     }
   };
 
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full max-w-xl">
       <div className="rounded-xl bg-[#DCA4A9] p-4">

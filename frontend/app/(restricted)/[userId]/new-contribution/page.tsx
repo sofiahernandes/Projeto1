@@ -115,6 +115,7 @@ export default function Donations() {
           onClick={() => setMenuOpen(true)}
         >
           ☰
+          ☰
         </button>
 
         <div className="sticky top-0 left-0 right-0 z-10 md:static bg-white/80 supports-[backdrop-filter]:bg-white/60">
