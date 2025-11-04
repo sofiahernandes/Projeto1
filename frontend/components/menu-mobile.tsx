@@ -18,7 +18,7 @@ export default function MenuMobile({ raUsuario }: Properties) {
   const router = useRouter();
 
   
-  const homeHref = `/${raUsuario}/team-history;
+  const homeHref = `/${raUsuario}/team-history`;
   const createHref = `/${raUsuario}/new-contribution`;
   const historyHref = `/${raUsuario}/user-profile`;
 

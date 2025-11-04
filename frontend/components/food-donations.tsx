@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 
 // Tipo que suas callbacks esperam (nome minúsculo)
-type Alimento = { nome: string; Unidade: string; Kg: string };
+type Alimento = { Nome: string; quantidade: string; pesoUnidade: string };
 
 interface Properties {
   raUsuario: number;
@@ -42,27 +42,32 @@ export default function FoodDonations({
   onAlimentosChange,
   onTotaisChange,
 }: Properties) {
+ 
 
-  type AlimentoRow = { id: number; Nome: string; Unidade: string; Kg: string };
-  const ALIMENTO_SHAPE: AlimentoRow = { id: 0, Nome: "", Unidade: "", Kg: "" };
+type AlimentoRow = {
+  id: number;
+  Nome: string;
+  quantidade: string;   // antes: Unidade
+  pesoUnidade: string;  // antes: Kg
+};
 
   const [alimentos, setAlimentos] = useState<AlimentoRow[]>([
-    { id: 1, Nome: "Arroz", Unidade: "", Kg: "" },
-    { id: 2, Nome: "Feijão", Unidade: "", Kg: "" },
-    { id: 3, Nome: "Macarrão", Unidade: "", Kg: "" },
-    { id: 4, Nome: "Farinha de Mandioca", Unidade: "", Kg: "" },
-    { id: 5, Nome: "Farinha de Trigo", Unidade: "", Kg: "" },
-    { id: 6, Nome: "Leite Integral", Unidade: "", Kg: "" },
-    { id: 7, Nome: "Açucar Refinado", Unidade: "", Kg: "" },
-    { id: 8, Nome: "Óleo de Soja", Unidade: "", Kg: "" },
-    { id: 9, Nome: "Café em Pó", Unidade: "", Kg: "" },
-    { id: 10, Nome: "Manteiga", Unidade: "", Kg: "" },
-    { id: 11, Nome: "Sal", Unidade: "", Kg: "" },
-    { id: 12, Nome: "Fubá", Unidade: "", Kg: "" },
-    { id: 13, Nome: "Sardinha", Unidade: "", Kg: "" },
-    { id: 14, Nome: "Polpa de Tomate", Unidade: "", Kg: "" },
-    { id: 15, Nome: "Milho Enlatado", Unidade: "", Kg: "" },
-    { id: 16, Nome: "Ervilha Enlatada", Unidade: "", Kg: "" },
+    { id: 1, Nome: "Arroz", quantidade: "", pesoUnidade: "" },
+    { id: 2, Nome: "Feijão", quantidade: "", pesoUnidade: "" },
+    { id: 3, Nome: "Macarrão", quantidade: "", pesoUnidade: "" },
+    { id: 4, Nome: "Farinha de Mandioca", quantidade: "", pesoUnidade: "" },
+    { id: 5, Nome: "Farinha de Trigo", quantidade: "", pesoUnidade: "" },
+    { id: 6, Nome: "Leite Integral", quantidade: "", pesoUnidade: "" },
+    { id: 7, Nome: "Açucar Refinado", quantidade: "", pesoUnidade: "" },
+    { id: 8, Nome: "Óleo de Soja", quantidade: "", pesoUnidade: "" },
+    { id: 9, Nome: "Café em Pó", quantidade: "", pesoUnidade: "" },
+    { id: 10, Nome: "Manteiga", quantidade: "", pesoUnidade: "" },
+    { id: 11, Nome: "Sal", quantidade: "", pesoUnidade: "" },
+    { id: 12, Nome: "Fubá", quantidade: "", pesoUnidade: "" },
+    { id: 13, Nome: "Sardinha", quantidade: "", pesoUnidade: "" },
+    { id: 14, Nome: "Polpa de Tomate", quantidade: "", pesoUnidade: "" },
+    { id: 15, Nome: "Milho Enlatado", quantidade: "", pesoUnidade: "" },
+    { id: 16, Nome: "Ervilha Enlatada", quantidade: "", pesoUnidade: "" },
   ]);
 
   const PONTOS_POR_KG: Record<string, number> = {
@@ -70,61 +75,80 @@ export default function FoodDonations({
     "Feijão": 5,
   };
 
-  function parseNumber(str: string | number) {
-    if (typeof str === "number") return Number.isFinite(str) ? str : 0;
-    const n = Number(String(str).replace(",", "."));
+  function parseNumber(str: string | number) {   
+   if (typeof str === "number") return Number.isFinite(str) ? str : 0;
+    const s = String(str).trim();
+    if (s === "") return 0;                             // evita NaN
+    const n = Number(s.replace(",", "."));
     return Number.isFinite(n) ? n : 0;
   }
+  
 
   const fmt = (n: number) =>
     n.toLocaleString("pt-BR", { maximumFractionDigits: 2 });
 
-  const totais = useMemo(() => {
-    let kgTotal = 0;
-    let pontos = 0;
 
-    alimentos.forEach(({ Nome, Unidade, Kg }) => {
-      const u = parseNumber(Unidade);    
-      const kgPorUnidade = parseNumber(Kg); 
-      const kg = u * kgPorUnidade;
+const totais = useMemo(() => {
+  let kgTotal = 0, pontos = 0;
+  alimentos.forEach(({ Nome, quantidade, pesoUnidade }) => {
+    const q = parseNumber(quantidade);
+    const kgU = parseNumber(pesoUnidade);
+    const kg = q * kgU;
+    kgTotal += kg;
+    const ptsKg = PONTOS_POR_KG[Nome] ?? 0;
+    pontos += kg * ptsKg;
+  });
+  return { kgTotal, pontos };
+}, [alimentos]);
 
-      kgTotal += kg;
-      const ptsKg = PONTOS_POR_KG[Nome] ?? 0;
-      pontos += kg * ptsKg;
-    });
 
-    return { kgTotal, pontos };
-  }, [alimentos]);
 
-  useEffect(() => {
-    onAlimentosChange?.(
-      alimentos.map(({ id, Nome, Unidade, Kg }) => ({
-        nome: Nome,
-        Unidade,
-        Kg,
-      }))
-    );
-  }, [alimentos, onAlimentosChange]);
+useEffect(() => {
+  onAlimentosChange?.(
+    (alimentos ?? []).map(({ id, Nome, quantidade, pesoUnidade }) => ({
+      id,
+      Nome,
+      quantidade,
+      pesoUnidade,
+    }))
+  );
+}, [alimentos, onAlimentosChange]);
+
 
   useEffect(() => {
     onTotaisChange?.(totais);
   }, [totais, onTotaisChange]);
 
   const handleAlimentoChange = (
-    index: number,                
-    campo: "Unidade" | "Kg",      
+    id: number,
+    campo: "quantidade" | "pesoUnidade",
     valor: string
   ) => {
-    setAlimentos((prev) => {
-      const next = [...prev];
-      next[index] = { ...next[index], [campo]: valor };
-      return next;
-    });
+    setAlimentos((prev) =>
+      prev.map((row) =>
+        row.id === id ? { ...row, [campo]: valor } : row
+      )
+    );
 
     const numero = valor === "" ? undefined : Number(valor.replace(",", "."));
-    if (campo === "Unidade") setQuantidade(numero);
-    if (campo === "Kg") setPesoUnidade(numero);
+    if (campo === "quantidade") setQuantidade(numero);
+    if (campo === "pesoUnidade") setPesoUnidade(numero);
   };
+  
+  // (Opcional) helper para montar payload no shape do back
+  // const buildPayload = () =>
+  //   alimentos.map(({ id, Nome, Unidade, Kg }) => ({
+  //     alimentoId: id,
+  //     Nome: Nome,
+  //     alimento: {
+  //       Unidade: Number(String(Unidade).replace(",", ".")) || 0,
+  //       Kg: Number(String(Kg).replace(",", ".")) || 0,
+  //     },
+  //     totalKg:
+  //       (Number(String(Unidade).replace(",", ".")) || 0) *
+  //       (Number(String(Kg).replace(",", ".")) || 0),
+  //   }));
+
 
 
   return (
@@ -143,15 +167,16 @@ export default function FoodDonations({
       <div className="mb-4 flex items-center gap-3">
         <input
           className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
-          type="number"
+          type="text"
           placeholder="Ex: 1200 kg"
           value={meta ?? ""}
           onChange={(e) => {
-            const v = e.currentTarget.value;
-            setMeta(v === "" ? undefined : Number(v));
+         const v = e.currentTarget.value;
+          setMeta(v === "" ? undefined : Number(v));
           }}
-          inputMode="decimal"
+          inputMode="numeric"
         />
+
         <div className="rounded-lg bg-white border border-[#BEB7AE] px-4 py-1.5 whitespace-nowrap w-[300px] overflow-hidden text-ellipsis">
           <span>Total em Kg:</span>
           <span className="ml-2">{fmt(totais.kgTotal)}</span>
@@ -166,7 +191,7 @@ export default function FoodDonations({
       </div>
 
       <div className="flex-1 min-h-0">
-        <div className="h-full overflow-auto pr-1 no-scrollbar">
+        <form id="FormAlimenticio" className= "h-full overflow-auto pr-1 no-scrollbar">
           {alimentos.map((alimento, index) => (
             <div key={alimento.id} className="flex gap-4 w-full">
               {/* Nome do alimento */}
@@ -179,26 +204,26 @@ export default function FoodDonations({
                 className="w-[30%] bg-white border border-gray-300 rounded-lg px-3 py-2 text-center appearance-none"
                 type="number"
                 placeholder="Unidade"
-                value={alimento.Unidade}
+                value={alimento.quantidade ?? ""}
                 onChange={(e) =>
-                  handleAlimentoChange(index, "Unidade", e.currentTarget.value)
+                handleAlimentoChange(alimento.id, "quantidade", e.currentTarget.value)
                 }
                 inputMode="numeric"
               />
-
+             {/* pesoUnidade*/}
               <input
                 className="w-[30%] bg-white border border-gray-300 rounded-lg px-3 py-2 text-center appearance-none"
                 type="number"
                 placeholder="Kg"
-                value={alimento.Kg}
+                value={alimento.pesoUnidade}
                 onChange={(e) =>
-                  handleAlimentoChange(index, "Kg", e.currentTarget.value)
+                handleAlimentoChange(alimento.id, "pesoUnidade", e.currentTarget.value)
                 }
                 inputMode="decimal"
               />
             </div>
           ))}
-        </div>
+        </form>
       </div>
     </form>
   );
