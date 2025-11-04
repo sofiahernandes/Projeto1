@@ -111,7 +111,7 @@ const Modal: React.FC<React.PropsWithChildren<Properties>> = ({
         )}
         <div className={classNames.box()}>
           <CloseButton
-            className="z-20"
+            className="z-20 text-2xl"
             isActive={isActiveControl}
             onClick={onClose}
           />

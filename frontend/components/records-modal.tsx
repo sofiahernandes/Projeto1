@@ -1,6 +1,7 @@
 import placeholderComprovante from "@/assets/placeholderComprovante.jpg";
 import Modal from "../hooks/use-modal";
 import DeleteContribution from "@/components/delete-contribution";
+import formatBRL from "./formatBRL";
 
 interface ContributionData {
   RaUsuario: number;
@@ -12,20 +13,24 @@ interface ContributionData {
   Comprovante?: string;
   IdContribuicao: number;
   DataContribuicao: string;
+  NomeAlimento?: string;
+  PontuacaoAlimento: number;
+  PesoUnidade: number;
+  uuid: string;
 }
 
 interface RecordsModalProps {
   data: ContributionData;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onDeleted?: () => void
+  onDeleted?: () => void;
 }
 
 const RecordsModal: React.FC<RecordsModalProps> = ({
   data,
   isOpen,
   setIsOpen,
-  onDeleted
+  onDeleted,
 }) => {
   if (!data) return null;
 
@@ -35,7 +40,7 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
 
   return (
     <Modal isActive={isOpen} onClose={toggleModal}>
-      <div className="overscroll-none overflow-hidden  drop-shadow-2xl items-center relative bg-[#FFFDF5] rounded-2xl ">
+      <div className="overflow-y-scroll max-h-300  drop-shadow-2xl items-center relative bg-[#FFFDF5] rounded-2xl ">
         <div className="flex max-w-[95vw] flex-col gap-5 z-10 px-10 py-8 w-90 text-left">
           <div className="">
             <div>
@@ -60,20 +65,43 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
 
                   <div>
                     <p className="text-sm text-gray-600">Quantidade</p>
-                    <p className="font-semibold">{data.Quantidade}</p>
+                    <p className="font-semibold">{Intl.NumberFormat("pt-BR").format(data.Quantidade)} 
+                    </p>
                   </div>
 
                   {data.Meta && (
                     <div>
                       <p className="text-sm text-gray-600">Meta</p>
-                      <p className="font-semibold">{data.Meta}</p>
+                      <p className="font-semibold">{typeof data.Meta === "number" &&
+                        Number.isFinite(data.Meta)
+                          ? new Intl.NumberFormat("pt-BR").format(data.Meta)
+                          : "-"}
+                        </p>
                     </div>
                   )}
 
                   {data.Gastos && (
                     <div>
                       <p className="text-sm text-gray-600">Gastos</p>
-                      <p className="font-semibold">{data.Gastos}</p>
+                      <p className="font-semibold">{formatBRL(data.Gastos)}</p>
+                    </div>
+                  )}
+
+                  {data.NomeAlimento && (
+                    <div className="flex justify-between">
+                      <div>
+                        <p className="text-sm text-gray-600"> Alimentos: </p>
+                        <p className="font-semibold ">{data.NomeAlimento} </p>
+                      </div>
+
+                      <div>
+                        <p className="text-sm text-gray-600">
+                          Peso unitário:
+                        </p>
+                        <p className="font-semibold ">
+                          {data.PesoUnidade} kg/g
+                        </p>
+                      </div>
                     </div>
                   )}
 
@@ -81,29 +109,29 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
                     <div>
                       <p className="text-sm text-gray-600 mb-2">Comprovantes</p>
                       <div className="flex items-start">
-                        {/* {data.Comprovante ? (
-                      <img
-                        src={data.Comprovante}
-                        alt="Anexo de comprovante"
-                        className="rounded-md w-full max-h-[300px] object-contain border border-gray-300"
-                      />
-                    ) : ( */}
-                        <img
-                          src={placeholderComprovante.src}
-                          alt="Anexo de comprovante"
-                          className="rounded-md aspect-square max-h-[45px] object-contain border border-gray-200 mb-6"
-                        />
+                        {data.Comprovante ? (
+                          <img
+                            src={data.Comprovante}
+                            alt="Anexo de comprovante"
+                            className="rounded-md w-full max-h-[300px] object-contain border border-gray-300"
+                          />
+                        ) : (
+                          <img
+                            src={placeholderComprovante.src}
+                            alt="Anexo de comprovante"
+                            className="rounded-md aspect-square max-h-[45px] object-contain border border-gray-200 mb-6"
+                          />
+                        )}
                       </div>
                     </div>
                   )}
                 </div>
               </div>
             </div>
-
             <DeleteContribution
               IdContribuicao={data.IdContribuicao}
               onDeleted={() => {
-                setIsOpen(false)
+                setIsOpen(false);
                 onDeleted?.();
               }}
             />
@@ -113,5 +141,4 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
     </Modal>
   );
 };
-
 export default RecordsModal;

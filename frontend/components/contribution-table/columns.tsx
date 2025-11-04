@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,11 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import {
-  MoreHorizontal,
-  Clipboard,
-  Eye,
-} from "lucide-react";
+import { MoreHorizontal, Clipboard, Eye } from "lucide-react";
+import formatBRL from "../formatBRL";
 
 export type Contribution = {
   RaUsuario: number;
@@ -27,17 +24,16 @@ export type Contribution = {
   Comprovante?: string;
   IdContribuicao: number;
   DataContribuicao: string;
+  NomeAlimento?: string;
+  PontuacaoAlimento: number;
+  PesoUnidade: number;
+  uuid: string;
 };
 
 export type ContributionActions = {
-  onView?: (c: Contribution) => void;        
-  onCopied?: (id: number) => void;           
+  onView?: (c: Contribution) => void;
+  onCopied?: (id: number) => void;
 };
-
-const formatBRL = (v?: number) =>
-  typeof v === "number"
-    ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v)
-    : "-"; //alterar pra kg quando necessario
 
 export const makeContributionColumns = (
   actions: ContributionActions = {}
@@ -47,28 +43,31 @@ export const makeContributionColumns = (
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
+          variant="prettyHeader"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Fonte da doação
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
-    cell: ({ row }) => <span className="font-medium">{row.original.Fonte ?? "-"}</span>,
+    cell: ({ row }) => (
+      <span className="font-medium w-[220px] block truncate">
+        {row.original.Fonte ?? "-"}</span>
+    ),
   },
   {
     accessorKey: "DataContribuicao",
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
+          variant="prettyHeader"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Data
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => {
       const d = row.original.DataContribuicao;
@@ -81,13 +80,13 @@ export const makeContributionColumns = (
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
+          variant="prettyHeader"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Tipo
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
   },
   {
@@ -95,47 +94,114 @@ export const makeContributionColumns = (
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
+          variant="prettyHeader"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Quantidade
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => {
       const q = row.original.Quantidade;
-      return <span>{Number.isFinite(q) ? new Intl.NumberFormat("pt-BR").format(q) : "-"}</span>;
+      return (
+        <span className="w-[80px] block truncate">
+          {Number.isFinite(q) ? new Intl.NumberFormat("pt-BR").format(q) : "-"}
+        </span>
+      );
     },
   },
+  {
+  id: "PesoTotal",
+  accessorFn: (row) => {
+    if (row.TipoDoacao !== "Alimenticia") return null;
+    const q = Number(row.Quantidade);
+    const pu = Number(row.PesoUnidade);
+    const PesoTotal = q * pu;
+    return Number.isFinite(PesoTotal) ? PesoTotal : null;
+  },
+  header: ({ column }) => (
+    <Button
+      variant="prettyHeader"
+      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+    >
+      Peso Total
+      <ArrowUpDown className="ml-2 h-4 w-4" />
+    </Button>
+  ),
+  cell: ({ getValue, row }) => {
+    const v = getValue<number | null>();
+    return row.original.TipoDoacao === "Alimenticia" && v != null
+      ? <span className="w-[80px] block truncate">
+        {new Intl.NumberFormat("pt-BR").format(v)} kg</span>
+      : <span> - </span>;
+  },
+},
+
+{
+  id: "PontuacaoTotal",
+  accessorFn: (row) => {
+    if (row.TipoDoacao !== "Alimenticia") return null;
+    const quant = Number(row.Quantidade);
+    const pont = Number(row.PontuacaoAlimento);
+    const PontuacaoTotal = quant * pont;
+    return Number.isFinite(PontuacaoTotal) ? PontuacaoTotal : null;
+  },
+  header: ({ column }) => (
+    <Button
+      variant="prettyHeader"
+      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+    >
+      Pontuação Total
+      <ArrowUpDown className="ml-2 h-4 w-4" />
+    </Button>
+  ),
+  cell: ({ getValue, row }) => {
+    const v = getValue<number | null>();
+    return row.original.TipoDoacao === "Alimenticia" && v != null
+      ? <span className="w-[60px] block truncate">
+        {new Intl.NumberFormat("pt-BR").format(v)}</span>
+      : <span> - </span>;
+  },
+},
   {
     accessorKey: "Gastos",
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
+          variant="prettyHeader"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Gastos
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => <span>{formatBRL(row.original.Gastos)}</span>,
   },
   {
     accessorKey: "Meta",
-header: ({ column }) => {
+    header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
+          variant="prettyHeader"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Meta
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
-    },    cell: ({ row }) => <span>{formatBRL(row.original.Meta)}</span>,
+      );
+    },
+    cell: ({ row }) => {
+      const meta = row.original.Meta;
+      return (
+        <span>
+          {typeof meta === "number" && Number.isFinite(meta)
+            ? new Intl.NumberFormat("pt-BR").format(meta)
+            : "-"}
+        </span>
+      );
+    },
   },
   {
     accessorKey: "Comprovante",
@@ -177,7 +243,9 @@ header: ({ column }) => {
 
             <DropdownMenuItem
               onClick={async () => {
-                await navigator.clipboard.writeText(String(c.IdContribuicao));
+                await navigator.clipboard.writeText(
+                  c.IdContribuicao.toString()
+                );
                 actions.onCopied?.(c.IdContribuicao);
               }}
             >
@@ -195,4 +263,4 @@ header: ({ column }) => {
     },
   },
 ];
-``
+``;

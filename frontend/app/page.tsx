@@ -9,136 +9,217 @@ import Hero from "@/components/hero";
 import Footer from "@/components/footer";
 
 import { overallMetrics } from "@/lib/overall-metrics";
-import { donations } from "@/lib/donations";
+import { useEffect, useState } from "react";
+
+interface ContribuicaoFinanceira {
+  IdContribuicaoFinanceira: number;
+  DataContribuicao: string | null;
+  Quantidade: number;
+  TipoDoacao: string;
+  Gastos: number;
+  Meta?: number | null;
+  Fonte?: string | null;
+  Comprovante?: string | null;
+  RaUsuario?: number | null;
+}
+
+interface ContribuicaoAlimenticia {
+  IdContribuicaoAlimenticia: number;
+  DataContribuicao: string | null;
+  Quantidade: number;
+  PesoUnidade: number;
+  Gastos: number;
+  Meta?: number | null;
+  Fonte?: string | null;
+  Comprovante?: string | null;
+  RaUsuario?: number | null;
+}
 
 export default function PublicDashboard() {
-  const recentDonations = donations.slice(0, 6);
-  const biggestDonations = donations.slice(0, 6);
+  const [biggestMoneyDonations, setBiggestMoneyDonations] = useState<
+    ContribuicaoFinanceira[]
+  >([]);
+  const [biggestFoodDonations, setBiggestFoodDonations] = useState<
+    ContribuicaoAlimenticia[]
+  >([]);
+
+  useEffect(() => {
+    const fetchDonations = async () => {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+      if (!backendUrl) {
+        console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
+        return;
+      }
+
+      try {
+        // Fetch Finance Donations
+        const [financeRes, foodRes] = await Promise.all([
+          fetch(`${backendUrl}/api/contributions/financeiras`),
+          fetch(`${backendUrl}/api/contributions/alimenticias`),
+        ]);
+
+        if (!financeRes.ok || !foodRes.ok) {
+          throw new Error("Erro ao buscar dados de contribuições");
+        }
+
+        const financeiras: ContribuicaoFinanceira[] = await financeRes.json();
+        const alimenticias: ContribuicaoAlimenticia[] = await foodRes.json();
+
+        // Sort and get top 6 for each
+        const topFinance = [...financeiras]
+          .sort((a, b) => b.Quantidade - a.Quantidade)
+          .slice(0, 6);
+
+        const topFood = [...alimenticias]
+          .sort(
+            (a, b) =>
+              b.Quantidade * b.PesoUnidade - a.Quantidade * a.PesoUnidade
+          )
+          .slice(0, 6);
+
+        setBiggestMoneyDonations(topFinance);
+        setBiggestFoodDonations(topFood);
+      } catch (error) {
+        console.error("Erro ao buscar doações:", error);
+      }
+    };
+
+    fetchDonations();
+  }, []);
 
   return (
     <div className="flex flex-col">
-    <Hero />
+      <Hero />
 
-    <main id="public-graph" className="w-full lg:p-10 p-6 flex align-center justify-center">
-      <div className="w-full">
-        <div className="flex justify-center w-full pb-4">
-          <h1 className="font-light text-white text-sm">
-            Arkana Dashboard
-          </h1>
-        </div>
+      <main
+        id="public-graph"
+        className="w-full lg:p-10 p-6 flex align-center justify-center"
+      >
+        <div className="w-full">
+          <div className="flex justify-center w-full pb-4">
+            <h1 className="font-light text-white text-sm">Arkana Dashboard</h1>
+          </div>
 
-        <div className="max-w-7xl mx-auto">
-          {/* Catões de Estatísticas */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-            {overallMetrics.map((metric, index) => (
-              <Card
-                key={index}
-                className="h-22 justify-center bg-primary border-none shadow-sm overflow-hidden"
-              >
+          <div className="max-w-7xl mx-auto">
+            {/* Cards de Estatísticas */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+              {overallMetrics.map((metric, index) => (
+                <Card
+                  key={index}
+                  className="h-22 justify-center bg-primary border-none shadow-sm overflow-hidden"
+                >
+                  <CardContent className="px-6">
+                    <div className="flex items-center gap-3 text-white">
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+                        <metric.icon className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <p className="text-sm">{metric.label}</p>
+                        <p className="text-2xl font-semibold">{metric.value}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Dashboard */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <Card className="hover:border-secondary/50 bg-transparent border border-secondary/40">
                 <CardContent className="px-6">
-                  <div className="flex items-center gap-3 text-white">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center">
-                      <metric.icon className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <p className="text-sm">{metric.label}</p>
-                      <p className="text-2xl font-semibold">{metric.value}</p>
-                    </div>
+                  <h2 className="text-lg text-center font-semibold text-gray-900 pb-3">
+                    Maiores Doações Financeiras
+                  </h2>
+                  <div>
+                    {biggestMoneyDonations.length > 0 ? (
+                      biggestMoneyDonations.map((item, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-2 rounded-lg hover:bg-secondary/20 cursor-pointer transition-colors"
+                        >
+                          <p className="text-gray-900">
+                            {item.Fonte ?? "Fonte desconhecida"}
+                          </p>
+                          <span className="text-secondary text-md">
+                            R${item.Quantidade.toLocaleString("pt-BR")}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="mx-auto text-center text-gray-700">
+                        Nenhuma doação financeira encontrada.
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-
-          {/* Dashboard */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Contribuições Recentes */}
-            <Card className="hover:border-secondary/50 bg-transparent border border-secondary/40">
-              <CardContent className="px-6">
-                <h2 className="text-lg text-center font-semibold text-gray-900 pb-3">
-                  Contribuições Recentes
-                </h2>
-                <div>
-                  {recentDonations.map((activity, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-4 p-2 rounded-lg hover:bg-secondary/20 cursor-pointer transition-colors"
+              <Card className="hover:border-secondary/50 bg-transparent border border-secondary/40">
+                <CardContent className="px-6">
+                  <h2 className="text-lg text-center font-semibold text-gray-900 pb-3">
+                    Maiores Doações Alimentícias
+                  </h2>
+                  <div>
+                    {biggestFoodDonations.length > 0 ? (
+                      biggestFoodDonations.map((item, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-2 rounded-lg hover:bg-secondary/20 cursor-pointer transition-colors"
+                        >
+                          <p className="text-gray-900">
+                            {item.Fonte ?? "Fonte desconhecida"}
+                          </p>
+                          <span className="text-secondary text-md">
+                            {(
+                              item.Quantidade * item.PesoUnidade
+                            ).toLocaleString("pt-BR")}{" "}
+                            kg
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="mx-auto text-center text-gray-700">
+                        Nenhuma doação alimentícia encontrada.
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            {/* Quick Actions */}
+            <Card className="border-none shadow-none bg-transparent">
+              <CardContent className="px-0">
+                <div className="grid grid-cols-2 gap-4">
+                  <Button className="overflow-hidden h-18 flex-col gap-2 bg-secondary/40 hover:bg-secondary/50 hover:border-secondary/60 border border-secondary/40 transition-colors">
+                    <Link
+                      href="/register/login"
+                      className="flex flex-col gap-2 items-center"
                     >
-                      <div className="w-6 h-6 rounded-3xl flex items-center justify-center text-white">
-                        <activity.icon className="w-4 h-4 text-secondary" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-gray-900">{activity.name}</p>
-                      </div>
-                      <p className="text-sm text-gray-600">{activity.team}</p>
-                      <span className="text-sm text-gray-500">
-                        {activity.date}
+                      <BookOpen className="w-6 h-6 text-gray-600" />
+                      <span className="text-sm text-gray-900 font-medium">
+                        Registrar Doações
                       </span>
-                    </div>
-                  ))}
+                    </Link>
+                  </Button>
+                  <Button className="bg-secondary/40 overflow-hidden h-18 gap-2 hover:bg-secondary/50 border border-secondary/40">
+                    <Link
+                      href="/public-reports"
+                      className="flex flex-col gap-2 items-center"
+                    >
+                      <FileText className="w-6 h-6 text-gray-600" />
+                      <span className="text-sm text-gray-900 font-medium">
+                        Ver Relatórios
+                      </span>
+                    </Link>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
-
-            {/* Times Recentemente Ativos */}
-            <Card className="hover:border-secondary/50 bg-transparent border border-secondary/40">
-              <CardContent className="px-6">
-                <h2 className="text-lg text-center font-semibold text-gray-900 pb-3">
-                  Maiores Doações
-                </h2>
-                <div>
-                  {biggestDonations.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-4 p-2 rounded-lg hover:bg-secondary/20 cursor-pointer transition-colors"
-                    >
-                      <div className="flex-1">
-                        <p className="text-gray-900">{item.team}</p>
-                      </div>
-                      <span className="text-secondary text-md">
-                        R${item.ammount}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
           </div>
-
-          {/* Quick Actions */}
-          <Card className="border-none shadow-none bg-transparent">
-            <CardContent className="px-0">
-              <div className="grid grid-cols-2 gap-4">
-                <Button className="overflow-hidden h-18 flex-col gap-2 bg-secondary/40 hover:bg-secondary/50 hover:border-secondary/60 border border-secondary/40 transition-colors">
-                  <Link
-                    href="/register/login"
-                    className="flex flex-col gap-2 items-center"
-                  >
-                    <BookOpen className="w-6 h-6 text-gray-600" />
-                    <span className="text-sm text-gray-900 font-medium">
-                      Registrar Doações
-                    </span>
-                  </Link>
-                </Button>
-                <Button className="bg-secondary/40 overflow-hidden h-18 gap-2 hover:bg-secondary/50 border border-secondary/40">
-                  <Link
-                    href="/public-reports"
-                    className="flex flex-col gap-2 items-center"
-                  >
-                    <FileText className="w-6 h-6 text-gray-600" />
-                    <span className="text-sm text-gray-900 font-medium">
-                      Ver Relatórios
-                    </span>
-                  </Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         </div>
-      </div>
-    </main>
-
-    <Footer />
+      </main>
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
