@@ -6,40 +6,41 @@ import React, { useEffect, useMemo, useState } from "react";
 type AlimentoRow = {
   id: number;
   Nome: string;
-  quantidade: string;   
-  pesoUnidade: string;  
+  quantidade: string;
+  pesoUnidade: string;
 };
 
 interface Properties {
   raUsuario: number;
-  setRaUsuario: React.Dispatch<React.SetStateAction<number | undefined>>;
-
-
+  setRaUsuario: React.Dispatch<React.SetStateAction<number>>;
+  tipoDoacao: string;
+  setTipoDoacao: React.Dispatch<React.SetStateAction<string>>;
   quantidade: number | undefined;
   setQuantidade: React.Dispatch<React.SetStateAction<number | undefined>>;
   pesoUnidade: number | undefined;
   setPesoUnidade: React.Dispatch<React.SetStateAction<number | undefined>>;
-
   fonte: string;
   setFonte: React.Dispatch<React.SetStateAction<string>>;
   meta: number | undefined;
   setMeta: React.Dispatch<React.SetStateAction<number | undefined>>;
   gastos: number | undefined;
   setGastos: React.Dispatch<React.SetStateAction<number | undefined>>;
-
-
-  onAlimentosChange?: (alimentos: {
-    id: number;
-    Nome: string;
-    quantidade: string;
-    pesoUnidade: string;
-  }[]) => void;
+  onAlimentosChange?: (
+    alimentos: {
+      id: number;
+      Nome: string;
+      quantidade: string;
+      pesoUnidade: string;
+    }[]
+  ) => void;
   onTotaisChange?: (totais: { kgTotal: number; pontos: number }) => void;
 }
 
 export default function FoodDonations({
   raUsuario,
   setRaUsuario,
+  tipoDoacao,
+  setTipoDoacao,
   quantidade,
   setQuantidade,
   pesoUnidade,
@@ -53,7 +54,6 @@ export default function FoodDonations({
   onAlimentosChange,
   onTotaisChange,
 }: Properties) {
-
   const [alimentos, setAlimentos] = useState<AlimentoRow[]>([
     { id: 1, Nome: "Arroz", quantidade: "", pesoUnidade: "" },
     { id: 2, Nome: "Feijão", quantidade: "", pesoUnidade: "" },
@@ -92,7 +92,10 @@ export default function FoodDonations({
     Math.abs(a - b) < eps;
 
   const fmt2 = (n: number) =>
-    n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    n.toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
 
   // Totais do grid (kg e pontos)
   const totais = useMemo(() => {
@@ -113,7 +116,10 @@ export default function FoodDonations({
   // quantidade (global) = SOMA de quantidades do grid
   // pesoUnidade (global) = MÉDIA de kg/unidade do grid
   useEffect(() => {
-    const somaQtd = alimentos.reduce((acc, a) => acc + parseNumber(a.quantidade), 0);
+    const somaQtd = alimentos.reduce(
+      (acc, a) => acc + parseNumber(a.quantidade),
+      0
+    );
 
     let somaPeso = 0;
     let countPeso = 0;
@@ -125,7 +131,7 @@ export default function FoodDonations({
       }
     }
     const mediaPeso = countPeso > 0 ? somaPeso / countPeso : 0;
-    
+
     if (!nearlyEqual(somaQtd, quantidade ?? 0)) {
       setQuantidade(somaQtd);
     }
@@ -138,7 +144,10 @@ export default function FoodDonations({
   useEffect(() => {
     onAlimentosChange?.(
       alimentos.map(({ id, Nome, quantidade, pesoUnidade }) => ({
-        id, Nome, quantidade, pesoUnidade,
+        id,
+        Nome,
+        quantidade,
+        pesoUnidade,
       }))
     );
   }, [alimentos, onAlimentosChange]);
@@ -155,8 +164,8 @@ export default function FoodDonations({
   ) => {
     // Remove espaços; deixa vírgula se o usuário quiser
     const v = valor.replace(/\s+/g, "");
-    setAlimentos(prev =>
-      prev.map(row => (row.id === id ? { ...row, [campo]: v } : row))
+    setAlimentos((prev) =>
+      prev.map((row) => (row.id === id ? { ...row, [campo]: v } : row))
     );
   };
 
@@ -177,13 +186,15 @@ export default function FoodDonations({
       <div className="mb-4 flex items-center gap-3 flex-wrap">
         <input
           className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
-          type="text"                 // aceita vírgula
+          type="text" // aceita vírgula
           placeholder="Ex: 1200"
           value={meta ?? ""}
           onChange={(e) => {
             const raw = e.currentTarget.value;
             const num = raw === "" ? undefined : Number(raw.replace(",", "."));
-            setMeta(Number.isFinite(num as number) ? (num as number) : undefined);
+            setMeta(
+              Number.isFinite(num as number) ? (num as number) : undefined
+            );
           }}
           inputMode="decimal"
           aria-label="Meta em kg"
@@ -192,7 +203,9 @@ export default function FoodDonations({
         {/* 👇 Mostra os GLOBAIS que agora são usados */}
         <div className="rounded-lg bg-white border border-[#BEB7AE] px-4 py-1.5 whitespace-nowrap w-[300px] overflow-hidden text-ellipsis">
           <span>Total em Kg:</span>
-          <span className="ml-2">{(quantidade ?? 0).toLocaleString("pt-BR")}</span>
+          <span className="ml-2">
+            {(quantidade ?? 0).toLocaleString("pt-BR")}
+          </span>
         </div>
 
         <div className="rounded-lg bg-white border border-[#BEB7AE] px-4 py-1.5 whitespace-nowrap w-[300px] overflow-hidden text-ellipsis">
@@ -209,8 +222,10 @@ export default function FoodDonations({
       </div>
 
       <div className="flex-1 min-h-0">
-
-        <div id="FormAlimenticio" className="h-full overflow-auto pr-1 no-scrollbar">
+        <div
+          id="FormAlimenticio"
+          className="h-full overflow-auto pr-1 no-scrollbar"
+        >
           {alimentos.map((alimento) => (
             <div key={alimento.id} className="flex gap-4 w-full">
               {/* Nome do alimento */}
@@ -225,7 +240,11 @@ export default function FoodDonations({
                 placeholder="Unidade"
                 value={alimento.quantidade}
                 onChange={(e) =>
-                  handleAlimentoChange(alimento.id, "quantidade", e.currentTarget.value)
+                  handleAlimentoChange(
+                    alimento.id,
+                    "quantidade",
+                    e.currentTarget.value
+                  )
                 }
                 inputMode="numeric"
                 aria-label={`Quantidade de ${alimento.Nome}`}
@@ -238,7 +257,11 @@ export default function FoodDonations({
                 placeholder="Kg"
                 value={alimento.pesoUnidade}
                 onChange={(e) =>
-                  handleAlimentoChange(alimento.id, "pesoUnidade", e.currentTarget.value)
+                  handleAlimentoChange(
+                    alimento.id,
+                    "pesoUnidade",
+                    e.currentTarget.value
+                  )
                 }
                 inputMode="decimal"
                 aria-label={`Kg por unidade de ${alimento.Nome}`}

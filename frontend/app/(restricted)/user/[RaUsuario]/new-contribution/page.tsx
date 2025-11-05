@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import "@/styles/globals.css";
 import MenuDesktop from "@/components/menu-desktop";
 import MenuMobile from "@/components/menu-mobile";
 import DonationsForm from "@/components/donations-form";
@@ -12,19 +11,17 @@ type Tipo = "Financeira" | "Alimenticia";
 
 export default function Donations() {
   const params = useParams();
-  const userId = Number(
-    (params as Record<string, string | string[] | undefined>)?.userId
-  );
+  const RaUsuario = Number(params.RaUsuario);
 
-  const [tipoDoacao, setTipoDoacao] = useState<Tipo | undefined>(undefined);
+  const [tipoDoacao, setTipoDoacao] = useState<string>("Financeira");
   const [menuOpen, setMenuOpen] = useState(false);
-  const [raUsuario, setRaUsuario] = useState<number | undefined>(userId);
-  const [quantidade, setQuantidade] = useState<number | undefined>(undefined);
-  const [meta, setMeta] = useState<number | undefined>(undefined);
-  const [gastos, setGastos] = useState<number | undefined>(undefined);
-  const [comprovante, setComprovante] = useState<string | null>(null); // ✅ aceita null
-  const [fonte, setFonte] = useState<string | null>(null); // ✅ aceita null
-  const [pesoUnidade, setPesoUnidade] = useState<number | undefined>(undefined);
+  const [raUsuario, setRaUsuario] = useState<number>(RaUsuario);
+  const [quantidade, setQuantidade] = useState<number>();
+  const [meta, setMeta] = useState<number>();
+  const [gastos, setGastos] = useState<number>();
+  const [comprovante, setComprovante] = useState<string>("");
+  const [fonte, setFonte] = useState<string>("");
+  const [pesoUnidade, setPesoUnidade] = useState<number>();
   const [loading, setLoading] = useState(false);
 
   const [activeTab, setActiveTab] = useState<"finance" | "food">("finance");
@@ -47,7 +44,7 @@ export default function Donations() {
       alert("Escolha o tipo: Financeira ou Alimentícia.");
       return;
     }
-    if (!fonte?.trim()) {
+    if (fonte === "") {
       alert("Informe o nome do evento/doador.");
       return;
     }
@@ -90,15 +87,6 @@ export default function Donations() {
       const data = await res.json();
       console.log("OK:", data);
       alert(`Contribuição ${tipoDoacao.toLowerCase()} enviada!`);
-
-      // ✅ reset coerente
-      setQuantidade(undefined);
-      setFonte(null);
-      setTipoDoacao(undefined);
-      setMeta(undefined);
-      setGastos(undefined);
-      setPesoUnidade(undefined);
-      setComprovante(null);
     } catch (err: any) {
       console.error(err);
       alert(err?.message || "Erro ao enviar.");
@@ -166,12 +154,12 @@ export default function Donations() {
           {/* Menu lateral desktop/tablet */}
           <MenuDesktop
             menuOpen={menuOpen}
-            RaUsuario={raUsuario!}
+            RaUsuario={raUsuario}
             setMenuOpen={setMenuOpen}
           />
 
           {/* Menu rodapé mobile */}
-          <MenuMobile RaUsuario={raUsuario!} />
+          <MenuMobile RaUsuario={raUsuario} />
 
           <main className="flex justify-center items-stretch min-h-screen w-full px-9 mt-10">
             <form
@@ -188,7 +176,7 @@ export default function Donations() {
                 <h2 className="text-2xl font-semibold mb-4">Financeiras</h2>
 
                 <DonationsForm
-                  tipoDoacao={tipoDoacao}
+                  tipoDoacao={tipoDoacao!}
                   setTipoDoacao={setTipoDoacao}
                   fonte={fonte ?? ""}
                   setFonte={setFonte}
@@ -216,7 +204,7 @@ export default function Donations() {
                   <div className="overflow-x-hidden no-scrollbar md:h-full md:overflow-y-auto h-[380px] overflow-y-auto rounded-lg">
                     <FoodDonations
                       raUsuario={raUsuario}
-                      setRaUsuario={setRaUsuario}
+                      setRaUsuario={setRaUsuario!}
                       tipoDoacao={tipoDoacao}
                       setTipoDoacao={setTipoDoacao}
                       pesoUnidade={pesoUnidade ?? 0}
@@ -229,6 +217,8 @@ export default function Donations() {
                       setFonte={setFonte}
                       onAlimentosChange={setAlimentosFromChild}
                       onTotaisChange={setTotaisFromChild}
+                      gastos={gastos}
+                      setGastos={setGastos}
                     />
                   </div>
                 </div>
