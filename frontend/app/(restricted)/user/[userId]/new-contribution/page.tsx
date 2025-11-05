@@ -36,7 +36,7 @@ export default function Donations() {
   quantidade?: number;
   comprovante: string;
 }
-  // ✅ Estados separados por tipo
+ 
   const [financeira, setFinanceira] = useState<FinanceiraState>({
     tipoDoacao: "Financeira" as Tipo,
     fonte: "",
@@ -46,7 +46,16 @@ export default function Donations() {
     comprovante: "",
   });
 
-  const [alimenticia, setAlimenticia] = useState({
+  interface AlimenticiaState {
+  tipoDoacao: Tipo;
+  fonte: string;
+  meta?: number;
+  gastos?: number;
+  quantidade?: number;
+  pesoUnidade?:number;
+  }
+
+  const [alimenticia, setAlimenticia] = useState <AlimenticiaState>({
     tipoDoacao: "Alimenticia" as Tipo,
     fonte: "",
     meta: undefined,
@@ -58,19 +67,33 @@ export default function Donations() {
 
   const apiBase =
     process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/+$/, "") ||
-    "http://localhost:3000";
-  const apiUrl = `${apiBase}/api/new-contribution`;
+    "http://localhost:3001";
+  const apiUrl = `${apiBase}/api/createContribution`;
+  console.log("[DEBUG] apiUrl:", apiUrl); // TEMPORÁRIO
+  
 
-  async function handleSubmit(
-    e: React.FormEvent<HTMLFormElement>,
-    tipo: Tipo
-  ) {
-    e.preventDefault();
-    setLoading(true);
+
+async function handleSubmit(e: React.FormEvent<HTMLFormElement>, tipo: "Financeira" | "Alimenticia") {
+  e.preventDefault();
+  setLoading(true);
+
 
     try {
       const body =
-        tipo === "Financeira" ? financeira : alimenticia;
+        tipo === "Financeira" ? {
+          
+            tipoDoacao: "Financeira",
+            RaUsuario: raUsuario,
+            Valor: financeira.gastos, // ajuste conforme seu back
+            Fonte: financeira.fonte,
+
+        }:{
+          
+       tipoDoacao: "Alimenticia",
+            Fonte: alimenticia.fonte,
+            Meta: alimenticia.meta,
+            // etc. (ajustar para o que seu back espera)
+        };
 
       const res = await fetch(apiUrl, {
         method: "POST",
@@ -86,6 +109,7 @@ export default function Donations() {
         setFinanceira({
           tipoDoacao: "Financeira",
           fonte: "",
+        
           meta:undefined,
           gastos: undefined,
           quantidade: undefined,
@@ -114,7 +138,6 @@ export default function Donations() {
           className={`open-menu ${menuOpen ? "menu-icon hidden" : "menu-icon"}`}
           onClick={() => setMenuOpen(true)}
         >
-          ☰
           ☰
         </button>
 

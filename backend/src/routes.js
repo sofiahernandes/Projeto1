@@ -20,6 +20,7 @@ r.get("/db/health", async (_, res) => {
   }
 });
 
+
 r.post("/createContribution", contributionController.createContribution);
 r.get("/contributions", contributionController.allContributions);
 r.get("/contributions/:RaUsuario", contributionController.getContributionsByRa);
@@ -46,18 +47,6 @@ r.get("/user/:RaUsuario", userController.userByRA);
 r.post("/user/login", authController.loginUser);
 r.post("/logOutUser", authController.logOutUser);
 r.delete("/deleteUser/:RaUsuario", userController.deleteUser);
-
-
-r.post("/createContribution", upload.single("Comprovante"), async (req, res) => {
-  try {
-    if (!req.file) return res.status(400).json({ error: "Nenhum arquivo enviado (Comprovante)." });
-    // Aqui você faria o insert real da contribuição
-    res.status(201).json({ ok: true, file: req.file.filename, path: req.file.path });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: e.message });
-  }
-});
 
 
 r.post("/images", upload.single("image"), async (req, res) => {

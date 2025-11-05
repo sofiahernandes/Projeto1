@@ -7,8 +7,7 @@ import { dirname } from "path";
 import multer from "multer";
 import routes from "./routes.js";
 
-
-
+app.use("/api", routes);
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
