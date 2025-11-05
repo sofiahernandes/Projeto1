@@ -32,7 +32,7 @@ export default function RenderContributionTable({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const params = useParams();
-  const userId = Number(params.userId);
+  const RaUsuario = Number(params.RaUsuario);
 
   const columns = useMemo(
     () =>
@@ -107,7 +107,7 @@ export default function RenderContributionTable({
       active = false;
       controller.abort();
     };
-  }, [userId, refreshKey]);
+  }, [RaUsuario, refreshKey]);
 
   if (loading) {
     return (

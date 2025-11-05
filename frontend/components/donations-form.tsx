@@ -3,14 +3,16 @@
 import React from "react";
 
 interface Properties {
+  tipoDoacao: string;
+  setTipoDoacao: React.Dispatch<React.SetStateAction<string>>
   fonte: string;
   setFonte: React.Dispatch<React.SetStateAction<string>>;
   meta: number;
-  setMeta: React.Dispatch<React.SetStateAction<number>>;
+  setMeta: React.Dispatch<React.SetStateAction<number | undefined>>;
   gastos: number;
-  setGastos: React.Dispatch<React.SetStateAction<number>>;
+  setGastos: React.Dispatch<React.SetStateAction<number | undefined>>;
   quantidade: number;
-  setQuantidade: React.Dispatch<React.SetStateAction<number>>;
+  setQuantidade: React.Dispatch<React.SetStateAction<number | undefined>>;
   comprovante: string;
   setComprovante: React.Dispatch<React.SetStateAction<string>>;
 }
