@@ -30,14 +30,14 @@ export default function RenderContributionCardAdmin({
 
   useEffect(() => {
     const controller = new AbortController();
-
+    const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
     let active = true;
 
     async function fetchContributions() {
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch(`http://localhost:3001/api/contributions`, {
+        const res = await fetch(`${backend_url}/api/contributions`, {
           cache: "no-store",
           signal: controller.signal,
         });
@@ -107,8 +107,8 @@ export default function RenderContributionCardAdmin({
             </EmptyMedia>
             <EmptyTitle>Nenhuma contribuição por enquanto!</EmptyTitle>
             <EmptyDescription>
-              Nessa edição, nenhum grupo arrecadou doações. Quando os alunos líderes
-              adicionarem ao Arkana, aparecerá aqui!
+              Nessa edição, nenhum grupo arrecadou doações. Quando os alunos
+              líderes adicionarem ao Arkana, aparecerá aqui!
             </EmptyDescription>
           </EmptyHeader>
         </Empty>
