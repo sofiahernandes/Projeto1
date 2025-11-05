@@ -69,11 +69,12 @@ model Contribuicao_Financeira {
   Gastos                   Decimal   @db.Decimal(10, 2)
   Meta                     Decimal?  @db.Decimal(10, 2)
   Fonte                    String?   @db.VarChar(200)
-  Comprovante              String?   @db.VarChar(200)
+  IdComprovante            Int? @unique
   RaUsuario                Int?
   
   usuario                  Usuario?  @relation(fields: [RaUsuario], references: [RaUsuario])
-
+  comprovante              Comprovante? @relation(fields: [IdComprovante], references: [IdComprovante])
+  @@index([IdComprovante], map:"IdComprovante")
   @@index([RaUsuario], map: "RaUsuario")
 }
 
@@ -91,7 +92,7 @@ model Contribuicao_Alimenticia {
   IdAlimento                Int?
   
   usuario                   Usuario?  @relation(fields: [RaUsuario], references: [RaUsuario])
-  alimento                  Alimento? @relation(fields: [IdAlimento], references: [IdAlimento])
+  alimento                  Alimento? @relation(fields: [IdAlimento], references: [IdAlimento])               
   contribuicoes_alimento    Contribuicao_Alimento[]
 
   @@index([IdAlimento], map: "IdAlimento")
@@ -117,4 +118,11 @@ model Contribuicao_Alimento {
 
   @@index([IdAlimento], map: "IdAlimento")
   @@index([IdContribuicaoAlimenticia], map: "IdContribuicaoAlimenticia")
+}
+
+model Comprovante{
+  IdComprovante Int @id @default(autoincrement())
+  Imagem String @db.VarChar(255)
+
+  contribuicao_financeira   Contribuicao_Financeira?
 }

@@ -26,7 +26,20 @@ const usersController = {
         include: {
           time_usuarios: {
             include: {
-              time: true, 
+              time_usuario: {
+                select: {
+                  RaUsuario: RaUsuario,
+                  RaAluno2: RaAluno2,
+                  RaAluno3: RaAluno3,
+                  RaAluno4: RaAluno4,
+                  RaAluno5: RaAluno5,
+                  RaAluno6: RaAluno6,
+                  RaAluno7: RaAluno7,
+                  RaAluno8: RaAluno8,
+                  RaAluno9: RaAluno9,
+                  RaAluno10: RaAluno10,
+                },
+              },
             },
           },
         },

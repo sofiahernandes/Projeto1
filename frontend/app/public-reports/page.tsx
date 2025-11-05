@@ -16,6 +16,10 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { MajorContributionsChart } from "@/components/reports-charts/tooltip-chart/page";
+import { FoodDonationsChart } from "@/components/reports-charts/pie-chart-label/page";
+import { FinanContribuitionsChart } from "@/components/reports-charts/area-chart/page";
+import { TeamsRankingChart } from "@/components/reports-charts/bar-label-costum/page";
 import { HandHeart } from "lucide-react";
 
 // Generate editions automatically
@@ -154,6 +158,11 @@ export default function PublicReports() {
             onRowClick={(c) => console.log("Clicked row:", c)}
           />
         )}
+
+        <MajorContributionsChart/>
+        <FoodDonationsChart/>
+        <FinanContribuitionsChart/>
+        <TeamsRankingChart/>
       </div>
     </div>
   );
