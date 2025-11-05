@@ -13,8 +13,8 @@ type AlimentoRow = {
 interface Properties {
   raUsuario: number;
   setRaUsuario: React.Dispatch<React.SetStateAction<number>>;
-  tipoDoacao: string;
-  setTipoDoacao: React.Dispatch<React.SetStateAction<string>>;
+  tipoDoacao: "Financeira" | "Alimenticia";
+  setTipoDoacao: React.Dispatch<React.SetStateAction<"Financeira" | "Alimenticia">>;
   quantidade: number | undefined;
   setQuantidade: React.Dispatch<React.SetStateAction<number | undefined>>;
   pesoUnidade: number | undefined;
