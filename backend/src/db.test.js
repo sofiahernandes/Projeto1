@@ -1,24 +1,26 @@
 import { PrismaClient } from "@prisma/client";
-
+import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 async function tryConnection() {
   try {
-    const newUser = await prisma.usuario.create({
+    
+    const senhaPura = "arkana";
+    const senhaHash = await bcrypt.hash(senhaPura, 10); 
+
+    // Cria o mentor com senha criptografada
+    const Mentor = await prisma.mentor.create({
       data: {
-        RaUsuario: 0, //inserir algo para teste,
-        NomeUsuario: "",
-        EmailUsuario: "",
-        SenhaUsuario: "",
-        TelefoneUsuario: "",
-        Turma: "",
+        EmailMentor: "admin@testelegal",
+        IsAdmin: true,
+        SenhaMentor: senhaHash, // senha criptografada
       },
     });
 
-    console.log("Usuário criado:", newUser);
+    console.log("Usuário criado:", Mentor);
 
-    const users = await prisma.usuario.findMany();
-    console.log("Usuários no banco:", users);
+    const mentor = await prisma.mentor.findMany();
+    console.log("Usuários no banco:", mentor);
   } catch (err) {
     console.error("Erro de conexão:", err.message);
   } finally {

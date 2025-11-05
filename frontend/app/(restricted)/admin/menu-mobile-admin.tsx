@@ -2,41 +2,25 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
 
-import userIcon from "@/assets/user.png";
-import addIcon from "@/assets/add.png";
-import newspaperIcon from "@/assets/newspaper.png";
-
-interface Properties {
-  RaUsuario: number;
-}
-
-export default function MenuMobile({ RaUsuario }: Properties) {
+export default function MenuMobile() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const homeHref = `/user/${RaUsuario}/team-history`;
-  const createHref = `/user/${RaUsuario}/new-contribution`;
-  const historyHref = `/user/${RaUsuario}/user-profile`;
+  
+  const historyHref = `/admin-history`;
+  const profileHref = `/admin-profile`;
 
   const isActive = (href: string) => pathname?.startsWith(href);
+  
 
-  useEffect(() => {
-    if (RaUsuario === undefined || RaUsuario === null || Number.isNaN(Number(RaUsuario))) {
-      console.warn(
-        "MenuMobile: RaUsuario inválido → verifique de onde está vindo esse valor.",
-        { RaUsuario, pathname }
-      );
-    }
-  }, [RaUsuario, pathname]);
+  // const onCreateClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
+  //   if (isActive(profileHref)) {
+  //     e.preventDefault();
+  //     router.refresh(); 
+  //   }
+  // };
 
-  const onCreateClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
-    if (isActive(createHref)) {
-      e.preventDefault();
-      router.refresh();
-    }
-  };
 
   // Estilos base dos "pills"
   const basePill =
@@ -49,6 +33,7 @@ export default function MenuMobile({ RaUsuario }: Properties) {
   // Selecionado: ícone rosa + halo/anel verde claro + leve scale
   const activePill =
     "bg-[#70805A] text-white ring-2 ring-[#6B7E5D] ring-offset-2 ring-offset-white animate-selected-pop";
+
 
   return (
     <>
@@ -72,11 +57,9 @@ export default function MenuMobile({ RaUsuario }: Properties) {
           >
             {/* Aba 1: Home */}
             <Link
-              href={homeHref}
+              href={profileHref}
               aria-label="Início"
-              className={`${basePill} ${
-                isActive(homeHref) ? activePill : neutralPill
-              }`}
+              className={`${basePill} ${isActive(profileHref) ? activePill : neutralPill}`}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -94,39 +77,11 @@ export default function MenuMobile({ RaUsuario }: Properties) {
               </svg>
             </Link>
 
-            {/* Aba 2: Cadastrar */}
-            <Link
-              href={createHref}
-              aria-label="Cadastrar"
-              className={`${basePill} ${
-                isActive(createHref)
-                  ? activePill
-                  : "text-white border-transparent hover:bg-[#466C4D] active:scale-95"
-              }`}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 5v14M5 12h14"
-                />
-              </svg>
-            </Link>
-
             {/* Aba 3: Histórico */}
             <Link
               href={historyHref}
               aria-label="Histórico"
-              className={`${basePill} ${
-                isActive(historyHref) ? activePill : neutralPill
-              }`}
+              className={`${basePill} ${isActive(historyHref) ? activePill : neutralPill}`}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -136,11 +91,7 @@ export default function MenuMobile({ RaUsuario }: Properties) {
                 stroke="currentColor"
                 strokeWidth={1.8}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 6v6l3 3"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l3 3" />
                 <circle cx="12" cy="12" r="9" />
               </svg>
             </Link>

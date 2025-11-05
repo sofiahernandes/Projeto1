@@ -43,15 +43,16 @@ export default function RenderContributionTableAdmin({
   useEffect(() => {
     const controller = new AbortController();
     let active = true;
+    const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     async function fetchContributions() {
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch(
-          `http://localhost:3001/api/contributions`,
-          { cache: "no-store", signal: controller.signal }
-        );
+        const res = await fetch(`${backend_url}/api/contributions`, {
+          cache: "no-store",
+          signal: controller.signal,
+        });
 
         if (!res.ok) throw new Error("Erro ao buscar contribuições");
         const raw = await res.json();
@@ -106,7 +107,7 @@ export default function RenderContributionTableAdmin({
       active = false;
       controller.abort();
     };
-  }, [ refreshKey]);
+  }, [refreshKey]);
 
   if (loading) {
     return (
@@ -127,8 +128,8 @@ export default function RenderContributionTableAdmin({
             </EmptyMedia>
             <EmptyTitle>Nenhuma contribuição por enquanto!</EmptyTitle>
             <EmptyDescription>
-              Nessa edição, nenhum grupo arrecadou doações. Quando os alunos líderes
-              adicionarem ao Arkana, aparecerá aqui!
+              Nessa edição, nenhum grupo arrecadou doações. Quando os alunos
+              líderes adicionarem ao Arkana, aparecerá aqui!
             </EmptyDescription>
           </EmptyHeader>
           <EmptyContent />

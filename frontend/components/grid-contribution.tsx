@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { HandHeart } from "lucide-react"
+import { HandHeart } from "lucide-react";
 import {
   Empty,
   EmptyContent,
@@ -12,13 +12,14 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import formatBRL from "./formatBRL";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { Contribution } from "./contribution-table/columns";
 
 interface RenderContributionProps {
   onSelect?: (contribution: Contribution) => void;
   refreshKey?: number;
 }
+const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export default function RenderContributionCard({
   onSelect,
@@ -27,24 +28,22 @@ export default function RenderContributionCard({
   const [contributions, setContributions] = useState<Contribution[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const params = useParams();
-  const userId = Number(params.userId);
+  const userId = Number(params.RaUsuario);
 
   useEffect(() => {
     const controller = new AbortController();
 
-let active = true;
+    let active = true;
 
     async function fetchContributions() {
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch(
-          `http://localhost:3001/api/contributions/${userId}`,
-          { cache: "no-store", signal: controller.signal }
-          
-        );
+        const res = await fetch(`${backend_url}/contributions/${userId}`, {
+          cache: "no-store",
+          signal: controller.signal,
+        });
 
         if (!res.ok) throw new Error("Erro ao buscar contribuições");
         const raw = await res.json();
@@ -80,7 +79,7 @@ let active = true;
               uuid: uuidv4(),
             }))
           : [];
-         console.log(raw);
+        console.log(raw);
         setContributions(data);
       } catch (err: any) {
         if (err?.name === "AbortError") {
@@ -91,7 +90,7 @@ let active = true;
         if (active) setLoading(false);
       }
     }
-    
+
     fetchContributions();
 
     return () => {
@@ -102,20 +101,21 @@ let active = true;
 
   if (contributions.length === 0) {
     return (
-      <div className="col-start-2 border rounded-xl border-gray-200 shadow-xl w-auto max-w-100 mx-auto"> 
+      <div className="col-start-2 border rounded-xl border-gray-200 shadow-xl w-auto max-w-100 mx-auto">
         <Empty>
-        <EmptyHeader>
-          <EmptyMedia variant="icon"> 
-            {/* mudar o icone  pra maozinha vazia*/}
-            <HandHeart size={44} strokeWidth={1.2} />
-          </EmptyMedia>
-          <EmptyTitle>Nenhuma contribuição por enquanto!</EmptyTitle>
-          <EmptyDescription>
-            Seu grupo ainda não arrecadou nenhuma doação. Quando o aluno líder adicionar ao Arkana, ela aparecerá aqui!
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
-    </div>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              {/* mudar o icone  pra maozinha vazia*/}
+              <HandHeart size={44} strokeWidth={1.2} />
+            </EmptyMedia>
+            <EmptyTitle>Nenhuma contribuição por enquanto!</EmptyTitle>
+            <EmptyDescription>
+              Seu grupo ainda não arrecadou nenhuma doação. Quando o aluno líder
+              adicionar ao Arkana, ela aparecerá aqui!
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      </div>
     );
   }
 
@@ -137,10 +137,11 @@ let active = true;
           <p className="text-base text-gray-800">
             Quantidade: {Intl.NumberFormat("pt-BR").format(c.Quantidade)}
           </p>
-          <p className="text-base text-gray-800">Gastos: {formatBRL(c.Gastos)}</p>
+          <p className="text-base text-gray-800">
+            Gastos: {formatBRL(c.Gastos)}
+          </p>
         </div>
       ))}
     </div>
   );
 }
-

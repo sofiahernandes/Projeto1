@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import BackHome from "@/components/back-home";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface Props {
   raUsuario: number;
@@ -71,7 +71,7 @@ export default function TeamTabs({ raUsuario }: Props) {
 
       const newTeam = await res.json();
 
-      router.push(`/$/new-contribution?userId=${raUsuario}`);
+      router.push(`user/${raUsuario}/new-contribution`);
     } catch (error) {
       console.error("Erro ao cadastrar time:", error);
 
