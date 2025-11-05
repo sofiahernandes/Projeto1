@@ -161,7 +161,7 @@ export default function DonationsForm({
         inputMode="decimal"
       />
 
-      <label>Valor Arrecadado</label>
+      <label>{tipoDoacao === "Financeira" ? "Valor (R$)" : "Quantidade (kg/unid)"}</label>
       <input
         className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
         type="number"
@@ -169,15 +169,16 @@ export default function DonationsForm({
         value={quantidade ?? 0}                    
         onChange={(e) => setQuantidade(toNum(e.target.value))}
         inputMode="decimal"
+        required
       />
  
       <label>Comprovante</label>
       <input
         className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
-        type="text"
-        placeholder="URL do comprovante"
-        value={comprovante}
-        onChange={(e) => setComprovante(e.target.value)}
+        type="file"
+        accept="image/png,image/jpeg"
+        onChange={handleFileChange}
+        required={tipoDoacao === "Financeira"}
       />
          <div className = "flex justify-end">
       <button
@@ -190,6 +191,6 @@ export default function DonationsForm({
       </button>
          </div>
          </div>
-    </form>
+    </div>
   );
 }
