@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import "@/styles/globals.css";
-import MenuDesktop from "@/components/ui/MenuDesktop";
-import MenuMobile from "@/components/MenuMobile";
-import DonationsForm from "@/components/DonationsForm";
-import FoodDonations from "@/components/FoodDonations";
+import MenuDesktop from "@/components/menu-desktop";
+import MenuMobile from "@/components/menu-mobile";
+import DonationsForm from "@/components/donations-form";
+import FoodDonations from "@/components/food-donations";
 
 type Tipo = "Financeira" | "Alimenticia";
 

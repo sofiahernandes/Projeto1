@@ -141,48 +141,55 @@ export default function DonationsForm({
           required
         />
 
-        <label className="block text-sm font-medium text-[#3B2A1A] mb-1">Meta</label>
-        <input
-          className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black px-3 py-1.5 mb-3"
-          type="number"
-          placeholder="Ex: R$100"
-          value={meta ?? ""}         
-        />
+      <label>Meta</label>
+      <input
+        className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
+        type="number"
+        placeholder="Ex: R$100"
+        value={meta ?? 0}                    
+        onChange={(e) => setMeta(toNum(e.target.value))}
+        inputMode="decimal"
+      />
 
-        <label className="block text-sm font-medium text-[#3B2A1A] mb-1">Gastos</label>
-        <input
-          className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black px-3 py-1.5 mb-3"
-          type="number"
-          placeholder="Ex: R$100"
-          value={gastos ?? ""}
-          onChange={(e) => setGastos(toNum(e.currentTarget.value))}
-        />
+      <label>Gastos</label>
+      <input
+        className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
+        type="number"
+        placeholder="Ex: R$100"
+        value={gastos ?? 0}                   
+        onChange={(e) => setGastos(toNum(e.target.value))}
+        inputMode="decimal"
+      />
 
-        <label className="block text-sm font-medium text-[#3B2A1A] mb-1">Valor R$</label>
-        <input
-          className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black px-3 py-1.5 mb-3"
-          type="number"
-          placeholder="Ex: R$140"
-          value={quantidade ?? ""}
-          onChange={(e) => setQuantidade(toNum(e.currentTarget.value))}
-          required
-        />
-
-        <label className="block text-sm font-medium text-[#3B2A1A] mb-1">
-          Comprovante (imagem PNG/JPEG)
-          <span className="text-red-600"> *</span>
-        </label>
-        <input
-          className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black px-3 py-1.5 mb-1"
-          type="file"
-          accept="image/png,image/jpeg"
-          onChange={handleFileChange}
-          required={tipoDoacao === "Financeira"}
-        />
-        {comprovante && (
-          <p className="text-xs text-gray-600 mb-3">Selecionado: {comprovante}</p>
-        )}
-      </div>
-    </div>
+      <label>Valor Arrecadado</label>
+      <input
+        className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
+        type="number"
+        placeholder="Ex: R$1000"
+        value={quantidade ?? 0}                    
+        onChange={(e) => setQuantidade(toNum(e.target.value))}
+        inputMode="decimal"
+      />
+ 
+      <label>Comprovante</label>
+      <input
+        className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
+        type="text"
+        placeholder="URL do comprovante"
+        value={comprovante}
+        onChange={(e) => setComprovante(e.target.value)}
+      />
+         <div className = "flex justify-end">
+      <button
+        type="submit"
+        disabled={loading}
+        onClick={() => setTipoDoacao("Financeira")}
+        className="mt-2 w-fit bottom-10 right-14 px-10 py-2 rounded-lg bg-[#B27477] houver: bg-[#9B5B60] text-white disabled:opacity-50"
+      >
+        {loading ? "Casdastrando..." : "Cadastrar"}
+      </button>
+         </div>
+         </div>
+    </form>
   );
 }
