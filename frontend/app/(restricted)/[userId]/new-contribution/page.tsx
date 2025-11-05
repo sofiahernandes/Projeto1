@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import "@/styles/globals.css";
-
 import MenuDesktop from "@/components/menu-desktop";
 import MenuMobile from "@/components/menu-mobile";
 import DonationsForm from "@/components/donations-form";
