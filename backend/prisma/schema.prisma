@@ -65,7 +65,7 @@ model Contribuicao_Financeira {
   IdContribuicaoFinanceira Int       @id @default(autoincrement())
   DataContribuicao         DateTime? @default(now()) @db.Timestamp(0)
   Quantidade               Decimal   @db.Decimal(10, 2)
-  TipoContribuicao         String    @db.VarChar(20)
+  TipoDoacao               String    @db.VarChar(20)
   Gastos                   Decimal   @db.Decimal(10, 2)
   Meta                     Decimal?  @db.Decimal(10, 2)
   Fonte                    String?   @db.VarChar(200)
@@ -80,7 +80,7 @@ model Contribuicao_Financeira {
 model Contribuicao_Alimenticia {
   IdContribuicaoAlimenticia Int       @id @default(autoincrement())
   DataContribuicao          DateTime? @default(now()) @db.Timestamp(0)
-  TipoContribuicao          String    @db.VarChar(20)
+  TipoDoacao                String    @db.VarChar(20)
   Quantidade                Decimal   @db.Decimal(10, 2)
   PesoUnidade               Float
   Gastos                    Decimal   @db.Decimal(10, 2)
