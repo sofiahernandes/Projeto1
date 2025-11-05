@@ -11,6 +11,7 @@ import authController from "./controllers/authController.js";
 
 const r = Router();
 
+/* ------------------------- 🔹 TESTE DE CONEXÃO COM DB ------------------------- */
 r.get("/db/health", async (_, res) => {
   try {
     const [rows] = await pool.query("SELECT 1 AS db_ok");
@@ -20,12 +21,15 @@ r.get("/db/health", async (_, res) => {
   }
 });
 
+/* ------------------------- 🔹 CONTRIBUIÇÕES ------------------------- */
+
 r.post("/createContribution", contributionController.createContribution);
 r.get("/contributions", contributionController.allContributions);
 r.get("/contributions/:RaUsuario", contributionController.getContributionsByRa);
-r.get("/contributions/edition/:editionNumber",contributionController.getContributionsByEdition);
+r.get("/contributions/edition/:editionNumber", contributionController.getContributionsByEdition);
 r.delete("/deleteContribution/:IdContribuicao", contributionController.deleteContribution);
 
+/* ------------------------- 🔹 MENTORES ------------------------- */
 r.post("/createMentor/:RaUsuario", mentorController.createMentor);
 r.post("/loginMentor", mentorController.loginMentor);
 r.get("/mentors", mentorController.allMentors);
@@ -35,26 +39,28 @@ r.get("/mentor/id/:IdMentor", mentorController.mentorById);
 r.get("/mentor/email/:EmailMentor", mentorController.mentorByEmail);
 r.delete("/deleteMentor/:EmailMentor", mentorController.deleteMentor);
 
+/* ------------------------- 🔹 TIMES ------------------------- */
 r.post("/createTeam", teamController.createTeam);
 r.get("/teams", teamController.allTeams);
 r.get("/team/:IdTime", teamController.teamByID);
 r.get("/:RaUsuario/userTeam", teamController.teamByUserRA);
 r.delete("/deleteTeam/:IdTime", teamController.deleteTeam);
 
+/* ------------------------- 🔹 USUÁRIOS / LOGIN ------------------------- */
 r.post("/register", authController.createUser);
-
 r.get("/users", userController.allUsers);
 r.get("/user/:RaUsuario", userController.userByRA);
 r.post("/user/login", authController.loginUser);
 r.post("/logOutUser", authController.logOutUser);
 r.delete("/deleteUser/:RaUsuario", userController.deleteUser);
 
+/* ------------------------- 🔹 UPLOAD DE IMAGENS ------------------------- */
 r.post("/images", upload.single("image"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "Nenhum arquivo enviado." });
     }
-    const filepath = req.file.path; // caminho completo (absoluto)
+    const filepath = req.file.path;
     await pool.execute("INSERT INTO images (img) VALUES (?)", [filepath]);
     res.status(201).json({ message: "Imagem enviada!", img: filepath });
   } catch (error) {
@@ -71,9 +77,6 @@ r.get("/images", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
-// atualizar imagem
-// ok
 
 r.put("/images/:ID", upload.single("image"), async (req, res) => {
   try {
@@ -102,9 +105,7 @@ r.put("/images/:ID", upload.single("image"), async (req, res) => {
 r.delete("/images/:ID", async (req, res) => {
   try {
     const { ID } = req.params;
-    const [rows] = await pool.execute("SELECT * FROM images WHERE ID = ?", [
-      ID,
-    ]);
+    const [rows] = await pool.execute("SELECT * FROM images WHERE ID = ?", [ID]);
     if (rows.length === 0)
       return res.status(404).json({ error: "Imagem não encontrada" });
 

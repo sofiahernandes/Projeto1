@@ -2,7 +2,6 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 
-// Tipo da linha do grid
 type AlimentoRow = {
   id: number;
   Nome: string;
@@ -26,12 +25,7 @@ interface Properties {
   gastos: number | undefined;
   setGastos: React.Dispatch<React.SetStateAction<number | undefined>>;
   onAlimentosChange?: (
-    alimentos: {
-      id: number;
-      Nome: string;
-      quantidade: string;
-      pesoUnidade: string;
-    }[]
+    alimentos: { id: number; Nome: string; quantidade: string; pesoUnidade: string }[]
   ) => void;
   onTotaisChange?: (totais: { kgTotal: number; pontos: number }) => void;
 }
@@ -61,7 +55,7 @@ export default function FoodDonations({
     { id: 4, Nome: "Farinha de Mandioca", quantidade: "", pesoUnidade: "" },
     { id: 5, Nome: "Farinha de Trigo", quantidade: "", pesoUnidade: "" },
     { id: 6, Nome: "Leite Integral", quantidade: "", pesoUnidade: "" },
-    { id: 7, Nome: "Açucar Refinado", quantidade: "", pesoUnidade: "" },
+    { id: 7, Nome: "Açúcar Refinado", quantidade: "", pesoUnidade: "" },
     { id: 8, Nome: "Óleo de Soja", quantidade: "", pesoUnidade: "" },
     { id: 9, Nome: "Café em Pó", quantidade: "", pesoUnidade: "" },
     { id: 10, Nome: "Manteiga", quantidade: "", pesoUnidade: "" },
@@ -73,31 +67,26 @@ export default function FoodDonations({
     { id: 16, Nome: "Ervilha Enlatada", quantidade: "", pesoUnidade: "" },
   ]);
 
-  // Pontos por KG (adicione regras se precisar)
+  // pontos por kg (exemplo)
   const PONTOS_POR_KG: Record<string, number> = {
     Arroz: 3,
     Feijão: 5,
   };
 
-  // Converte string com vírgula/ponto em número seguro
-  function parseNumber(str: string | number) {
+  const parseNumber = (str: string | number): number => {
     if (typeof str === "number") return Number.isFinite(str) ? str : 0;
-    const s = String(str).trim();
+    const s = str.trim();
     if (s === "") return 0;
     const n = Number(s.replace(",", "."));
     return Number.isFinite(n) ? n : 0;
-  }
+  };
 
-  const nearlyEqual = (a: number, b: number, eps = 1e-9) =>
-    Math.abs(a - b) < eps;
+  const nearlyEqual = (a: number, b: number, eps = 1e-9) => Math.abs(a - b) < eps;
 
   const fmt2 = (n: number) =>
-    n.toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
+    n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-  // Totais do grid (kg e pontos)
+  // totais gerais
   const totais = useMemo(() => {
     let kgTotal = 0;
     let pontos = 0;
@@ -112,58 +101,35 @@ export default function FoodDonations({
     return { kgTotal, pontos };
   }, [alimentos]);
 
-  // 👉 AQUI: usamos (e atualizamos) os GLOBAIS do PAI de forma útil
-  // quantidade (global) = SOMA de quantidades do grid
-  // pesoUnidade (global) = MÉDIA de kg/unidade do grid
+  // atualizar totais globais
   useEffect(() => {
-    const somaQtd = alimentos.reduce(
-      (acc, a) => acc + parseNumber(a.quantidade),
-      0
-    );
-
-    let somaPeso = 0;
-    let countPeso = 0;
-    for (const a of alimentos) {
-      const p = parseNumber(a.pesoUnidade);
-      if (p > 0) {
-        somaPeso += p;
-        countPeso += 1;
-      }
-    }
+    const somaQtd = alimentos.reduce((acc, a) => acc + parseNumber(a.quantidade), 0);
+    const somaPeso = alimentos.reduce((acc, a) => acc + parseNumber(a.pesoUnidade), 0);
+    const countPeso = alimentos.filter((a) => parseNumber(a.pesoUnidade) > 0).length;
     const mediaPeso = countPeso > 0 ? somaPeso / countPeso : 0;
 
-    if (!nearlyEqual(somaQtd, quantidade ?? 0)) {
-      setQuantidade(somaQtd);
-    }
-    if (!nearlyEqual(mediaPeso, pesoUnidade ?? 0)) {
-      setPesoUnidade(mediaPeso);
-    }
-  }, [alimentos, setQuantidade, setPesoUnidade]);
+    if (!nearlyEqual(somaQtd, quantidade ?? 0)) setQuantidade(somaQtd);
+    if (!nearlyEqual(mediaPeso, pesoUnidade ?? 0)) setPesoUnidade(mediaPeso);
+  }, [alimentos, quantidade, pesoUnidade, setQuantidade, setPesoUnidade]);
 
-  // Callbacks p/ pai (se fornecidas)
+  // enviar para componente pai
   useEffect(() => {
-    onAlimentosChange?.(
-      alimentos.map(({ id, Nome, quantidade, pesoUnidade }) => ({
-        id,
-        Nome,
-        quantidade,
-        pesoUnidade,
-      }))
-    );
+    onAlimentosChange?.(alimentos);
   }, [alimentos, onAlimentosChange]);
 
   useEffect(() => {
     onTotaisChange?.(totais);
   }, [totais, onTotaisChange]);
 
-  // Handler de mudança no grid
+  // atualizar alimento individual
   const handleAlimentoChange = (
     id: number,
     campo: "quantidade" | "pesoUnidade",
     valor: string
   ) => {
-    // Remove espaços; deixa vírgula se o usuário quiser
     const v = valor.replace(/\s+/g, "");
+    // impede números decimais no campo de quantidade
+    if (campo === "quantidade" && v.includes(".")) return;
     setAlimentos((prev) =>
       prev.map((row) => (row.id === id ? { ...row, [campo]: v } : row))
     );
@@ -174,101 +140,74 @@ export default function FoodDonations({
       <div>Nome do Evento</div>
 
       <input
-        className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-3"
+        className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-black"
         type="text"
         placeholder="Ex: Instituto Alma"
         value={fonte}
-        onChange={(e) => setFonte(e.currentTarget.value)}
-        aria-label="Nome do evento"
+        onChange={(e) => setFonte(e.target.value)}
       />
 
       <div>Meta</div>
       <div className="mb-4 flex items-center gap-3 flex-wrap">
         <input
-          className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
-          type="text" // aceita vírgula
+          className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-black"
+          type="text"
           placeholder="Ex: 1200"
           value={meta ?? ""}
           onChange={(e) => {
-            const raw = e.currentTarget.value;
+            const raw = e.target.value;
             const num = raw === "" ? undefined : Number(raw.replace(",", "."));
-            setMeta(
-              Number.isFinite(num as number) ? (num as number) : undefined
-            );
+            setMeta(Number.isFinite(num as number) ? (num as number) : undefined);
           }}
-          inputMode="decimal"
-          aria-label="Meta em kg"
         />
 
-        {/* 👇 Mostra os GLOBAIS que agora são usados */}
-        <div className="rounded-lg bg-white border border-[#BEB7AE] px-4 py-1.5 whitespace-nowrap w-[300px] overflow-hidden text-ellipsis">
+        <div className="rounded-lg bg-white border border-gray-300 px-4 py-1.5 w-[300px]">
           <span>Total em Kg:</span>
-          <span className="ml-2">
-            {(quantidade ?? 0).toLocaleString("pt-BR")}
-          </span>
+          <span className="ml-2">{(quantidade ?? 0).toLocaleString("pt-BR")}</span>
         </div>
 
-        <div className="rounded-lg bg-white border border-[#BEB7AE] px-4 py-1.5 whitespace-nowrap w-[300px] overflow-hidden text-ellipsis">
-          <span>Kg/Unid (média global):</span>
+        <div className="rounded-lg bg-white border border-gray-300 px-4 py-1.5 w-[300px]">
+          <span>Kg/Unid (média):</span>
           <span className="ml-2">{fmt2(pesoUnidade ?? 0)}</span>
         </div>
       </div>
 
       {/* Cabeçalho */}
-      <div className="flex gap-4 w-full font-bold">
+      <div className="flex gap-4 font-bold">
         <div className="w-[30%] text-center">Alimento</div>
-        <div className="w-[30%] text-center">Unidade</div>
+        <div className="w-[30%] text-center">Unidades</div>
         <div className="w-[30%] text-center">Kg/Unidade</div>
       </div>
 
-      <div className="flex-1 min-h-0">
-        <div
-          id="FormAlimenticio"
-          className="h-full overflow-auto pr-1 no-scrollbar"
-        >
-          {alimentos.map((alimento) => (
-            <div key={alimento.id} className="flex gap-4 w-full">
-              {/* Nome do alimento */}
-              <div className="w-[30%] bg-white border border-gray-300 rounded-lg flex items-center justify-center text-center px-3 py-2 min-h-10 break-words [hyphens:auto]">
-                {alimento.Nome}
-              </div>
-
-              {/* Unidade (quantidade) */}
-              <input
-                className="w-[30%] bg-white border border-gray-300 rounded-lg px-3 py-2 text-center appearance-none"
-                type="text"
-                placeholder="Unidade"
-                value={alimento.quantidade}
-                onChange={(e) =>
-                  handleAlimentoChange(
-                    alimento.id,
-                    "quantidade",
-                    e.currentTarget.value
-                  )
-                }
-                inputMode="numeric"
-                aria-label={`Quantidade de ${alimento.Nome}`}
-              />
-
-              {/* Kg por unidade */}
-              <input
-                className="w-[30%] bg-white border border-gray-300 rounded-lg px-3 py-2 text-center appearance-none"
-                type="text"
-                placeholder="Kg"
-                value={alimento.pesoUnidade}
-                onChange={(e) =>
-                  handleAlimentoChange(
-                    alimento.id,
-                    "pesoUnidade",
-                    e.currentTarget.value
-                  )
-                }
-                inputMode="decimal"
-                aria-label={`Kg por unidade de ${alimento.Nome}`}
-              />
+      <div className="flex-1 overflow-auto pr-1">
+        {alimentos.map((a) => (
+          <div key={a.id} className="flex gap-4 w-full">
+            <div className="w-[30%] bg-white border border-gray-300 rounded-lg flex items-center justify-center text-center px-3 py-2">
+              {a.Nome}
             </div>
-          ))}
-        </div>
+            <input
+              className="w-[30%] bg-white border border-gray-300 rounded-lg px-3 py-2 text-center"
+              type="number"
+              placeholder="Qtd"
+              value={a.quantidade}
+              onChange={(e) =>
+                handleAlimentoChange(a.id, "quantidade", e.target.value)
+              }
+              inputMode="numeric"
+            />
+            <input
+              className="w-[30%] bg-white border border-gray-300 rounded-lg px-3 py-2 text-center"
+              type="number"
+              step="0.01"
+              placeholder="Kg"
+              value={a.pesoUnidade}
+              onChange={(e) =>
+                handleAlimentoChange(a.id, "pesoUnidade", e.target.value)
+              }
+              inputMode="decimal"
+            />
+          </div>
+        ))}
       </div>
     </form>
   );

@@ -18,45 +18,50 @@ export default function Donations() {
   );
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [raUsuario, setRaUsuario] = useState<number | undefined>(userId);
+  const [raUsuario, setRaUsuario] = useState<number | undefined>(userId || 123);
   const [loading, setLoading] = useState(false);
 
   const [activeTab, setActiveTab] = useState<"finance" | "food">("finance");
-  const [alimentosFromChild, setAlimentosFromChild] = useState<any>(null);
+  const [alimentosFromChild, setAlimentosFromChild] = useState<
+    { id: number; quantidade: number; pesoUnidade: number }[]
+  >([]);
+
   const [totaisFromChild, setTotaisFromChild] = useState<{ pontos: number }>({
     pontos: 0,
   });
-  const [tipoDoacao, setTipoDoacao] = useState<"Financeira" | "Alimenticia">("Alimenticia");
+
+  const [tipoDoacao, setTipoDoacao] = useState<Tipo>("Alimenticia");
+  const [idAlimento, setIdAlimento] = useState<number | undefined>();
 
   interface FinanceiraState {
-  tipoDoacao: Tipo;
-  fonte: string;
-  meta?: number;
-  gastos?: number;
-  quantidade?: number;
-  comprovante: string;
-}
- 
+    tipoDoacao: Tipo;
+    fonte: string;
+    meta?: number;
+    gastos?: number;
+    quantidade?: number;
+    comprovante: string;
+  }
+
   const [financeira, setFinanceira] = useState<FinanceiraState>({
-    tipoDoacao: "Financeira" as Tipo,
+    tipoDoacao: "Financeira",
     fonte: "",
-    meta:undefined,
+    meta: undefined,
     gastos: undefined,
     quantidade: undefined,
     comprovante: "",
   });
 
   interface AlimenticiaState {
-  tipoDoacao: Tipo;
-  fonte: string;
-  meta?: number;
-  gastos?: number;
-  quantidade?: number;
-  pesoUnidade?:number;
+    tipoDoacao: Tipo;
+    fonte: string;
+    meta?: number;
+    gastos?: number;
+    quantidade?: number;
+    pesoUnidade?: number;
   }
 
-  const [alimenticia, setAlimenticia] = useState <AlimenticiaState>({
-    tipoDoacao: "Alimenticia" as Tipo,
+  const [alimenticia, setAlimenticia] = useState<AlimenticiaState>({
+    tipoDoacao: "Alimenticia",
     fonte: "",
     meta: undefined,
     quantidade: undefined,
@@ -68,32 +73,46 @@ export default function Donations() {
   const apiBase =
     process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/+$/, "") ||
     "http://localhost:3001";
+
   const apiUrl = `${apiBase}/api/createContribution`;
-  console.log("[DEBUG] apiUrl:", apiUrl); // TEMPORÁRIO
-  
 
-
-async function handleSubmit(e: React.FormEvent<HTMLFormElement>, tipo: "Financeira" | "Alimenticia") {
-  e.preventDefault();
-  setLoading(true);
-
+  async function handleSubmit(
+    e: React.FormEvent<HTMLFormElement>,
+    tipo: "Financeira" | "Alimenticia"
+  ) {
+    e.preventDefault();
+    setLoading(true);
 
     try {
-      const body =
-        tipo === "Financeira" ? {
-          
-            tipoDoacao: "Financeira",
-            RaUsuario: raUsuario,
-            Valor: financeira.gastos, // ajuste conforme seu back
-            Fonte: financeira.fonte,
+      let body: any;
 
-        }:{
-          
-       tipoDoacao: "Alimenticia",
-            Fonte: alimenticia.fonte,
-            Meta: alimenticia.meta,
-            // etc. (ajustar para o que seu back espera)
+      if (tipo === "Financeira") {
+        body = {
+          TipoDoacao: "Financeira",
+          RaUsuario: raUsuario,
+          Quantidade: 1,
+          Gastos: financeira.gastos ?? 0,
+          Fonte: financeira.fonte,
+          Comprovante: "sem-comprovante",
+          Meta: financeira.meta ?? 0,
         };
+      } else {
+        // ✅ Alimentícia com lista de alimentos
+        body = {
+          TipoDoacao: "Alimenticia",
+          RaUsuario: raUsuario,
+          Fonte: alimenticia.fonte,
+          Comprovante: "sem-comprovante",
+          Meta: alimenticia.meta ?? 0,
+          Alimentos: alimentosFromChild.map((a) => ({
+            IdAlimento: a.id,
+            Quantidade: Number(a.quantidade) || 0,
+            PesoUnidade: Number(a.pesoUnidade) || 0,
+          })),
+        };
+      }
+
+      console.log("🛰️ Enviando body para o backend:", body);
 
       const res = await fetch(apiUrl, {
         method: "POST",
@@ -101,7 +120,8 @@ async function handleSubmit(e: React.FormEvent<HTMLFormElement>, tipo: "Financei
         body: JSON.stringify(body),
       });
 
-      if (!res.ok) throw new Error(`Erro ao enviar (${res.status})`);
+      if (!res.ok)
+        throw new Error(`Erro ao enviar (${res.status}): ${await res.text()}`);
 
       alert(`Contribuição ${tipo.toLowerCase()} enviada com sucesso!`);
 
@@ -109,8 +129,7 @@ async function handleSubmit(e: React.FormEvent<HTMLFormElement>, tipo: "Financei
         setFinanceira({
           tipoDoacao: "Financeira",
           fonte: "",
-        
-          meta:undefined,
+          meta: undefined,
           gastos: undefined,
           quantidade: undefined,
           comprovante: "",
@@ -123,9 +142,11 @@ async function handleSubmit(e: React.FormEvent<HTMLFormElement>, tipo: "Financei
           quantidade: undefined,
           pesoUnidade: 0,
         });
+        setAlimentosFromChild([]);
       }
     } catch (err: any) {
-      alert(err?.message || "Erro ao enviar a contribuição");
+      console.error("Erro ao enviar:", err);
+      alert(err?.message || "Erro ao enviar contribuição");
     } finally {
       setLoading(false);
     }
@@ -188,7 +209,7 @@ async function handleSubmit(e: React.FormEvent<HTMLFormElement>, tipo: "Financei
 
         <main className="flex justify-center items-stretch min-h-screen w-full px-9 mt-10">
           <div className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-x-1">
-            {/* ✅ Financeiro */}
+            {/* ✅ Financeira */}
             <form
               onSubmit={(e) => handleSubmit(e, "Financeira")}
               className={`${
@@ -201,7 +222,7 @@ async function handleSubmit(e: React.FormEvent<HTMLFormElement>, tipo: "Financei
                 raUsuario={raUsuario}
                 setRaUsuario={setRaUsuario}
                 tipoDoacao={financeira.tipoDoacao}
-                setTipoDoacao={() => {}} // fixo
+                setTipoDoacao={() => {}}
                 fonte={financeira.fonte}
                 setFonte={(v) =>
                   setFinanceira({ ...financeira, fonte: v as string })
@@ -223,17 +244,17 @@ async function handleSubmit(e: React.FormEvent<HTMLFormElement>, tipo: "Financei
                   setFinanceira({ ...financeira, comprovante: v as string })
                 }
               />
-              
-        <div className="mt-2 flex justify-end">
-          <button
-            type="submit"
-            onClick={() => setTipoDoacao("Financeira")}
-            disabled={loading}
-            className="px-10 py-2 rounded-lg bg-[#B27477] hover:bg-[#9B5B60] text-white transition disabled:opacity-50"
-          >
-            {loading ? "Cadastrando..." : "Cadastrar Financeira"}
-          </button>
-           </div>
+
+              <div className="mt-2 flex justify-end">
+                <button
+                  type="submit"
+                  onClick={() => setTipoDoacao("Financeira")}
+                  disabled={loading}
+                  className="px-10 py-2 rounded-lg bg-[#B27477] hover:bg-[#9B5B60] text-white transition disabled:opacity-50"
+                >
+                  {loading ? "Cadastrando..." : "Cadastrar Financeira"}
+                </button>
+              </div>
             </form>
 
             {/* ✅ Alimentícia */}
@@ -250,7 +271,7 @@ async function handleSubmit(e: React.FormEvent<HTMLFormElement>, tipo: "Financei
                   raUsuario={raUsuario}
                   setRaUsuario={setRaUsuario}
                   tipoDoacao={alimenticia.tipoDoacao}
-                  setTipoDoacao={() => {}} // fixo
+                  setTipoDoacao={() => {}}
                   pesoUnidade={alimenticia.pesoUnidade}
                   setPesoUnidade={(v) =>
                     setAlimenticia({ ...alimenticia, pesoUnidade: Number(v) })
@@ -261,16 +282,15 @@ async function handleSubmit(e: React.FormEvent<HTMLFormElement>, tipo: "Financei
                   }
                   meta={alimenticia.meta}
                   setMeta={(v) =>
-                    
                     setAlimenticia({ ...alimenticia, meta: Number(v) })
                   }
                   fonte={alimenticia.fonte}
                   setFonte={(v) =>
                     setAlimenticia({ ...alimenticia, fonte: v as string })
                   }
-                  
-                  onAlimentosChange={setAlimentosFromChild}
                   onTotaisChange={setTotaisFromChild}
+                  idAlimento={idAlimento}
+                  setIdAlimento={setIdAlimento}
                 />
               </div>
 

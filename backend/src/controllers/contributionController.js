@@ -176,19 +176,18 @@ const contributionController = {
   // CREATE CONTRIBUTION (handling both food and finance)
   createContribution: async (req, res) => {
     const {
-      RaUsuario,
-      TipoDoacao,
-      Quantidade,
-      Meta,
-      Gastos,
-      Fonte,
-      Comprovante,
-      PesoUnidade, // Only for food donations
-      IdAlimento, // Only for food donations
+    RaUsuario,
+    TipoDoacao,
+    Quantidade,
+    Meta,
+    Gastos,
+    Fonte,
+    Comprovante,
+    alimentos 
     } = req.body;
 
     // Validate required fields
-    if (!RaUsuario || !TipoDoacao || !Quantidade || !Fonte || !Comprovante) {
+    if (!RaUsuario || !TipoDoacao || !Fonte || !Comprovante) {
       return res
         .status(400)
         .json({ error: "Preencha todos os campos obrigatórios." });
@@ -216,22 +215,23 @@ const contributionController = {
         // Create food donation
         contribuicao = await prisma.Contribuicao_Alimenticia.create({
           data: {
-            RaUsuario,
-            Quantidade,
-            PesoUnidade,
-            TipoDoacao,
-            Meta,
-            Gastos,
-            Fonte,
-            Comprovante,
-            IdAlimento,
+          RaUsuario,
+          TipoDoacao,
+          Meta,
+          Gastos,
+          Fonte,
+          Comprovante,
           },
         });
 
-        // Create a relationship between food and donation
-        if (IdAlimento) {
-          const contribuicao_alimento =
-            await prisma.contribuicao_alimento.create({
+        // Cria vínculos com cada alimento do array
+        if (Array.isArray(alimentos) && alimentos.length > 0) {
+          for (const item of alimentos) {
+            const { IdAlimento, Quantidade, PesoUnidade } = item;
+
+            if (!IdAlimento || !Quantidade || !PesoUnidade) continue;
+
+            await prisma.Contribuicao_Alimento.create({
               data: {
                 IdAlimento,
                 IdContribuicaoAlimenticia:
@@ -239,13 +239,15 @@ const contributionController = {
               },
             });
 
-          if (!contribuicao_alimento) {
-            return res
-              .status(404)
-              .json({ message: "Contribuição não registrada" });
+            // Atualiza os dados da contribuição (quantidade/peso)
+            await prisma.Contribuicao_Alimenticia.update({
+              where: {
+                IdContribuicaoAlimenticia:
+                  contribuicao.IdContribuicaoAlimenticia,
+              },
+              data: { Quantidade, PesoUnidade },
+            });
           }
-
-          res.json(contribuicao_alimento);
         }
       } else {
         return res.status(400).json({ error: "Tipo de doação inválido." });
@@ -253,6 +255,7 @@ const contributionController = {
 
       res.status(201).json(contribuicao);
     } catch (err) {
+      console.error(err);
       res
         .status(500)
         .json({ error: "Erro ao criar contribuição.", details: err.message });
