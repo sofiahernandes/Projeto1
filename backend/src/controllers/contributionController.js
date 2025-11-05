@@ -119,7 +119,7 @@ const contributionController = {
             Meta,
             Gastos,
             Fonte,
-            Comprovante,
+            Comprovante: comprovantePath,
           },
         });
       }

@@ -23,7 +23,7 @@
 <br/>
 
 # Entregas
-- [Projeto de Extensão](https://github.com/2025-2-MCC2/Projeto1/blob/main/entregas/PROJETO%20DE%20EXTEN%C3%87%C3%83O.md)
+- [Banner](https://github.com/2025-2-MCC2/Projeto1/blob/main/entregas)
 
 | Disciplina | Entrega 1 | Entrega 2 |  
 | :-------: | :------: | :-------: |
@@ -31,7 +31,7 @@
 | calculo II | [/entregas/entrega-1/calculo-2/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/calculo-2) | [/entregas/entrega-2/calculo-2/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-2/calculo-2) |    
 | banco de dados | [/entregas/entrega-1/banco-de-dados/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/banco-de-dados) | [/entregas/entrega-2/banco-de-dados/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-2/banco-de-dados) |  
 | gestao empresarial | [/entregas/entrega-1/gestao-empresarial/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/gestao-empresarial) | [/entregas/entrega-2/gestao-empresarial/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-2/gestao-empresarial) |  
-| projeto interdisciplinar | [/entregas/entrega-1/proj-interdisciplinar/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/proj-interdisciplinar) | [/entregas/entrega-2/proj-interdisciplinar/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-2/proj-interdisciplinar) |   
+| projeto interdisciplinar | [/entregas/entrega-1/proj-interdisciplinar/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/proj-interdisciplinar) | [Projeto de Extensão](https://github.com/2025-2-MCC2/Projeto1/blob/main/entregas/PROJETO%20DE%20EXTEN%C3%87%C3%83O.md) |   
 <br/>
 
 # Descrição

@@ -130,7 +130,6 @@ export default function RenderContributionCardAdmin({
           </p>
           <p className="text-base text-gray-950">Fonte da doação: {c.Fonte}</p>
           <p className="text-base text-gray-950">Ra do Aluno: {c.RaUsuario}</p>
-
           <p className="text-base text-gray-800">
             Tipo de Doação: {c.TipoDoacao}
           </p>
