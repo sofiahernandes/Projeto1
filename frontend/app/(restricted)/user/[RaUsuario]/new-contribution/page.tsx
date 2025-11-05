@@ -12,9 +12,10 @@ type Tipo = "Financeira" | "Alimenticia";
 
 export default function Donations() {
   const params = useParams();
-  const userId = Number((params as Record<string, string | string[] | undefined>)?.userId);
+  const userId = Number(
+    (params as Record<string, string | string[] | undefined>)?.userId
+  );
 
-  
   const [tipoDoacao, setTipoDoacao] = useState<Tipo | undefined>(undefined);
   const [menuOpen, setMenuOpen] = useState(false);
   const [raUsuario, setRaUsuario] = useState<number | undefined>(userId);
@@ -26,8 +27,7 @@ export default function Donations() {
   const [pesoUnidade, setPesoUnidade] = useState<number | undefined>(undefined);
   const [loading, setLoading] = useState(false);
 
-
-  const [activeTab, setActiveTab] = useState<'finance' | 'food'>('finance');
+  const [activeTab, setActiveTab] = useState<"finance" | "food">("finance");
   const [alimentosFromChild, setAlimentosFromChild] = useState<any>(null);
   const [totaisFromChild, setTotaisFromChild] = useState<any>({ pontos: 0 });
 
@@ -36,7 +36,8 @@ export default function Donations() {
   }
 
   const apiBase =
-    process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/+$/, "") || "http://localhost:3001";
+    process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/+$/, "") ||
+    "http://localhost:3001";
   const apiUrl = `${apiBase}/api/new-contribution`;
 
   async function handleSubmit(e: React.FormEvent) {
@@ -165,12 +166,12 @@ export default function Donations() {
           {/* Menu lateral desktop/tablet */}
           <MenuDesktop
             menuOpen={menuOpen}
-            raUsuario={raUsuario!}
+            RaUsuario={raUsuario!}
             setMenuOpen={setMenuOpen}
           />
 
           {/* Menu rodapé mobile */}
-          <MenuMobile raUsuario={raUsuario!} />
+          <MenuMobile RaUsuario={raUsuario!} />
 
           <main className="flex justify-center items-stretch min-h-screen w-full px-9 mt-10">
             <form
@@ -234,8 +235,7 @@ export default function Donations() {
 
                 <div className="mt-4 flex items-center gap-3 justify-end">
                   <div className="bg-[#DCA4A9] border border-transparent text-sm rounded-lg py-2 px-16">
-                    Pontuação:{" "}
-                    <span>{fmt(totaisFromChild.pontos)}</span>
+                    Pontuação: <span>{fmt(totaisFromChild.pontos)}</span>
                   </div>
 
                   <button
