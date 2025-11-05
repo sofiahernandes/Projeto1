@@ -15,6 +15,7 @@ interface ContributionData {
   NomeAlimento?: string;
   PontuacaoAlimento: number;
   PesoUnidade: number;
+  NomeTime: string,
   uuid: string;
 }
 
