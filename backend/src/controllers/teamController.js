@@ -4,7 +4,11 @@ const teamsController = {
   //GET http://localhost:3001/api/teams
   allTeams: async (_, res) => {
     try {
-      const times = await prisma.time.findMany();
+      const times = await prisma.time.findMany({
+        orderby: {
+          time: "desc",
+        },
+      });
       res.json(times);
     } catch (err) {
       res
@@ -52,7 +56,7 @@ const teamsController = {
       res.status(500).json({ error: "Erro ao buscar o time do usuário" });
     }
   },
-  
+
   //POST http://localhost:3001/api/createTeam
   createTeam: async (req, res) => {
     const {
