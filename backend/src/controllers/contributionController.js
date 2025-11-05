@@ -23,7 +23,10 @@ const contributionController = {
 
       // Combine both contributions into one array, tagging them by type
       const allContribs = [
-        ...financeContribs.map((contrib) => ({ ...contrib, TipoDoacao: "Financeira" })),
+        ...financeContribs.map((contrib) => ({
+          ...contrib,
+          TipoDoacao: "Financeira",
+        })),
         ...foodContribs.map((contrib) => ({
           ...contrib,
           TipoDoacao: "Alimenticia",
@@ -31,7 +34,9 @@ const contributionController = {
       ];
 
       // Sort by DataContribuicao (descending)
-      allContribs.sort((a, b) => new Date(b.DataContribuicao) - new Date(a.DataContribuicao));
+      allContribs.sort(
+        (a, b) => new Date(b.DataContribuicao) - new Date(a.DataContribuicao)
+      );
 
       res.json(allContribs);
     } catch (err) {
@@ -67,7 +72,10 @@ const contributionController = {
 
       // Combine both contributions into one array
       const allContribs = [
-        ...financeContribs.map((contrib) => ({ ...contrib, TipoDoacao: "Financeira" })),
+        ...financeContribs.map((contrib) => ({
+          ...contrib,
+          TipoDoacao: "Financeira",
+        })),
         ...foodContribs.map((contrib) => ({
           ...contrib,
           TipoDoacao: "Alimenticia",
@@ -75,15 +83,93 @@ const contributionController = {
       ];
 
       if (allContribs.length === 0) {
-        return res.status(404).json({ error: "Nenhuma contribuição encontrada para esse usuário." });
+        return res
+          .status(404)
+          .json({
+            error: "Nenhuma contribuição encontrada para esse usuário.",
+          });
       }
 
       // Sort by DataContribuicao (descending)
-      allContribs.sort((a, b) => new Date(b.DataContribuicao) - new Date(a.DataContribuicao));
+      allContribs.sort(
+        (a, b) => new Date(b.DataContribuicao) - new Date(a.DataContribuicao)
+      );
 
       res.json(allContribs);
     } catch (err) {
-      res.status(500).json({ error: "Erro ao buscar contribuições por RaUsuario.", details: err.message });
+      res
+        .status(500)
+        .json({
+          error: "Erro ao buscar contribuições por RaUsuario.",
+          details: err.message,
+        });
+    }
+  },
+
+  // GET CONTRIBUTIONS BY EDITION
+  getContributionsByEdition: async (req, res) => {
+    try {
+      const { editionNumber } = req.params;
+      const edition = Number(editionNumber);
+
+      // determine the start and end dates for that edition
+      const baseYear = 2025 + Math.floor((edition - 7) / 2);
+      const isFirstSemester = edition % 2 === 1; // 7 -> true, 8 -> false, etc.
+
+      const startDate = new Date(
+        baseYear,
+        isFirstSemester ? 0 : 7, // Jan or Aug
+        1
+      );
+      const endDate = new Date(
+        baseYear,
+        isFirstSemester ? 6 : 11, // July or Dec
+        31
+      );
+
+      // Fetch both types of contributions within this period
+      const financeContribs = await prisma.Contribuicao_Financeira.findMany({
+        where: {
+          DataContribuicao: { gte: startDate, lte: endDate },
+        },
+        orderBy: { DataContribuicao: "desc" },
+      });
+
+      const foodContribs = await prisma.Contribuicao_Alimenticia.findMany({
+        where: {
+          DataContribuicao: { gte: startDate, lte: endDate },
+        },
+        orderBy: { DataContribuicao: "desc" },
+        include: {
+          Contribucao_Alimento: {
+            include: { Alimento: true },
+          },
+        },
+      });
+
+      // merge both
+      const allContribs = [
+        ...financeContribs.map((c) => ({ ...c, TipoDoacao: "Financeira" })),
+        ...foodContribs.map((c) => ({ ...c, TipoDoacao: "Alimenticia" })),
+      ];
+
+      if (allContribs.length === 0) {
+        return res
+          .status(404)
+          .json({
+            message: "Nenhuma contribuição encontrada para essa edição.",
+          });
+      }
+
+      allContribs.sort(
+        (a, b) => new Date(b.DataContribuicao) - new Date(a.DataContribuicao)
+      );
+      res.json(allContribs);
+    } catch (err) {
+      res.status(500).json({
+        error: "Erro ao buscar contribuições por edição.",
+        details: err.message,
+      });
     }
   },
 
@@ -97,13 +183,15 @@ const contributionController = {
       Gastos,
       Fonte,
       Comprovante,
-      PesoUnidade,  // Only for food donations
-      IdAlimento,   // Only for food donations
+      PesoUnidade, // Only for food donations
+      IdAlimento, // Only for food donations
     } = req.body;
 
     // Validate required fields
     if (!RaUsuario || !TipoDoacao || !Quantidade || !Fonte || !Comprovante) {
-      return res.status(400).json({ error: "Preencha todos os campos obrigatórios." });
+      return res
+        .status(400)
+        .json({ error: "Preencha todos os campos obrigatórios." });
     }
 
     try {
@@ -142,17 +230,21 @@ const contributionController = {
 
         // Create a relationship between food and donation
         if (IdAlimento) {
-          const contribuicao_alimento = await prisma.contribuicao_alimento.create({
-            data: {
-              IdAlimento,
-              IdContribuicaoAlimenticia: contribuicao.IdContribuicaoAlimenticia,
-            },
-          });
+          const contribuicao_alimento =
+            await prisma.contribuicao_alimento.create({
+              data: {
+                IdAlimento,
+                IdContribuicaoAlimenticia:
+                  contribuicao.IdContribuicaoAlimenticia,
+              },
+            });
 
           if (!contribuicao_alimento) {
-            return res.status(404).json({ message: "Contribuição não registrada" });
+            return res
+              .status(404)
+              .json({ message: "Contribuição não registrada" });
           }
-    
+
           res.json(contribuicao_alimento);
         }
       } else {
@@ -161,7 +253,9 @@ const contributionController = {
 
       res.status(201).json(contribuicao);
     } catch (err) {
-      res.status(500).json({ error: "Erro ao criar contribuição.", details: err.message });
+      res
+        .status(500)
+        .json({ error: "Erro ao criar contribuição.", details: err.message });
     }
   },
 
