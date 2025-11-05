@@ -68,29 +68,36 @@ export default function DonationsForm({
           inputMode="decimal"
         />
 
-        <label className="block text-sm font-medium text-[#3B2A1A] mb-1">
-          Valor Arrecadado
-        </label>
-        <input
-          className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
-          type="number"
-          placeholder="Ex: R$1000"
-          value={quantidade}
-          onChange={(e) => setQuantidade(toNum(e.target.value))}
-          inputMode="decimal"
-        />
-
-        <label className="block text-sm font-medium text-[#3B2A1A] mb-1">
-          Comprovante
-        </label>
-        <input
-          className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
-          type="text"
-          placeholder="URL do comprovante"
-          value={comprovante}
-          onChange={(e) => setComprovante(e.target.value)}
-        />
-      </div>
+      <label>{tipoDoacao === "Financeira" ? "Valor (R$)" : "Quantidade (kg/unid)"}</label>
+      <input
+        className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
+        type="number"
+        placeholder="Ex: R$1000"
+        value={quantidade ?? 0}                    
+        onChange={(e) => setQuantidade(toNum(e.target.value))}
+        inputMode="decimal"
+        required
+      />
+ 
+      <label>Comprovante</label>
+      <input
+        className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
+        type="file"
+        accept="image/png,image/jpeg"
+        onChange={handleFileChange}
+        required={tipoDoacao === "Financeira"}
+      />
+         <div className = "flex justify-end">
+      <button
+        type="submit"
+        disabled={loading}
+        onClick={() => setTipoDoacao("Financeira")}
+        className="mt-2 w-fit bottom-10 right-14 px-10 py-2 rounded-lg bg-[#B27477] houver: bg-[#9B5B60] text-white disabled:opacity-50"
+      >
+        {loading ? "Casdastrando..." : "Cadastrar"}
+      </button>
+         </div>
+         </div>
     </div>
   );
 }
