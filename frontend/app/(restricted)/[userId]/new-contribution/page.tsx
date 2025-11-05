@@ -1,8 +1,10 @@
+
 "use client";
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import "@/styles/globals.css";
+
 import MenuDesktop from "@/components/menu-desktop";
 import MenuMobile from "@/components/menu-mobile";
 import DonationsForm from "@/components/donations-form";
@@ -12,68 +14,87 @@ type Tipo = "Financeira" | "Alimenticia";
 
 export default function Donations() {
   const params = useParams();
-  const userId = Number((params as Record<string, string | string[] | undefined>)?.userId);
+  const userId = Number(
+    (params as Record<string, string | string[] | undefined>)?.userId
+  );
 
-  
-  const [tipoDoacao, setTipoDoacao] = useState<Tipo | undefined>(undefined);
   const [menuOpen, setMenuOpen] = useState(false);
   const [raUsuario, setRaUsuario] = useState<number | undefined>(userId);
-  const [quantidade, setQuantidade] = useState<number | undefined>(undefined);
-  const [meta, setMeta] = useState<number | undefined>(undefined);
-  const [gastos, setGastos] = useState<number | undefined>(undefined);
-  const [comprovante, setComprovante] = useState<string | null>(null); // ✅ aceita null
-  const [fonte, setFonte] = useState<string | null>(null); // ✅ aceita null
-  const [pesoUnidade, setPesoUnidade] = useState<number | undefined>(undefined);
   const [loading, setLoading] = useState(false);
 
-
-  const [activeTab, setActiveTab] = useState<'finance' | 'food'>('finance');
+  const [activeTab, setActiveTab] = useState<"finance" | "food">("finance");
   const [alimentosFromChild, setAlimentosFromChild] = useState<any>(null);
-  const [totaisFromChild, setTotaisFromChild] = useState<any>({ pontos: 0 });
+  const [totaisFromChild, setTotaisFromChild] = useState<{ pontos: number }>({
+    pontos: 0,
+  });
+  const [tipoDoacao, setTipoDoacao] = useState<"Financeira" | "Alimenticia">("Alimenticia");
 
-  function fmt(value: number) {
-    return value.toLocaleString("pt-BR");
+  interface FinanceiraState {
+  tipoDoacao: Tipo;
+  fonte: string;
+  meta?: number;
+  gastos?: number;
+  quantidade?: number;
+  comprovante: string;
+}
+ 
+  const [financeira, setFinanceira] = useState<FinanceiraState>({
+    tipoDoacao: "Financeira" as Tipo,
+    fonte: "",
+    meta:undefined,
+    gastos: undefined,
+    quantidade: undefined,
+    comprovante: "",
+  });
+
+  interface AlimenticiaState {
+  tipoDoacao: Tipo;
+  fonte: string;
+  meta?: number;
+  gastos?: number;
+  quantidade?: number;
+  pesoUnidade?:number;
   }
 
+  const [alimenticia, setAlimenticia] = useState <AlimenticiaState>({
+    tipoDoacao: "Alimenticia" as Tipo,
+    fonte: "",
+    meta: undefined,
+    quantidade: undefined,
+    pesoUnidade: 0,
+  });
+
+  const fmt = (value: number) => value.toLocaleString("pt-BR");
+
   const apiBase =
-    process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/+$/, "") || "http://localhost:3001";
-  const apiUrl = `${apiBase}/api/new-contribution`;
+    process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/+$/, "") ||
+    "http://localhost:3001";
+  const apiUrl = `${apiBase}/api/createContribution`;
+  console.log("[DEBUG] apiUrl:", apiUrl); // TEMPORÁRIO
+  
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
 
-    if (!tipoDoacao) {
-      alert("Escolha o tipo: Financeira ou Alimentícia.");
-      return;
-    }
-    if (!fonte?.trim()) {
-      alert("Informe o nome do evento/doador.");
-      return;
-    }
-    if (quantidade === undefined) {
-      alert("Informe a quantidade/valor.");
-      return;
-    }
+async function handleSubmit(e: React.FormEvent<HTMLFormElement>, tipo: "Financeira" | "Alimenticia") {
+  e.preventDefault();
+  setLoading(true);
 
-    setLoading(true);
+
     try {
       const body =
-        tipoDoacao === "Financeira"
-          ? {
-              TipoDoacao: "Financeira",
-              Fonte: fonte,
-              Comprovante: comprovante,
-              Meta: meta,
-              Quantidade: quantidade,
-              Gastos: gastos,
-            }
-          : {
-              TipoDoacao: "Alimenticia",
-              Fonte: fonte,
-              Quantidade: quantidade,
-              PesoUnidade: pesoUnidade,
-              Meta: meta,
-            };
+        tipo === "Financeira" ? {
+          
+            tipoDoacao: "Financeira",
+            RaUsuario: raUsuario,
+            Valor: financeira.gastos, // ajuste conforme seu back
+            Fonte: financeira.fonte,
+
+        }:{
+          
+       tipoDoacao: "Alimenticia",
+            Fonte: alimenticia.fonte,
+            Meta: alimenticia.meta,
+            // etc. (ajustar para o que seu back espera)
+        };
 
       const res = await fetch(apiUrl, {
         method: "POST",
@@ -81,33 +102,35 @@ export default function Donations() {
         body: JSON.stringify(body),
       });
 
-      if (!res.ok) {
-        const txt = await res.text().catch(() => "");
-        throw new Error(txt || `Falha (${res.status})`);
+      if (!res.ok) throw new Error(`Erro ao enviar (${res.status})`);
+
+      alert(`Contribuição ${tipo.toLowerCase()} enviada com sucesso!`);
+
+      if (tipo === "Financeira") {
+        setFinanceira({
+          tipoDoacao: "Financeira",
+          fonte: "",
+        
+          meta:undefined,
+          gastos: undefined,
+          quantidade: undefined,
+          comprovante: "",
+        });
+      } else {
+        setAlimenticia({
+          tipoDoacao: "Alimenticia",
+          fonte: "",
+          meta: undefined,
+          quantidade: undefined,
+          pesoUnidade: 0,
+        });
       }
-
-      const data = await res.json();
-      console.log("OK:", data);
-      alert(`Contribuição ${tipoDoacao.toLowerCase()} enviada!`);
-
-      // ✅ reset coerente
-      setQuantidade(undefined);
-      setFonte(null);
-      setTipoDoacao(undefined);
-      setMeta(undefined);
-      setGastos(undefined);
-      setPesoUnidade(undefined);
-      setComprovante(null);
     } catch (err: any) {
-      console.error(err);
-      alert(err?.message || "Erro ao enviar.");
+      alert(err?.message || "Erro ao enviar a contribuição");
     } finally {
       setLoading(false);
     }
   }
-
-  const isFinanceira = tipoDoacao === "Financeira";
-  const isAlimenticia = tipoDoacao === "Alimenticia";
 
   return (
     <div className="container w-full">
@@ -119,39 +142,35 @@ export default function Donations() {
           ☰
         </button>
 
-        <div className="sticky top-0 left-0 right-0 z-10 md:z-10 md:static md:bg-transparent bg-white/80 supports-[backdrop-filter]:bg-white/60">
+        <div className="sticky top-0 left-0 right-0 z-10 md:static bg-white/80 supports-[backdrop-filter]:bg-white/60">
           <div className="mx-auto max-w-4xl px-14 py-5">
-            <div className="mx-auto max-w-4xl md:max-w-6xl px-4 md:px-10 py-3 md:py-6">
-              <h1 className="text-[#A6B895] tracking-tight leading-[0.95] text-center text-[32px]">
-                Adicionar Contribuição
-              </h1>
-            </div>
+            <h1 className="text-[#A6B895] tracking-tight text-center text-[32px]">
+              Adicionar Contribuição
+            </h1>
           </div>
 
-          {/* Seletor de abas (mobile) */}
+          {/* Abas (mobile) */}
           <div className="md:hidden w-full flex justify-center">
             <div className="inline-grid grid-cols-2 w-full max-w-xs rounded-full border border-[#A6B895] bg-white p-0.5 shadow-sm">
               <button
                 type="button"
                 onClick={() => setActiveTab("finance")}
-                className={
-                  "rounded-full py-3 text-sm font-medium transition-all " +
-                  (activeTab === "finance"
-                    ? "bg-[#A6B895] text-white shadow-sm"
-                    : "text-black hover:bg-gray-100")
-                }
+                className={`rounded-full py-3 text-sm font-medium ${
+                  activeTab === "finance"
+                    ? "bg-[#A6B895] text-white"
+                    : "text-black hover:bg-gray-100"
+                }`}
               >
                 Financeira
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab("food")}
-                className={
-                  "rounded-full py-3 text-sm font-medium transition-all " +
-                  (activeTab === "food"
-                    ? "bg-[#A6B895] text-white shadow-sm"
-                    : "text-[#1F2937] hover:bg-gray-100")
-                }
+                className={`rounded-full py-3 text-sm font-medium ${
+                  activeTab === "food"
+                    ? "bg-[#A6B895] text-white"
+                    : "text-[#1F2937] hover:bg-gray-100"
+                }`}
               >
                 Alimentos
               </button>
@@ -160,103 +179,119 @@ export default function Donations() {
         </div>
       </header>
 
-      <div className="content">
-        <div className={`page-container ${menuOpen ? "shifted" : ""}`}>
-          {/* Menu lateral desktop/tablet */}
-          <MenuDesktop
-            menuOpen={menuOpen}
-            raUsuario={raUsuario!}
-            setMenuOpen={setMenuOpen}
-          />
+      <div className="page-container">
+        <MenuDesktop
+          menuOpen={menuOpen}
+          raUsuario={raUsuario!}
+          setMenuOpen={setMenuOpen}
+        />
+        <MenuMobile raUsuario={raUsuario!} />
 
-          {/* Menu rodapé mobile */}
-          <MenuMobile raUsuario={raUsuario!} />
-
-          <main className="flex justify-center items-stretch min-h-screen w-full px-9 mt-10">
+        <main className="flex justify-center items-stretch min-h-screen w-full px-9 mt-10">
+          <div className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-x-1">
+            {/* ✅ Financeiro */}
             <form
-              onSubmit={handleSubmit}
-              className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-x-1"
+              onSubmit={(e) => handleSubmit(e, "Financeira")}
+              className={`${
+                activeTab === "finance" ? "block" : "hidden"
+              } md:block bg-[#DCA4A9] border border-[#DCA4A9] p-6 rounded-xl shadow-md w-full h-[600px]`}
             >
-              {/* Aba Financeira */}
-              <div
-                className={
-                  (activeTab === "finance" ? "block" : "hidden") +
-                  " md:block bg-[#DCA4A9] border border-[#DCA4A9] p-6 rounded-xl shadow-md w-full h-[600px]"
-                }
-              >
-                <h2 className="text-2xl font-semibold mb-4">Financeiras</h2>
+              <h2 className="text-2xl font-semibold mb-4">Financeiras</h2>
 
-                <DonationsForm
-                  tipoDoacao={tipoDoacao}
-                  setTipoDoacao={setTipoDoacao}
-                  fonte={fonte ?? ""}
-                  setFonte={setFonte}
-                  meta={meta ?? 0}
-                  setMeta={setMeta}
-                  gastos={gastos ?? 0}
-                  setGastos={setGastos}
-                  quantidade={quantidade ?? 0}
-                  setQuantidade={setQuantidade}
-                  comprovante={comprovante ?? ""}
-                  setComprovante={setComprovante}
+              <DonationsForm
+                raUsuario={raUsuario}
+                setRaUsuario={setRaUsuario}
+                tipoDoacao={financeira.tipoDoacao}
+                setTipoDoacao={() => {}} // fixo
+                fonte={financeira.fonte}
+                setFonte={(v) =>
+                  setFinanceira({ ...financeira, fonte: v as string })
+                }
+                meta={financeira.meta}
+                setMeta={(v) =>
+                  setFinanceira({ ...financeira, meta: Number(v) })
+                }
+                gastos={financeira.gastos}
+                setGastos={(v) =>
+                  setFinanceira({ ...financeira, gastos: Number(v) })
+                }
+                quantidade={financeira.quantidade}
+                setQuantidade={(v) =>
+                  setFinanceira({ ...financeira, quantidade: Number(v) })
+                }
+                comprovante={financeira.comprovante}
+                setComprovante={(v) =>
+                  setFinanceira({ ...financeira, comprovante: v as string })
+                }
+              />
+              
+        <div className="mt-2 flex justify-end">
+          <button
+            type="submit"
+            onClick={() => setTipoDoacao("Financeira")}
+            disabled={loading}
+            className="px-10 py-2 rounded-lg bg-[#B27477] hover:bg-[#9B5B60] text-white transition disabled:opacity-50"
+          >
+            {loading ? "Cadastrando..." : "Cadastrar Financeira"}
+          </button>
+           </div>
+            </form>
+
+            {/* ✅ Alimentícia */}
+            <form
+              onSubmit={(e) => handleSubmit(e, "Alimenticia")}
+              className={`${
+                activeTab === "food" ? "block" : "hidden"
+              } md:flex md:flex-col bg-[#F2D1D4] border border-gray-100 p-6 rounded-xl shadow-md w-full h-[600px]`}
+            >
+              <h2 className="text-2xl font-semibold mb-3">Alimentícias</h2>
+
+              <div className="min-h-0 flex-1 overflow-y-auto rounded-lg">
+                <FoodDonations
+                  raUsuario={raUsuario}
+                  setRaUsuario={setRaUsuario}
+                  tipoDoacao={alimenticia.tipoDoacao}
+                  setTipoDoacao={() => {}} // fixo
+                  pesoUnidade={alimenticia.pesoUnidade}
+                  setPesoUnidade={(v) =>
+                    setAlimenticia({ ...alimenticia, pesoUnidade: Number(v) })
+                  }
+                  quantidade={alimenticia.quantidade}
+                  setQuantidade={(v) =>
+                    setAlimenticia({ ...alimenticia, quantidade: Number(v) })
+                  }
+                  meta={alimenticia.meta}
+                  setMeta={(v) =>
+                    
+                    setAlimenticia({ ...alimenticia, meta: Number(v) })
+                  }
+                  fonte={alimenticia.fonte}
+                  setFonte={(v) =>
+                    setAlimenticia({ ...alimenticia, fonte: v as string })
+                  }
+                  
+                  onAlimentosChange={setAlimentosFromChild}
+                  onTotaisChange={setTotaisFromChild}
                 />
               </div>
 
-              {/* Aba Alimentícia */}
-              <div
-                className={
-                  (activeTab === "food" ? "block" : "hidden") +
-                  " md:flex md:flex-col bg-[#F2D1D4] border border-gray-100 p-6 rounded-xl shadow-md w-full h-[600px]"
-                }
-              >
-                <h2 className="text-2xl font-semibold mb-3">Alimentícias</h2>
-
-                <div className="min-h-0 flex-1">
-                  <div className="overflow-x-hidden no-scrollbar md:h-full md:overflow-y-auto h-[380px] overflow-y-auto rounded-lg">
-                    <FoodDonations
-                      raUsuario={raUsuario}
-                      setRaUsuario={setRaUsuario}
-                      tipoDoacao={tipoDoacao}
-                      setTipoDoacao={setTipoDoacao}
-                      pesoUnidade={pesoUnidade ?? 0}
-                      setPesoUnidade={setPesoUnidade}
-                      quantidade={quantidade ?? 0}
-                      setQuantidade={setQuantidade}
-                      meta={meta ?? 0}
-                      setMeta={setMeta}
-                      fonte={fonte ?? ""}
-                      setFonte={setFonte}
-                      onAlimentosChange={setAlimentosFromChild}
-                      onTotaisChange={setTotaisFromChild}
-                    />
-                  </div>
+              <div className="mt-4 flex flex-none items-center gap-3 justify-end">
+                <div className="bg-[#DCA4A9] border text-sm rounded-lg py-2 px-16 whitespace-nowrap w-[300px] overflow-hidden text-ellipsis">
+                  Pontuação: <span>{fmt(totaisFromChild?.pontos ?? 0)}</span>
                 </div>
 
-                <div className="mt-4 flex items-center gap-3 justify-end">
-                  <div className="bg-[#DCA4A9] border border-transparent text-sm rounded-lg py-2 px-16">
-                    Pontuação:{" "}
-                    <span>{fmt(totaisFromChild.pontos)}</span>
-                  </div>
-
-                  <button
-                    type="submit"
-                    onClick={() => setTipoDoacao("Alimenticia")}
-                    disabled={loading}
-                    className={`w-fit px-4 py-2 rounded-lg border ${
-                      isAlimenticia
-                        ? "bg-emerald-600 text-white border-emerald-600"
-                        : "bg-white text-emerald-700 border-emerald-600"
-                    } hover:opacity-90 disabled:opacity-50`}
-                  >
-                    {loading && isAlimenticia
-                      ? "Enviando..."
-                      : "Cadastrar Alimentícia"}
-                  </button>
-                </div>
+                <button
+                  type="submit"
+                  onClick={() => setTipoDoacao("Alimenticia")}
+                  disabled={loading}
+                  className="w-fit px-4 py-2 rounded-lg bg-emerald-600 text-white hover:opacity-90 disabled:opacity-50"
+                >
+                  {loading ? "Enviando..." : "Cadastrar Alimentícia"}
+                </button>
               </div>
             </form>
-          </main>
-        </div>
+          </div>
+        </main>
       </div>
     </div>
   );
