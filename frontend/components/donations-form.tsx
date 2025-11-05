@@ -1,21 +1,27 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 interface Properties {
+  raUsuario: number;
+  setRaUsuario: React.Dispatch<React.SetStateAction<number | undefined>>;
+  tipoDoacao: "Financeira" | "Alimenticia";
+  setTipoDoacao: React.Dispatch<React.SetStateAction<"Financeira" | "Alimenticia">>;
+  quantidade: number | undefined;
+  setQuantidade: React.Dispatch<React.SetStateAction<number | undefined>>;
   fonte: string;
   setFonte: React.Dispatch<React.SetStateAction<string>>;
-  meta: number;
-  setMeta: React.Dispatch<React.SetStateAction<number>>;
-  gastos: number;
-  setGastos: React.Dispatch<React.SetStateAction<number>>;
-  quantidade: number;
-  setQuantidade: React.Dispatch<React.SetStateAction<number>>;
+  meta: number | undefined;
+  setMeta: React.Dispatch<React.SetStateAction<number | undefined>>;
+  gastos: number | undefined;
+  setGastos: React.Dispatch<React.SetStateAction<number | undefined>>;
   comprovante: string;
   setComprovante: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function DonationsForm({
+  raUsuario,
+  setRaUsuario,
   quantidade,
   setQuantidade,
   fonte,
@@ -27,77 +33,127 @@ export default function DonationsForm({
   comprovante,
   setComprovante,
 }: Properties) {
-  const toNum = (v: string) => (v === "" ? 0 : Number(v));
+  const [comprovanteFile, setComprovanteFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const toNum = (v: string) => (v === "" ? undefined : Number(v));
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.currentTarget.files?.[0] ?? null;
+    if (!file) {
+      setComprovanteFile(null);
+      setComprovante("");
+      return;
+    }
+
+    const okType = ["image/png", "image/jpeg"].includes(file.type);
+    const okSize = file.size <= 5 * 1024 * 1024;
+
+    if (!okType) return alert("Apenas PNG/JPEG");
+    if (!okSize) return alert("Arquivo muito grande (máx. 5MB)");
+
+    setComprovanteFile(file);
+    setComprovante(file.name);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!fonte.trim()) return alert("Informe o nome do evento/doador");
+    if (quantidade === undefined) return alert("Informe o valor/quantidade");
+
+    setLoading(true);
+    try {
+      const form = new FormData();
+      if (comprovanteFile) form.append("Comprovante", comprovanteFile);
+      form.append("RaUsuario", String(raUsuario));
+      form.append("Quantidade", String(quantidade ?? ""));
+      form.append("Meta", String(meta ?? ""));
+      form.append("Gastos", String(gastos ?? ""));
+      form.append("Fonte", fonte);
+
+      const res = await fetch("/api/createContribution", {
+        method: "POST",
+        body: form,
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+
+      alert("Contribuição registrada com sucesso!");
+
+      // Resetar campos
+      setFonte("");
+      setQuantidade(undefined);
+      setMeta(undefined);
+      setGastos(undefined);
+      setComprovante("");
+      setComprovanteFile(null);
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || "Erro de conexão");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full max-w-xl">
       <div className="rounded-xl bg-[#DCA4A9] p-4">
-        <label className="block text-sm font-medium text-[#3B2A1A] mb-1">
-          Nome do Evento / nome do doador
-        </label>
+        <label className="block mb-1">Nome do Evento / doador</label>
         <input
-          className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black px-3 py-1.5 mb-3"
           type="text"
           placeholder="Ex: Instituto Alma"
           value={fonte}
           onChange={(e) => setFonte(e.currentTarget.value)}
+          className="w-[80%] bg-white border rounded px-3 py-1.5"
           required
         />
 
-        <label className="block text-sm font-medium text-[#3B2A1A] mb-1">
-          Meta
-        </label>
+        <label className="block mb-1">Meta</label>
         <input
-          className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
           type="number"
           placeholder="Ex: R$100"
-          value={meta}
-          onChange={(e) => setMeta(toNum(e.target.value))}
-          inputMode="decimal"
+          value={meta ?? ""}
+          onChange={(e) => setMeta(toNum(e.currentTarget.value))}
+          className="w-[80%] bg-white border rounded px-3 py-1.5"
         />
 
-        <label className="block text-sm font-medium text-[#3B2A1A] mb-1">
-          Gastos
-        </label>
+        <label className="block mb-1">Gastos</label>
         <input
-          className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
           type="number"
           placeholder="Ex: R$100"
-          value={gastos}
-          onChange={(e) => setGastos(toNum(e.target.value))}
-          inputMode="decimal"
+          value={gastos ?? ""}
+          onChange={(e) => setGastos(toNum(e.currentTarget.value))}
+          className="w-[80%] bg-white border rounded px-3 py-1.5"
         />
 
-      <label>{tipoDoacao === "Financeira" ? "Valor (R$)" : "Quantidade (kg/unid)"}</label>
-      <input
-        className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
-        type="number"
-        placeholder="Ex: R$1000"
-        value={quantidade ?? 0}                    
-        onChange={(e) => setQuantidade(toNum(e.target.value))}
-        inputMode="decimal"
-        required
-      />
- 
-      <label>Comprovante</label>
-      <input
-        className="w-[80%] bg-white border border-[#CBB8A8] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none mb-2"
-        type="file"
-        accept="image/png,image/jpeg"
-        onChange={handleFileChange}
-        required={tipoDoacao === "Financeira"}
-      />
-         <div className = "flex justify-end">
-      <button
-        type="submit"
-        disabled={loading}
-        onClick={() => setTipoDoacao("Financeira")}
-        className="mt-2 w-fit bottom-10 right-14 px-10 py-2 rounded-lg bg-[#B27477] houver: bg-[#9B5B60] text-white disabled:opacity-50"
-      >
-        {loading ? "Casdastrando..." : "Cadastrar"}
-      </button>
-         </div>
-         </div>
-    </div>
+        <label className="block mb-1">Valor R$</label>
+        <input
+          type="number"
+          placeholder="Ex: R$140"
+          value={quantidade ?? ""}
+          onChange={(e) => setQuantidade(toNum(e.currentTarget.value))}
+          className="w-[80%] bg-white border rounded px-3 py-1.5"
+          required
+        />
+
+        <label className="block mb-1">Comprovante (PNG/JPEG)</label>
+        <input
+          type="file"
+          accept="image/png,image/jpeg"
+          onChange={handleFileChange}
+          className="w-[80%] bg-white border rounded px-3 py-1.5"
+        />
+        {comprovante && <p className="text-xs text-gray-600">Selecionado: {comprovante}</p>}
+
+        <button
+          type="submit"
+          className="mt-3 px-4 py-2 bg-emerald-600 text-white rounded hover:opacity-90 disabled:opacity-50"
+          disabled={loading}
+        >
+          {loading ? "Enviando..." : "Cadastrar"}
+        </button>
+      </div>
+    </form>
   );
 }
