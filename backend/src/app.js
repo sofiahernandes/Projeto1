@@ -7,7 +7,6 @@ import { dirname } from "path";
 import multer from "multer";
 import routes from "./routes.js";
 
-app.use("/api", routes);
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -36,7 +35,6 @@ app.get("/health", (_, res) => {
   res.json({ ok: true, server: "up" });
 });
 
-
 app.use("/api", routes);
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
@@ -57,5 +55,4 @@ app.use((req, res) => {
 });
 
 
-// app.use('/api', routes)
 export default app;
