@@ -54,7 +54,7 @@ r.post("/logOutUser", authController.logOutUser);
 r.delete("/deleteUser/:RaUsuario", userController.deleteUser);
 
 r.post("/comprovante", receiptController.uploadReceipt);
-r.post("/comprovante/:IdContribuicaoFinanciera",receiptController.addReceiptAtContribution);
+r.post("/comprovante/:IdContribuicaoFinanceira", receiptController.addReceiptAtContribution);
 r.get("/comprovante/:RaUsuario", receiptController.receiptByRA);
 r.get("/comprovante/:IdComprovante ", receiptController.receiptById);
 r.get("/comprovante/todosComprovantes", receiptController.getAllReceipts);

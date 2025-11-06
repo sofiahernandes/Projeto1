@@ -4,9 +4,11 @@ import React, { useState } from "react";
 
 interface Properties {
   raUsuario: number;
-  setRaUsuario: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setRaUsuario: React.Dispatch<React.SetStateAction<number>>;
   tipoDoacao: "Financeira" | "Alimenticia";
-  setTipoDoacao: React.Dispatch<React.SetStateAction<"Financeira" | "Alimenticia">>;
+  setTipoDoacao: React.Dispatch<
+    React.SetStateAction<"Financeira" | "Alimenticia">
+  >;
   quantidade: number | undefined;
   setQuantidade: React.Dispatch<React.SetStateAction<number | undefined>>;
   fonte: string;
@@ -15,8 +17,8 @@ interface Properties {
   setMeta: React.Dispatch<React.SetStateAction<number | undefined>>;
   gastos: number | undefined;
   setGastos: React.Dispatch<React.SetStateAction<number | undefined>>;
-  comprovante: string;
-  setComprovante: React.Dispatch<React.SetStateAction<string>>;
+  comprovante: File | null;
+  setComprovante: React.Dispatch<React.SetStateAction<File | null>>;
 }
 
 export default function DonationsForm({
@@ -33,72 +35,27 @@ export default function DonationsForm({
   comprovante,
   setComprovante,
 }: Properties) {
-  const [comprovanteFile, setComprovanteFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
-
   const toNum = (v: string) => (v === "" ? undefined : Number(v));
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.currentTarget.files?.[0] ?? null;
     if (!file) {
-      setComprovanteFile(null);
-      setComprovante("");
+      setComprovante(null);
       return;
     }
 
-    const okType = ["image/png", "image/jpeg"].includes(file.type);
+    const okType = ["image/png", "image/jpeg", "image/jpg"].includes(file.type);
     const okSize = file.size <= 5 * 1024 * 1024;
 
     if (!okType) return alert("Apenas PNG/JPEG");
     if (!okSize) return alert("Arquivo muito grande (máx. 5MB)");
 
-    setComprovanteFile(file);
-    setComprovante(file.name);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!fonte.trim()) return alert("Informe o nome do evento/doador");
-    if (quantidade === undefined) return alert("Informe o valor/quantidade");
-
-    setLoading(true);
-    try {
-      const form = new FormData();
-      if (comprovanteFile) form.append("Comprovante", comprovanteFile);
-      form.append("RaUsuario", String(raUsuario));
-      form.append("Quantidade", String(quantidade ?? ""));
-      form.append("Meta", String(meta ?? ""));
-      form.append("Gastos", String(gastos ?? ""));
-      form.append("Fonte", fonte);
-
-      const res = await fetch("/api/createContribution", {
-        method: "POST",
-        body: form,
-      });
-
-      if (!res.ok) throw new Error(await res.text());
-
-      alert("Contribuição registrada com sucesso!");
-
-      // Resetar campos
-      setFonte("");
-      setQuantidade(undefined);
-      setMeta(undefined);
-      setGastos(undefined);
-      setComprovante("");
-      setComprovanteFile(null);
-    } catch (err: any) {
-      console.error(err);
-      alert(err.message || "Erro de conexão");
-    } finally {
-      setLoading(false);
-    }
+    setComprovante(file);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full max-w-xl">
-      <div className="rounded-xl bg-[#DCA4A9] p-4">
+    <div className="flex flex-col gap-4 w-full">
+      <div className="rounded-xl p-4">
         <label className="block mb-1">Nome do Evento / doador</label>
         <input
           type="text"
@@ -109,7 +66,7 @@ export default function DonationsForm({
           required
         />
 
-        <label className="block mb-1">Meta</label>
+        <label className="block mb-1 mt-3">Meta</label>
         <input
           type="number"
           placeholder="Ex: R$100"
@@ -118,7 +75,7 @@ export default function DonationsForm({
           className="w-[80%] bg-white border rounded px-3 py-1.5"
         />
 
-        <label className="block mb-1">Gastos</label>
+        <label className="block mb-1 mt-3">Gastos</label>
         <input
           type="number"
           placeholder="Ex: R$100"
@@ -127,7 +84,7 @@ export default function DonationsForm({
           className="w-[80%] bg-white border rounded px-3 py-1.5"
         />
 
-        <label className="block mb-1">Valor R$</label>
+        <label className="block mb-1 mt-3">Valor R$</label>
         <input
           type="number"
           placeholder="Ex: R$140"
@@ -137,23 +94,19 @@ export default function DonationsForm({
           required
         />
 
-        <label className="block mb-1">Comprovante (PNG/JPEG)</label>
+        <label className="block mb-1 mt-3">Comprovante (PNG/JPEG)</label>
         <input
           type="file"
           accept="image/png,image/jpeg"
           onChange={handleFileChange}
           className="w-[80%] bg-white border rounded px-3 py-1.5"
         />
-        {comprovante && <p className="text-xs text-gray-600">Selecionado: {comprovante}</p>}
-
-        <button
-          type="submit"
-          className="mt-3 px-4 py-2 bg-emerald-600 text-white rounded hover:opacity-90 disabled:opacity-50"
-          disabled={loading}
-        >
-          {loading ? "Enviando..." : "Cadastrar"}
-        </button>
+        {comprovante && (
+          <p className="text-xs text-gray-600 mt-1">
+            Selecionado: {comprovante.name}
+          </p>
+        )}
       </div>
-    </form>
+    </div>
   );
 }
