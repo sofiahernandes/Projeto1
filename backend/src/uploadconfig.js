@@ -11,7 +11,6 @@ cloudinary.config({
 });
 
 const isDev = process.env.NODE_ENV !== "production";
-
 const storage = isDev
   ? (() => {
       const uploadDir = path.resolve("src", "uploads");

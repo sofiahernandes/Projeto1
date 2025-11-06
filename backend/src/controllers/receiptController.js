@@ -3,6 +3,8 @@ import { prisma } from "../../prisma/lib/prisma.js";
 import path from "path";
 import fs from "fs";
 
+const isDev = process.env.NODE_ENV !== "production";
+
 const receiptController = {
   // POST http://localhost:3001/api/comprovante
   uploadReceipt: async (req, res) => {
@@ -19,15 +21,19 @@ const receiptController = {
         data: comprovante,
       });
     } catch (error) {
-      console.error("Erro no upload:", error);
       res.status(500).json({ error: error.message });
     }
   },
 
-  // POST /api/comprovante/:IdContribuicaoFinanciera - (adiciona imagem pela contribuição financeira )
+  // POST http://localhost:3001/api/comprovante/:IdContribuicaoFinanciera - (adiciona imagem pela contribuição financeira )
   addReceiptAtContribution: async (req, res) => {
     try {
       const { IdContribuicaoFinanceira } = req.params;
+      const contributionId = parseInt(IdContribuicaoFinanceira, 10);
+
+      if (isNaN(contributionId)) {
+        return res.status(400).json({ error: "ID de contribuição inválido." });
+      }
 
       if (!req.file) {
         return res.status(400).json({ error: "Nenhum arquivo enviado." });
@@ -36,7 +42,10 @@ const receiptController = {
       const contribuicaoExiste =
         await prisma.contribuicao_Financeira.findUnique({
           where: {
-            IdContribuicaoFinanceira,
+            IdContribuicaoFinanceira: contributionId,
+          },
+          include: {
+            comprovante: Number(IdComprovante),
           },
         });
 
@@ -49,46 +58,59 @@ const receiptController = {
           const publicId = publicIdWithExt.replace(/\.[^/.]+$/, "");
           await cloudinary.uploader.destroy(publicId);
         }
-
         return res.status(404).json({ error: "Contribuição não encontrada" });
       }
-
+      if (!contribuicaoExiste.IdComprovante) {
+        return res.status(400).json({
+          error: "Esta contribuição não possui um comprovante vinculado",
+        });
+      }
       const imagemUrl = req.file.path;
 
-      const comprovante = await prisma.comprovante.create({
+      const comprovanteAtualizado = await prisma.comprovante.update({
+        where: { IdComprovante: contribuicaoExiste.IdComprovante },
         data: { Imagem: imagemUrl },
       });
 
-      const contribuicaoFinanAtualizada =
-        await prisma.contribuicao_Financeira.update({
-          where: { IdContribuicaoFinanceira },
-          data: { IdComprovante: comprovante.IdComprovante },
+      const contribuicaoFinalizada =
+        await prisma.contribuicao_Financeira.findUnique({
+          where: { IdContribuicaoFinanceira: contributionId },
           include: {
             comprovante: true,
-            usuario: true,
+            usuario: {
+              select: {
+                RaUsuario: true,
+                NomeUsuario: true,
+                EmailUsuario: true,
+              },
+            },
           },
         });
-
-      res.status(201).json({
-        message: "Comprovante adicionado à contribuição com sucesso!",
-        data: contribuicaoFinanAtualizada,
+      res.status(200).json({
+        message: "Comprovante atualizado com sucesso!",
+        data: { ...contribuicaoFinalizada, TipoDoacao: "Financeira" },
       });
     } catch (error) {
-      console.error("Erro ao adicionar comprovante:", error);
       res.status(500).json({ error: error.message });
     }
   },
 
-  // GET /api/comprovante/usuario/:raUsuario
+  // GET http://localhost:3001/api/comprovante/usuario/:raUsuario
   receiptByRA: async (req, res) => {
     try {
       const { RaUsuario } = req.params;
 
       const comprovantes = await prisma.contribuicao_Financeira.findMany({
-        where: { RaUsuario: parseInt(RaUsuario) },
+        where: { RaUsuario: parseInt(RaUsuario, 10) },
         include: {
           comprovante: true,
-          usuario: true,
+          usuario: {
+            select: {
+              RaUsuario: true,
+              NomeUsuario: true,
+              EmailUsuario: true,
+            },
+          },
         },
         orderBy: { DataContribuicao: "desc" },
       });
@@ -101,37 +123,49 @@ const receiptController = {
 
       res.json(comprovantes);
     } catch (error) {
-      console.error("Erro ao buscar comprovantes:", error);
       res.status(500).json({ error: error.message });
     }
   },
 
-  // GET /api/comprovante/:IdComprovante
+  // GET http://localhost:3001/api/comprovante/:IdComprovante
   receiptById: async (req, res) => {
     try {
       const { IdComprovante } = req.params;
-      const contribuicao = await prisma.contribuicao_Financeira.findUnique({
-        where: { IdContribuicaoFinanceira: parseInt(IdComprovante) },
+      const receiptId = parseInt(IdComprovante, 10);
+
+      if (isNaN(receiptId)) {
+        return res.status(400).json({ error: "ID de comprovante inválido." });
+      }
+
+      const comprovante = await prisma.comprovante.findUnique({
+        where: { IdComprovante: receiptId },
         include: {
-          comprovante: true,
-          usuario: true,
+          contribuicao_financeira: {
+            include: {
+              usuario: {
+                select: {
+                  RaUsuario: true,
+                  NomeUsuario: true,
+                  EmailUsuario: true,
+                },
+              },
+            },
+          },
         },
       });
 
-      if (!contribuicao) {
+      if (!comprovante) {
         return res.status(404).json({
-          error: "Contribuição não encontrada",
+          error: "Comprovante não encontrado",
         });
       }
 
-      res.json(contribuicao);
+      res.json(comprovante);
     } catch (error) {
-      console.error("Erro ao buscar contribuição:", error);
       res.status(500).json({ error: error.message });
     }
   },
 
-  //  GET http://localhost:3001/api/comprovante/todosComprovantes (listar todos- se for necessário)
   getAllReceipts: async (req, res) => {
     try {
       const comprovantes = await prisma.comprovante.findMany({
@@ -153,7 +187,6 @@ const receiptController = {
 
       res.json(comprovantes);
     } catch (error) {
-      console.error("Erro ao listar comprovantes:", error);
       res.status(500).json({ error: error.message });
     }
   },
@@ -162,9 +195,14 @@ const receiptController = {
   deleteReceiptById: async (req, res) => {
     try {
       const { IdComprovante } = req.params;
+      const receiptId = parseInt(IdComprovante, 10);
+
+      if (isNaN(receiptId)) {
+        return res.status(400).json({ error: "ID de comprovante inválido." });
+      }
 
       const comprovante = await prisma.comprovante.findUnique({
-        where: { IdComprovante: parseInt(IdComprovante) },
+        where: { IdComprovante: receiptId },
         include: {
           contribuicao_financeira: true,
         },
@@ -187,7 +225,7 @@ const receiptController = {
       if (isDev) {
         const filepath = path.resolve(comprovante.Imagem);
         fs.unlink(filepath, (err) => {
-          if (err) console.warn("Erro ao remover arquivo local:", err);
+          if (err) alert("Erro ao remover arquivo local:", err);
         });
       } else {
         try {
@@ -196,25 +234,23 @@ const receiptController = {
 
           if (uploadIndex !== -1) {
             const publicIdWithExt = urlParts.slice(uploadIndex + 2).join("/");
-            const publicId = publicIdWithExt.replace(/\.[^/.]+$/, ""); // Remove extensão
-
+            const publicId = publicIdWithExt.replace(/\.[^/.]+$/, "");
             await cloudinary.uploader.destroy(publicId);
           }
         } catch (cloudinaryError) {
           console.warn("Erro ao deletar do Cloudinary:", cloudinaryError);
         }
       }
+
       await prisma.comprovante.delete({
-        where: { IdComprovante: parseInt(IdComprovante) },
+        where: { IdComprovante: receiptId },
       });
 
       res.status(200).json({
         message: "Comprovante excluído com sucesso!",
-        id: parseInt(IdComprovante),
+        id: receiptId,
       });
     } catch (error) {
-      console.error("Erro ao deletar comprovante:", error);
-
       if (error.code === "P2003") {
         return res.status(409).json({
           error:
@@ -226,4 +262,5 @@ const receiptController = {
     }
   },
 };
+
 export default receiptController;
