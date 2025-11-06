@@ -3,7 +3,6 @@ import { prisma } from "../../prisma/lib/prisma.js";
 import { createToken, denyToken } from "../services/tokenServices.js";
 
 const usersController = {
-  //GET http://localhost:3001/api/users
   allUsers: async (_, res) => {
     try {
       const usuario = await prisma.usuario.findMany();
@@ -16,7 +15,6 @@ const usersController = {
     }
   },
 
-  //GET http://localhost:3001/api/user/:RaUsuario
   userByRA: async (req, res) => {
     const { RaUsuario } = req.params;
 
@@ -26,8 +24,28 @@ const usersController = {
         include: {
           time_usuarios: {
             include: {
-              time: true, 
+              time: {
+                select: {
+                  IdTime: true,
+                  NomeTime: true,
+                  IdMentor: true,
+                  mentor: {
+                    select: {
+                      IdMentor: true,
+                      EmailMentor: true,
+                    },
+                  },
+                },
+              },
             },
+          },
+          contribuicoes_financeiras: {
+            orderBy: { DataContribuicao: "desc" },
+            take: 5,
+          },
+          contribuicoes_alimenticias: {
+            orderBy: { DataContribuicao: "desc" },
+            take: 5,
           },
         },
       });
@@ -46,13 +64,12 @@ const usersController = {
     }
   },
 
-  //DELETE http://localhost:3001/api/deleteUser/:RaUsuario
   deleteUser: async (req, res) => {
     const { RaUsuario } = req.params;
 
     try {
       const usuario = await prisma.usuario.delete({
-        where: { RaUsuario: RaUsuario },
+        where: { RaUsuario: Number(RaUsuario) },
       });
       res.json({ message: "Aluno Mentor deletado com sucesso!", usuario });
     } catch (err) {
