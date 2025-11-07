@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function MenuMobile() {
   const pathname = usePathname();
   const router = useRouter();
-  const { RaUsuario } = useParams();
+  const params = useParams();
+  const [RaUsuario, setRaUsuario] = useState<number>();
 
   const homeHref = `/user/${RaUsuario}/team-history`;
   const createHref = `/user/${RaUsuario}/new-contribution`;
@@ -16,8 +17,8 @@ export default function MenuMobile() {
   const isActive = (href: string) => pathname?.startsWith(href);
 
   useEffect(() => {
-    if (!RaUsuario) {
-      console.warn("MenuMobile: RaUsuario indefinido", { pathname });
+    if (params?.RaUsuario){
+      setRaUsuario(Number(params?.RaUsuario))
     }
   }, [RaUsuario, pathname]);
 

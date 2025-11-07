@@ -12,7 +12,7 @@ model Mentor {
   EmailMentor String  @unique @db.VarChar(250) 
   IsAdmin     Boolean?
   SenhaMentor String   @db.VarChar(80)
-  times       Time[]   // Relação com Time
+  time       Time[]   // Relação com Time
 }
 
 model Time {

@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 
 export default function TabsLogin() {
   const router = useRouter();
-  const [IdMentor] = React.useState("");
+  const [IdMentor, setIdMentor] = React.useState<number>();
   const [IdTime] = React.useState("");
   const [EmailMentor, setEmailMentor] = React.useState("");
   const [SenhaMentor, setSenhaMentor] = React.useState("");
@@ -90,8 +90,9 @@ export default function TabsLogin() {
         return;
       }
 
-      const Mentor = await res.json();
-      router.push(`/mentor/${IdMentor}/mentor-history`);
+       const { mentor } = await res.json(); 
+      setIdMentor(mentor.IdMentor);
+      router.push(`/mentor/${mentor.IdMentor}/mentor-history`);
     } catch (error) {
       console.error("Erro ao logar mentor:", error);
     }
@@ -132,8 +133,9 @@ export default function TabsLogin() {
         return;
       }
 
-      const Admin = await res.json();
-      router.push(`/admin/${IdMentor}/admin-history`);
+      const { admin } = await res.json(); 
+      setIdMentor(admin.IdMentor);
+      router.push(`/admin/${admin.IdMentor}/admin-history`);
     } catch (error) {
       console.error("Erro ao logar admin:", error);
     }

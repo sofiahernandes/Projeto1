@@ -1,17 +1,22 @@
-import { SetStateAction } from "react";
+import { SetStateAction, useState, useEffect } from "react";
 import Link from "next/link";
+import React from "react";
+import { useParams } from "next/navigation";
 
 interface Properties {
   menuOpen: Boolean;
   setMenuOpen: (arg: SetStateAction<boolean>) => void;
-  RaUsuario: number;
 }
 
-export default function MenuDesktop({
-  menuOpen,
-  setMenuOpen,
-  RaUsuario,
-}: Properties) {
+export default function MenuDesktop({ menuOpen, setMenuOpen}: Properties) {
+  const params = useParams();
+  const [RaUsuario, setRaUsuario] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (params?.RaUsuario) {
+      setRaUsuario(Number(params?.RaUsuario));
+    }
+  }, [params]);
   return (
     <aside className={`side-menu ${menuOpen ? "open" : ""}`}>
       <button className="close-menu" onClick={() => setMenuOpen(false)}>
