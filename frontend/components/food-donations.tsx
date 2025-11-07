@@ -2,7 +2,6 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 
-// Tipo da linha do grid
 type AlimentoRow = {
   id: number;
   Nome: string;
@@ -13,8 +12,10 @@ type AlimentoRow = {
 interface Properties {
   raUsuario: number;
   setRaUsuario: React.Dispatch<React.SetStateAction<number>>;
-  tipoDoacao: string;
-  setTipoDoacao: React.Dispatch<React.SetStateAction<string>>;
+  tipoDoacao: "Financeira" | "Alimenticia";
+  setTipoDoacao: React.Dispatch<
+    React.SetStateAction<"Financeira" | "Alimenticia">
+  >;
   quantidade: number | undefined;
   setQuantidade: React.Dispatch<React.SetStateAction<number | undefined>>;
   pesoUnidade: number | undefined;
@@ -25,14 +26,7 @@ interface Properties {
   setMeta: React.Dispatch<React.SetStateAction<number | undefined>>;
   gastos: number | undefined;
   setGastos: React.Dispatch<React.SetStateAction<number | undefined>>;
-  onAlimentosChange?: (
-    alimentos: {
-      id: number;
-      Nome: string;
-      quantidade: string;
-      pesoUnidade: string;
-    }[]
-  ) => void;
+  onAlimentosChange?: (alimentos: any[]) => void;
   onTotaisChange?: (totais: { kgTotal: number; pontos: number }) => void;
 }
 
@@ -73,13 +67,11 @@ export default function FoodDonations({
     { id: 16, Nome: "Ervilha Enlatada", quantidade: "", pesoUnidade: "" },
   ]);
 
-  // Pontos por KG (adicione regras se precisar)
   const PONTOS_POR_KG: Record<string, number> = {
     Arroz: 3,
     Feijão: 5,
   };
 
-  // Converte string com vírgula/ponto em número seguro
   function parseNumber(str: string | number) {
     if (typeof str === "number") return Number.isFinite(str) ? str : 0;
     const s = String(str).trim();
@@ -97,7 +89,6 @@ export default function FoodDonations({
       maximumFractionDigits: 2,
     });
 
-  // Totais do grid (kg e pontos)
   const totais = useMemo(() => {
     let kgTotal = 0;
     let pontos = 0;
@@ -112,9 +103,6 @@ export default function FoodDonations({
     return { kgTotal, pontos };
   }, [alimentos]);
 
-  // 👉 AQUI: usamos (e atualizamos) os GLOBAIS do PAI de forma útil
-  // quantidade (global) = SOMA de quantidades do grid
-  // pesoUnidade (global) = MÉDIA de kg/unidade do grid
   useEffect(() => {
     const somaQtd = alimentos.reduce(
       (acc, a) => acc + parseNumber(a.quantidade),
@@ -138,17 +126,18 @@ export default function FoodDonations({
     if (!nearlyEqual(mediaPeso, pesoUnidade ?? 0)) {
       setPesoUnidade(mediaPeso);
     }
-  }, [alimentos, setQuantidade, setPesoUnidade]);
+  }, [alimentos, quantidade, pesoUnidade, setQuantidade, setPesoUnidade]);
 
-  // Callbacks p/ pai (se fornecidas)
   useEffect(() => {
     onAlimentosChange?.(
-      alimentos.map(({ id, Nome, quantidade, pesoUnidade }) => ({
-        id,
-        Nome,
-        quantidade,
-        pesoUnidade,
-      }))
+      alimentos
+        .filter((a) => parseNumber(a.quantidade) > 0)
+        .map(({ id, Nome, quantidade, pesoUnidade }) => ({
+          IdAlimento: id,
+          Nome,
+          Quantidade: parseNumber(quantidade),
+          PesoUnidade: parseNumber(pesoUnidade),
+        }))
     );
   }, [alimentos, onAlimentosChange]);
 
@@ -156,13 +145,11 @@ export default function FoodDonations({
     onTotaisChange?.(totais);
   }, [totais, onTotaisChange]);
 
-  // Handler de mudança no grid
   const handleAlimentoChange = (
     id: number,
     campo: "quantidade" | "pesoUnidade",
     valor: string
   ) => {
-    // Remove espaços; deixa vírgula se o usuário quiser
     const v = valor.replace(/\s+/g, "");
     setAlimentos((prev) =>
       prev.map((row) => (row.id === id ? { ...row, [campo]: v } : row))
@@ -170,7 +157,7 @@ export default function FoodDonations({
   };
 
   return (
-    <form className="flex flex-col gap-2 w-full min-h-screen">
+    <div className="flex flex-col gap-2 w-full">
       <div>Nome do Evento</div>
 
       <input
@@ -186,7 +173,7 @@ export default function FoodDonations({
       <div className="mb-4 flex items-center gap-3 flex-wrap">
         <input
           className="w-[80%] bg-[white] border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
-          type="text" // aceita vírgula
+          type="text"
           placeholder="Ex: 1200"
           value={meta ?? ""}
           onChange={(e) => {
@@ -200,7 +187,6 @@ export default function FoodDonations({
           aria-label="Meta em kg"
         />
 
-        {/* 👇 Mostra os GLOBAIS que agora são usados */}
         <div className="rounded-lg bg-white border border-[#BEB7AE] px-4 py-1.5 whitespace-nowrap w-[300px] overflow-hidden text-ellipsis">
           <span>Total em Kg:</span>
           <span className="ml-2">
@@ -214,7 +200,6 @@ export default function FoodDonations({
         </div>
       </div>
 
-      {/* Cabeçalho */}
       <div className="flex gap-4 w-full font-bold">
         <div className="w-[30%] text-center">Alimento</div>
         <div className="w-[30%] text-center">Unidade</div>
@@ -227,15 +212,13 @@ export default function FoodDonations({
           className="h-full overflow-auto pr-1 no-scrollbar"
         >
           {alimentos.map((alimento) => (
-            <div key={alimento.id} className="flex gap-4 w-full">
-              {/* Nome do alimento */}
-              <div className="w-[30%] bg-white border border-gray-300 rounded-lg flex items-center justify-center text-center px-3 py-2 min-h-10 break-words [hyphens:auto]">
+            <div key={alimento.id} className="flex gap-4 w-full mb-2">
+              <div className="w-[30%] bg-white border border-gray-300 rounded-lg flex items-center justify-center text-center px-3 py-2 min-h-10 break-words">
                 {alimento.Nome}
               </div>
 
-              {/* Unidade (quantidade) */}
               <input
-                className="w-[30%] bg-white border border-gray-300 rounded-lg px-3 py-2 text-center appearance-none"
+                className="w-[30%] bg-white border border-gray-300 rounded-lg px-3 py-2 text-center"
                 type="text"
                 placeholder="Unidade"
                 value={alimento.quantidade}
@@ -250,9 +233,8 @@ export default function FoodDonations({
                 aria-label={`Quantidade de ${alimento.Nome}`}
               />
 
-              {/* Kg por unidade */}
               <input
-                className="w-[30%] bg-white border border-gray-300 rounded-lg px-3 py-2 text-center appearance-none"
+                className="w-[30%] bg-white border border-gray-300 rounded-lg px-3 py-2 text-center"
                 type="text"
                 placeholder="Kg"
                 value={alimento.pesoUnidade}
@@ -270,6 +252,6 @@ export default function FoodDonations({
           ))}
         </div>
       </div>
-    </form>
+    </div>
   );
 }
