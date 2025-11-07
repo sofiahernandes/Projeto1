@@ -232,11 +232,7 @@ export default function Donations() {
       </header>
 
       <div className="page-container">
-        <MenuDesktop
-          menuOpen={menuOpen}
-          RaUsuario={raUsuario!}
-          setMenuOpen={setMenuOpen}
-        />
+        <MenuDesktop menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
         <MenuMobile />
 
         <main className="flex justify-center items-stretch min-h-screen w-full px-9 mt-10">

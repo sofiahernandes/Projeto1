@@ -26,21 +26,26 @@ export default function RenderContributionCard({
   refreshKey = 0,
 }: RenderContributionProps) {
   const [contributions, setContributions] = useState<Contribution[]>([]);
+  const params = useParams();
+  const IdMentor = Number(params?.IdMentor)
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const params = useParams();
-  const userId = Number(params.RaUsuario);
 
   useEffect(() => {
-    const controller = new AbortController();
+    if (!IdMentor || isNaN(IdMentor)) {
+      console.error("IdMentor inválido:", params);
+      return;
+    }
 
+    const controller = new AbortController();
     let active = true;
 
     async function fetchContributions() {
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch(`${backend_url}/contributions/${userId}`, {
+
+        const res = await fetch(`${backend_url}/api/mentor/${IdMentor}/contributions`, {
           cache: "no-store",
           signal: controller.signal,
         });
@@ -97,7 +102,7 @@ export default function RenderContributionCard({
       active = false;
       controller.abort();
     };
-  }, [userId, refreshKey]);
+  }, [IdMentor]);
 
   if (contributions.length === 0) {
     return (
@@ -145,3 +150,4 @@ export default function RenderContributionCard({
     </div>
   );
 }
+

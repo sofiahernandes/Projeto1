@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+
 import { prisma } from "../../prisma/lib/prisma.js";
 import { createToken, denyToken } from "../services/tokenServices.js";
 
@@ -20,7 +21,7 @@ const usersController = {
 
     try {
       const usuario = await prisma.usuario.findUnique({
-        where: { RaUsuario: Number(RaUsuario) },
+        where: { RaUsuario: parseInt(RaUsuario) },
         include: {
           time_usuarios: {
             include: {

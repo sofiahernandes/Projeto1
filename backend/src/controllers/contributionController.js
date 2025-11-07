@@ -6,11 +6,18 @@ const contributionController = {
       const financeContribs = await prisma.contribuicao_Financeira.findMany({
         orderBy: { DataContribuicao: "desc" },
         include: {
+          comprovante: { select: { Imagem: true } },
           usuario: {
-            select: {
-              RaUsuario: true,
-              NomeUsuario: true,
-              EmailUsuario: true,
+            include: {
+              time_usuarios: {
+                include: {
+                  time: {
+                    select: {
+                      NomeTime: true,
+                    },
+                  },
+                },
+              },
             },
           },
         },
@@ -20,10 +27,16 @@ const contributionController = {
         orderBy: { DataContribuicao: "desc" },
         include: {
           usuario: {
-            select: {
-              RaUsuario: true,
-              NomeUsuario: true,
-              EmailUsuario: true,
+            include: {
+              time_usuarios: {
+                include: {
+                  time: {
+                    select: {
+                      NomeTime: true,
+                    },
+                  },
+                },
+              },
             },
           },
           contribuicoes_alimento: {
@@ -35,13 +48,30 @@ const contributionController = {
       });
 
       const allContribs = [
-        ...financeContribs.map((contrib) => ({
-          ...contrib,
+        ...financeContribs.map((c) => ({
+          Gastos: c.Gastos,
+          IdContribuicao: c.IdContribuicaoFinanceira,
           TipoDoacao: "Financeira",
+          DataContribuicao: c.DataContribuicao,
+          Quantidade: c.Quantidade,
+          Fonte: c.Fonte,
+          RaUsuario: c.RaUsuario || null,
+          Comprovante: c.comprovante?.Imagem || null,
+          NomeTime: c.usuario?.time_usuarios?.[0]?.time?.NomeTime || "Sem time",
         })),
-        ...foodContribs.map((contrib) => ({
-          ...contrib,
+        ...foodContribs.map((c) => ({
+          IdContribuicao: c.IdContribuicaoAlimenticia,
+          Gastos: c.Gastos,
           TipoDoacao: "Alimenticia",
+          DataContribuicao: c.DataContribuicao,
+          Quantidade: c.Quantidade,
+          Fonte: c.Fonte,
+          RaUsuario: c.RaUsuario || null,
+          Comprovante: c.Comprovante || null,
+          NomeTime: c.usuario?.time_usuarios?.[0]?.time?.NomeTime || "Sem time",
+          Alimentos:
+            c.contribuicoes_alimento?.map((a) => a.alimento?.NomeAlimento) ||
+            [],
         })),
       ];
 
@@ -51,7 +81,6 @@ const contributionController = {
 
       res.json(allContribs);
     } catch (err) {
-      console.error("Erro ao listar contribuições:", err);
       res.status(500).json({
         error: "Erro ao listar contribuições.",
         details: err.message,

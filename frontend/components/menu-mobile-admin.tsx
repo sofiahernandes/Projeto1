@@ -1,22 +1,24 @@
 "use client";
-
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 
 export default function MenuMobileAdmin() {
   const pathname = usePathname();
   const router = useRouter();
+  const params = useParams();
+  const [IdMentor, setIdMentor] = useState<string | null>(null);
 
-  const historyHref = `/admin-history`;
-  const profileHref = `/admin-profile`;
+  const historyHref = `admin/${IdMentor}/admin-history`;
+  const profileHref = `admin/${IdMentor}/admin-profile`;
 
   const isActive = (href: string) => pathname?.startsWith(href);
-  
-  // useEffect(() => {
-  //   if (!IdMentor) {
-  //     console.warn("MenuMobile: RaUsuario indefinido", { pathname });
-  //   }
-  // }, [IdMentor, pathname]);
+
+  useEffect(() => {
+    if (params?.IdMentor) {
+      setIdMentor(params.IdMentor as string);
+    }
+  }, [params]);
 
   // const onCreateClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
   //   if (isActive(createHref)) {
@@ -93,7 +95,11 @@ export default function MenuMobileAdmin() {
               stroke="currentColor"
               strokeWidth={1.8}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l3 3" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 6v6l3 3"
+              />
               <circle cx="12" cy="12" r="9" />
             </svg>
           </Link>

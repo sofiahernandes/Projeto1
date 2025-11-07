@@ -1,6 +1,6 @@
 "use client";
 
-import React, { SetStateAction, useEffect } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import BackHome from "@/components/back-home";
 import { useParams } from "next/navigation";
 import { fetchData } from "@/hooks/fetch-user-profile";
@@ -11,29 +11,33 @@ import RenderContributionTable from "@/components/table-contribution";
 
 export default function MentorVision() {
   const params = useParams();
-  const userId = parseInt(params.RaUsuario as string, 10);
+  const RaUsuario = parseInt(params.RaUsuario as string, 10);
   const teamId = parseInt(params.teamId as string, 10);
-  const [team, setTeam] = React.useState<any>(null);
-  const [user, setUser] = React.useState<any>(null);
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [buttonSelected, setButtonSelected] = React.useState(false);
+  const [IdMentor, setIdMentor] = useState<number|null>(null);
+  const [team, setTeam] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [buttonSelected, setButtonSelected] = useState(false);
 
   const [selectedContribution, setSelectedContribution] =
     React.useState<any>(null);
 
   useEffect(() => {
-    if (isNaN(userId) || isNaN(teamId)) {
+    if (params?.IdMentor){
+      setIdMentor(Number(params?.IdMentor))
+    }
+    if (isNaN(RaUsuario) || isNaN(teamId)) {
       console.error("Parâmetros inválidos:", params);
       return;
     }
 
     const fetchTeamData = async () => {
-      const data = await fetchData(userId);
+      const data = await fetchData(RaUsuario, teamId);
       setUser(data?.user);
       setTeam(data?.team);
     };
     fetchTeamData();
-  }, [userId, teamId]);
+  }, [params]);
 
   return (
     <div className="min-h-dvh w-full overflow-y-hidden overflow-x-hidden flex flex-col bg-[#f4f3f1]/60">

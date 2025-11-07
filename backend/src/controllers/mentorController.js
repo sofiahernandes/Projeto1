@@ -47,19 +47,43 @@ const mentorController = {
     }
   },
 
-  //GET http://localhost:3001/api/mentor/email/:EmailMentor
-  mentorByEmail: async (req, res) => {
-    const { EmailMentor } = req.params;
+  mentorByTeam: async (req, res) => {
+    const { IdMentor } = req.params;
 
     try {
       const mentor = await prisma.mentor.findUnique({
-        where: { EmailMentor: String(EmailMentor) },
+        where: {
+          IdMentor: parseInt(IdMentor),
+        },
+        include: {
+          time: {
+            select: {
+              IdTime: true,
+              NomeTime: true,
+              time_usuarios: {
+                select: {
+                  RaUsuario: true,
+                },
+              },
+            },
+          },
+        },
       });
-      res.json(mentor);
+
+      if (!mentor) {
+        return res.status(404).json({ error: "Mentor não encontrado" });
+      }
+
+      const timesFormatados = mentor.time.map((time) => ({
+        IdTime: time.IdTime,
+        NomeTime: time.NomeTime,
+        RaUsuario: time.time_usuarios[0]?.RaUsuario || null,
+      }));
+
+      res.json(timesFormatados);
     } catch (err) {
-      res
-        .status(500)
-        .json({ error: "Erro ao encontrar mentor", details: err.message });
+      console.error("Erro ao buscar times do mentor:", err);
+      res.status(500).json({ error: "Erro ao buscar times do mentor" });
     }
   },
 
