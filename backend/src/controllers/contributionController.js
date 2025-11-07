@@ -202,7 +202,7 @@ const contributionController = {
 
     try {
       let contribuicao;
-      
+
       if (TipoDoacao === "Financeira") {
         if (!Quantidade || !Fonte || Gastos === undefined) {
           return res.status(400).json({
@@ -239,7 +239,7 @@ const contributionController = {
             },
           });
 
-          return contribuicao; 
+          return contribuicao;
         });
         return res.status(201).json({
           message: "Contribuição financeira criada com sucesso!",
@@ -258,34 +258,39 @@ const contributionController = {
           });
         }
 
-        contribuicao = await prisma.contribuicao_Alimenticia.create({
-          data: {
-            RaUsuario: Number(RaUsuario),
-            TipoDoacao,
-            Quantidade: Number(Quantidade),
-            PesoUnidade: Number(PesoUnidade),
-            Gastos: Gastos ? Number(Gastos) : 0,
-            Meta: Meta ? Number(Meta) : null,
-            Fonte: Fonte || null,
-            IdAlimento:
-              alimentos.length === 1 ? Number(alimentos[0].IdAlimento) : null,
-          },
-          include: {
-            usuario: true,
-          },
-        });
-
-        const contribuicoesAlimento = await Promise.all(
-          alimentos.map((alimento) =>
-            prisma.contribuicao_Alimento.create({
+        const resultado = await prisma.$transaction(async (tx) => {
+          const alimento = alimentos.map((alimento) => {
+            return tx.alimento.create({
               data: {
                 IdAlimento: Number(alimento.IdAlimento),
-                IdContribuicaoAlimenticia:
-                  contribuicao.IdContribuicaoAlimenticia,
               },
-            })
-          )
-        );
+              include: {
+                contribuicoes_alimento: {
+                  select: {
+                    IdContribuicaoAlimento: alimento.IdContribuicaoAlimento,
+                  },
+                  IdAlimento: true,
+                },
+              },
+            });
+          });
+          contribuicao = await tx.contribuicao_Alimenticia.create({
+            data: {
+              RaUsuario: Number(RaUsuario),
+              TipoDoacao,
+              Quantidade: Number(Quantidade),
+              PesoUnidade: Number(PesoUnidade),
+              Gastos: Gastos ? Number(Gastos) : 0,
+              Meta: Meta ? Number(Meta) : null,
+              Fonte: Fonte || null,
+              IdAlimento:
+                alimentos.length === 1 ? Number(alimentos[0].IdAlimento) : null,
+            },
+            include: {
+              usuario: true,
+            },
+          });
+        });
 
         const contribuicaoCompleta =
           await prisma.contribuicao_Alimenticia.findUnique({

@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/2025-2-MCC2/Projeto1#readme",
   "dependencies": {
-    "@prisma/client": "^6.18.0",
+    "@prisma/client": "^6.19.0",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.8.0",
     "cors": "^2.8.5",
