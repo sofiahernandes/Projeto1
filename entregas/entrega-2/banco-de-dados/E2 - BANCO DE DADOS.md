@@ -48,6 +48,7 @@ model Usuario {
 - Separação adequada entre informações pessoais do aluno mentor e da sua equipe (Turma).
   Nesse contexto, este usuário é responsável por cadastrar: seu time (incluindo os participantes), seu mentor (atrelado ao grupo), e as contribuições recebidas pelo seu time.
   Mais adiante, essa tabela é central no modelo, pois conecta o usuário às doações (Contribuicao_Financeira, Contribuicao_Alimenticia) e aos times (Time).
+
 <br/>
 
 ### Tabela Mentor
@@ -77,6 +78,7 @@ Uso de auto_increment para simplificar o gerenciamento de IDs;
 Campo booleano IsAdmin separa perfis de mentor e administrador sem precisar de tabelas adicionais.
   Nesse contexto, o mentor possui acesso a somente observar o histórico de seu próprio grupo, enquanto o administrador pode observar os históricos de todos os grupos cadastrados. Isto se dá porque as suas funções incluem somente monitorar os times e averiguar os dados cadastrados por eles.
  Ademais, a separação entre Usuario e Mentor é decorrente de papéis distintos no sistema, facilitando o controle de permissões. Essa abordagem facilita a implementação de autenticação e autorização diferenciadas (por exemplo, mentores podem visualizar relatórios, enquanto usuários também cadastram doações).
+
 <br/>
 
 ### Tabela Time
@@ -105,6 +107,7 @@ model Time {
   Nela, observa-se a aplicação de boas práticas, como:
 - Ligação com as tabelas de Usuario e Mentor por meio de chaves estrangeiras;
 - O uso de auto_increment é adequado para identificação única.
+
 <br/>
 
 ### Tabela Time_Usuario
@@ -152,6 +155,7 @@ model Time_Usuario {
 }
 ```
  Esta tabela representa os grupos de alunos (times) que participam do Projeto, estabelecendo uma relação com a tabela time de acordo com o processo de normalização e de boas práticas.
+
 <br/>
 
 ### Tabela Contribuicao_Financeira
@@ -199,6 +203,7 @@ O uso do timestamp default current_timestamp automatiza o registro de data;
 Campos de controle como Meta e Gastos ajudam na gestão de metas e transparência financeira.
 
   Nesse contexto, a inclusão do campo Fonte possibilita análises de origem de recursos (ex: eventos, doações diretas etc.), facilitando que mentores e administradores detectem arrecadações com fraudes ou fontes enviesadas.
+
 <br/>
 
 ### Tabela Comprovantes 
@@ -220,6 +225,7 @@ model Comprovante{
 ```
 
 Essa tabela armazena o caminho do comprovante enviado pela tabela de contribuições financeiras.
+
 <br/>
 
 ### Tabela Contribuicao_Alimenticia
@@ -270,6 +276,7 @@ model Contribuicao_Alimenticia {
 Boa normalização com referência direta à tabela Alimento;
 Campos Meta, Gastos e Fonte padronizados com a versão financeira (mantendo consistência de modelo das contribuições).
   Além disso, esta tabela permite análises quantitativas e qualitativas das doações (peso total, tipo de alimento mais doado, cumprimento de metas, etc.); sendo o campo PesoUnidade muitíssimo útil para calcular o impacto total das doações e suas respectivas pontuações.
+
 <br/>
 
 ### Tabela Alimento
