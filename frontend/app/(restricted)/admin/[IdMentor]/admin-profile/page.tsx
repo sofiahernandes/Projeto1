@@ -1,8 +1,8 @@
 "use client";
 
 import React, { SetStateAction, useEffect, useState } from "react";
-import MenuMobileAdmin from "../../../../components/menu-mobile-admin";
-import MenuDesktopAdmin from "../../../../components/menu-desktop-admin";
+import MenuMobileAdmin from "@/components/menu-mobile-admin";
+import MenuDesktopAdmin from "@/components/menu-desktop-admin";
 import { useParams } from "next/navigation";
 
 export default function AdminProfile() {
