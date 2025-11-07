@@ -21,7 +21,6 @@ r.get("/db/health", async (_, res) => {
 r.post("/createContribution", contributionController.createContribution);
 r.get("/contributions", contributionController.allContributions);
 r.get("/contributions/:RaUsuario", contributionController.getContributionsByRa);
-r.get("/mentor/:IdMentor/contributions", contributionController.getContributionsByMentor);
 r.get("/contributions/edition/:editionNumber",contributionController.getContributionsByEdition);
 r.delete( "/deleteContribution/:IdContribuicao", contributionController.deleteContribution);
 
