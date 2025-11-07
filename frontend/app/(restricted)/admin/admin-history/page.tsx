@@ -4,22 +4,18 @@ import React, { SetStateAction, useEffect } from "react";
 import BackHome from "@/components/back-home";
 import RecordsMentor from "@/components/records-mentor";
 import SwitchViewButton from "@/components/toggle-button";
-import MenuDesktopAdmin from "../menu-desktop-admin";
-import MenuMobileAdmin from "../menu-mobile-admin";
+import MenuDesktopAdmin from "../../../../components/menu-desktop-admin";
+import MenuMobileAdmin from "../../../../components/menu-mobile-admin";
 import RenderContributionTableAdmin from "@/components/table-contribution-admin";
 import RenderContributionCardAdmin from "@/components/grid-contribution-admin";
 import { useParams } from "next/navigation";
 
 {
   /** 
- * corrigir menus, quando tiver o params do admin - ok
- corrigir params do admin igual de mentor, com alo que identifique ele (email ou id) - nao precisa
- corrigir a url e a organização de pasta - ok
- corrigir modal admin
+ * 
+ corrigir modal admin - tirar Gastos, aumentar fonte da data 
  adicionar filtro de pesquisar por ediçao
  adicionar filtro de edições
- adicionar profile do admin com função de cadastrar novos admins
- corrigir rota de login do adm, quando tiver o params dele
   */
 }
 
@@ -29,16 +25,9 @@ export default function AdminPageVision() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [selectedContribution, setSelectedContribution] =
     React.useState<any>(null);
+  const params = useParams();
+  const adminId = parseInt(params.IdMentor as string, 10);
 
-  const [adminId, setAdminId] = React.useState<number | null>(null);
-
-  useEffect(() => {
-    const adminData = localStorage.getItem("admin");
-    if (adminData) {
-      const parsed = JSON.parse(adminData);
-      setAdminId(parsed?.IdMentor || 10000000);
-    }
-  }, []);
 
   return (
     <div className="min-h-dvh w-full overflow-y-hidden overflow-x-hidden flex flex-col bg-[#f4f3f1]/60">

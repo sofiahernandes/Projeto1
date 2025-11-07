@@ -6,7 +6,7 @@ interface Properties {
   setMenuOpen: (arg: SetStateAction<boolean>) => void;
 }
 
-export default function MenuDesktop({
+export default function MenuDesktopAdmin({
   menuOpen,
   setMenuOpen,
 }: Properties) {
