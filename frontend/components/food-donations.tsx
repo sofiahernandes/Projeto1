@@ -63,7 +63,7 @@ export default function FoodDonations({
     { id: 12, Nome: "Fubá", quantidade: "", pesoUnidade: "" },
     { id: 13, Nome: "Sardinha", quantidade: "", pesoUnidade: "" },
     { id: 14, Nome: "Polpa de Tomate", quantidade: "", pesoUnidade: "" },
-    { id: 15, Nome: "Milho Enlatado", quantidade: "", pesoUnidade: "" },
+    { id: 15, Nome: "Outros", quantidade: "", pesoUnidade: "" },
     { id: 16, Nome: "Ervilha Enlatada", quantidade: "", pesoUnidade: "" },
   ]);
 
@@ -160,15 +160,11 @@ export default function FoodDonations({
             setMeta(Number.isFinite(num as number) ? (num as number) : undefined);
           }}
         />
-
-        <div className="rounded-lg bg-white border border-gray-300 px-4 py-1.5 w-[300px]">
-          <span>Total em Kg:</span>
-          <span className="ml-2">{(quantidade ?? 0).toLocaleString("pt-BR")}</span>
-        </div>
-
-        <div className="rounded-lg bg-white border border-gray-300 px-4 py-1.5 w-[300px]">
-          <span>Kg/Unid (média):</span>
-          <span className="ml-2">{fmt2(pesoUnidade ?? 0)}</span>
+        <div>Total em Kg </div>
+        <div className="mb-4 flex items-center gap-3 flex-wrap">         
+          <span className="w-[80%] bg-white border border-gray-300 rounded-lg px-10 py-1.5 text-black">
+           {(quantidade ?? 0).toLocaleString("pt-BR")}
+            </span>
         </div>
       </div>
 
