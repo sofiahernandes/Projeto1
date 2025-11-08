@@ -1,13 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import BackHome from "@/components/back-home";
-import { DataTable } from "@/components/contribution-table-admin/data-table";
-import {
-  makeContributionColumns,
-  Contribution,
-} from "@/components/contribution-table-admin/columns";
-import { toast } from "sonner"; // optional if you use toast notifications
+import React, { SetStateAction, useEffect, useState } from "react";
+import { Contribution } from "@/components/contribution-table-admin/columns";
 import {
   Empty,
   EmptyContent,
@@ -21,6 +15,12 @@ import { FoodDonationsChart } from "@/components/reports-charts/pie-chart-label/
 import { FinanContribuitionsChart } from "@/components/reports-charts/area-chart/page";
 import { TeamsRankingChart } from "@/components/reports-charts/bar-label-costum/page";
 import { HandHeart } from "lucide-react";
+import BackHome from "@/components/back-home";
+import RecordsMentor from "@/components/records-mentor";
+import SwitchViewButton from "@/components/toggle-button";
+import RenderContributionTableAdmin from "@/components/table-contribution-admin";
+import RenderContributionCardAdmin from "@/components/grid-contribution-admin";
+import Loading from "@/components/loading";
 
 // Generate editions automatically
 function generateEditions(startEdition = 7, startYear = 2025) {
@@ -56,6 +56,11 @@ export default function PublicReports() {
     return currentEdition;
   });
 
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [buttonSelected, setButtonSelected] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const [selectedContribution, setSelectedContribution] =
+    React.useState<any>(null);
   const [contributions, setContributions] = useState<Contribution[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -84,14 +89,6 @@ export default function PublicReports() {
 
     fetchContributions();
   }, [edition]);
-
-  const columns = makeContributionColumns({
-    onCopied: (id) => toast.success(`ID ${id} copiado!`),
-    onView: (c) => {
-      // open a modal or navigate to a detail view (optional)
-      console.log("Visualizar contribuição:", c);
-    },
-  });
 
   if (!contributions.length) {
     return (
@@ -124,45 +121,112 @@ export default function PublicReports() {
         <BackHome />
       </div>
 
-      <div className="max-w-6xl mx-auto mt-5">
-        {/* Edition Selector */}
-        <div className="flex justify-center mb-6">
-          <select
-            value={edition}
-            onChange={(e) => setEdition(Number(e.target.value))}
-            className="border border-gray-300 rounded-lg px-4 py-2 bg-white text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-secondary"
-          >
-            {editions.map((ed) => (
-              <option key={ed.value} value={ed.value}>
-                {ed.label}
-              </option>
-            ))}
-          </select>
+      <div className="mx-auto mt-5 grid grid-cols-1 md:grid-cols-3">
+        <div className="w-full h-full md:col-span-2">
+          {/* Edition Selector */}
+          <div className="flex justify-center mb-6">
+            <select
+              title="Filtrar por edição"
+              value={edition}
+              onChange={(e) => setEdition(Number(e.target.value))}
+              className="border border-gray-300 rounded-lg px-4 py-2 bg-white text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-secondary"
+            >
+              {editions.map((ed) => (
+                <option key={ed.value} value={ed.value}>
+                  {ed.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Table / Loading / Error */}
+          {loading && (
+            <p className="text-center text-gray-600">
+              <Loading />
+            </p>
+          )}
+
+          {error && (
+            <p className="text-center text-red-500">
+              Ocorreu um erro! Recarregue a página para tentar novamente.
+            </p>
+          )}
+
+          {!loading && !error && (
+            <div className="min-h-dvh w-full overflow-y-hidden overflow-x-hidden flex flex-col bg-[#f4f3f1]/60">
+              <div className="flex flex-col left-0 top-0">
+                <header className="py-4 mt-6 relative flex justify-center items-center">
+                  <button
+                    type="button"
+                    className={`open-menu hover:text-primary/60 ${
+                      menuOpen ? "menu-icon hidden" : "menu-icon"
+                    }`}
+                    onClick={() => setMenuOpen(true)}
+                  >
+                    {" "}
+                    ☰{" "}
+                  </button>
+                  <h1
+                    className={`text-4xl font-semibold text-[#cc3983] text-center transition-all duration-300 ease-in-out ${
+                      menuOpen ? "md:pl-[270px]" : "ml-0"
+                    }`}
+                  >
+                    Histórico de contribuições
+                  </h1>
+                </header>
+              </div>
+
+              <div className="*:w-full flex justify-center pt-4 transition-all duration-300 ease-in-out">
+                <main className="w-full max-w-[1300px] p-1.5 md:mt-0 ">
+                  {selectedContribution && (
+                    <RecordsMentor
+                      data={selectedContribution}
+                      isOpen={isOpen}
+                      setIsOpen={setIsOpen}
+                    />
+                  )}
+                  <div className="flex flex-col gap-2 mx-3 text-center">
+                    <h3 className="text-2xl uppercase font-semibold text-primary ">
+                      Histórico de contribuições
+                    </h3>
+                    <div className="self-end">
+                      <SwitchViewButton
+                        buttonSelected={buttonSelected}
+                        setButtonSelected={(arg: SetStateAction<boolean>) =>
+                          setButtonSelected(arg)
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    {buttonSelected ? (
+                      <RenderContributionTableAdmin
+                        onSelect={(contribution: any) => {
+                          setSelectedContribution(contribution);
+                          setIsOpen(true);
+                        }}
+                      />
+                    ) : (
+                      <RenderContributionCardAdmin
+                        onSelect={(contribution: any) => {
+                          setSelectedContribution(contribution);
+                          setIsOpen(true);
+                        }}
+                      />
+                    )}
+                  </div>
+                </main>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Table / Loading / Error */}
-        {loading && (
-          <p className="text-center text-gray-600">
-            Carregando contribuições...
-          </p>
-        )}
-
-        {error && (
-          <p className="text-center text-red-500">Ocorreu um erro: {error}</p>
-        )}
-
-        {!loading && !error && (
-          <DataTable
-            columns={columns}
-            data={contributions}
-            onRowClick={(c) => console.log("Clicked row:", c)}
-          />
-        )}
-
-        <MajorContributionsChart/>
-        <FoodDonationsChart/>
-        <FinanContribuitionsChart/>
-        <TeamsRankingChart/>
+        <div className="w-full h-full">
+          <MajorContributionsChart />
+          <FoodDonationsChart />
+          <FinanContribuitionsChart />
+          <TeamsRankingChart />
+        </div>
       </div>
     </div>
   );
