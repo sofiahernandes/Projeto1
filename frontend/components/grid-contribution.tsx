@@ -108,7 +108,6 @@ export default function RenderContributionCard({
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
-              {/* mudar o icone  pra maozinha vazia*/}
               <HandHeart size={44} strokeWidth={1.2} />
             </EmptyMedia>
             <EmptyTitle>Nenhuma contribuição por enquanto!</EmptyTitle>
@@ -131,7 +130,7 @@ export default function RenderContributionCard({
           onClick={() => onSelect?.(c)}
         >
           <p className="font-semibold text-lg ">{c.Fonte}</p>
-          <p className="text-sm text-gray-950">
+          <p className="text-base text-gray-950">
             Data: {new Date(c.DataContribuicao).toLocaleDateString("pt-BR")}
           </p>
           <p className="text-base text-gray-800">

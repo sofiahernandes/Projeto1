@@ -97,6 +97,7 @@ const contributionController = {
         orderBy: { DataContribuicao: "desc" },
         include: {
           usuario: true,
+          comprovante: true,
         },
       });
 
@@ -133,7 +134,7 @@ const contributionController = {
       allContribs.sort(
         (a, b) => new Date(b.DataContribuicao) - new Date(a.DataContribuicao)
       );
-
+console.log(allContribs);
       res.json(allContribs);
     } catch (err) {
       console.error("Erro ao buscar contribuições por RA:", err);
