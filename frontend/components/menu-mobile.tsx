@@ -8,7 +8,7 @@ export default function MenuMobile() {
   const pathname = usePathname();
   const router = useRouter();
   const params = useParams();
-  const [RaUsuario, setRaUsuario] = useState<number>();
+  const [RaUsuario, setRaUsuario] = useState<number | null>(null);
 
   const homeHref = `/user/${RaUsuario}/team-history`;
   const createHref = `/user/${RaUsuario}/new-contribution`;

@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 
 import { prisma } from "../../prisma/lib/prisma.js";
-import { createToken, denyToken } from "../services/tokenServices.js";
 
 const usersController = {
   allUsers: async (_, res) => {

@@ -27,16 +27,11 @@ export default function RenderContributionCard({
 }: RenderContributionProps) {
   const [contributions, setContributions] = useState<Contribution[]>([]);
   const params = useParams();
-  const IdMentor = Number(params?.IdMentor)
+  const RaUsuario = Number(params?.RaUsuario);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!IdMentor || isNaN(IdMentor)) {
-      console.error("IdMentor inválido:", params);
-      return;
-    }
-
     const controller = new AbortController();
     let active = true;
 
@@ -45,10 +40,13 @@ export default function RenderContributionCard({
         setLoading(true);
         setError(null);
 
-        const res = await fetch(`${backend_url}/api/mentor/${IdMentor}/contributions`, {
-          cache: "no-store",
-          signal: controller.signal,
-        });
+        const res = await fetch(
+          `${backend_url}/api/contributions/${RaUsuario}`,
+          {
+            cache: "no-store",
+            signal: controller.signal,
+          }
+        );
 
         if (!res.ok) throw new Error("Erro ao buscar contribuições");
         const raw = await res.json();
@@ -102,7 +100,7 @@ export default function RenderContributionCard({
       active = false;
       controller.abort();
     };
-  }, [IdMentor]);
+  }, [RaUsuario, refreshKey]);
 
   if (contributions.length === 0) {
     return (
@@ -150,4 +148,3 @@ export default function RenderContributionCard({
     </div>
   );
 }
-
