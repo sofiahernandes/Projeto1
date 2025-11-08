@@ -356,46 +356,23 @@ const contributionController = {
     }
   },
   deleteContribution: async (req, res) => {
-    const { TipoDoacao, RaUsuario } = req.params;
+    const { TipoDoacao, IdContribuicao } = req.params;
+
     try {
+      const id = Number(IdContribuicao);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "ID inválido." });
+      }
+
       let contribuicao;
+
       if (TipoDoacao === "Financeira") {
-        const contrib = await prisma.contribuicao_Financeira.findFirst({
-          where: { RaUsuario: Number(RaUsuario) },
-          orderBy: { DataContribuicao: "desc" },
-        });
-
-        if (!contrib) {
-          return res.status(404).json({
-            error:
-              "Nenhuma contribuição financeira encontrada para este usuário.",
-          });
-        }
-
         contribuicao = await prisma.contribuicao_Financeira.delete({
-          where: { IdContribuicaoFinanceira: contrib.IdContribuicaoFinanceira },
+          where: { IdContribuicaoFinanceira: id },
         });
       } else if (TipoDoacao === "Alimenticia") {
-        const contrib = await prisma.contribuicao_Alimenticia.findFirst({
-          where: { RaUsuario: Number(RaUsuario) },
-          orderBy: { DataContribuicao: "desc" },
-        });
-
-        if (!contrib) {
-          return res.status(404).json({
-            error:
-              "Nenhuma contribuição alimentícia encontrada para este usuário.",
-          });
-        }
-        await prisma.contribuicao_Alimento.deleteMany({
-          where: {
-            IdContribuicaoAlimenticia: contrib.IdContribuicaoAlimenticia,
-          },
-        });
         contribuicao = await prisma.contribuicao_Alimenticia.delete({
-          where: {
-            IdContribuicaoAlimenticia: contrib.IdContribuicaoAlimenticia,
-          },
+          where: { IdContribuicaoAlimenticia: id },
         });
       } else {
         return res.status(400).json({
@@ -403,20 +380,13 @@ const contributionController = {
         });
       }
 
-      res.status(200).json({
+      return res.status(200).json({
         message: "Contribuição deletada com sucesso!",
         data: contribuicao,
       });
     } catch (err) {
       console.error("Erro ao deletar contribuição:", err);
-
-      if (err.code === "P2025") {
-        return res.status(404).json({
-          error: "Contribuição não encontrada.",
-        });
-      }
-
-      res.status(500).json({
+      return res.status(500).json({
         error: "Erro ao deletar contribuição.",
         details: err.message,
       });

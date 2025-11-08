@@ -1,6 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { fetchData } from "@/hooks/fetch-user-profile";
 
 import {
   AlertDialog,
@@ -16,7 +18,7 @@ import {
 
 type DeleteContributionProps = {
   IdContribuicao: number;
-  TipoDoacao: string; 
+  TipoDoacao: string;
   onDeleted?: () => void;
 };
 const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -38,7 +40,7 @@ export default function DeleteContribution({
       setError(null);
 
       const res = await fetch(
-        `${backend_url}/api/contribuicao/${TipoDoacao}/${IdContribuicao}`,
+        `${backend_url}/api/contribution/${TipoDoacao}/${IdContribuicao}`,
         { method: "DELETE" }
       );
 

@@ -14,15 +14,16 @@ import {
 } from "@/components/ui/table";
 
 interface Contribution {
+  IdContribuicao: number;
   RaUsuario: number;
   TipoDoacao: string;
   Quantidade: number;
   Meta?: number;
   Gastos?: number;
   Fonte?: string;
-  Comprovante?: string;
-  IdContribuicao: number;
-  Imagem: string;
+  comprovante?: {
+  IdComprovante: number;
+  Imagem: string;}
   DataContribuicao: string;
 }
 
@@ -50,7 +51,7 @@ export default function RenderContribution() {
             <TableCell className="text-right">
               {new Date(c.DataContribuicao).toLocaleDateString()}
             </TableCell>
-            <TableCell>{c.Imagem}</TableCell>
+            <TableCell>{c.comprovante?.Imagem}</TableCell>
           </TableRow>
         ))}
       </TableBody>

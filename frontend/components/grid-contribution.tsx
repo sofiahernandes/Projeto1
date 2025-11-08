@@ -73,7 +73,13 @@ export default function RenderContributionCard({
                     )
                   : undefined,
               Fonte: r.Fonte ?? "",
-              Comprovante: r.Comprovante ?? undefined,
+              Comprovante:
+                r.IdComprovante && r.Imagem
+                  ? {
+                      IdComprovante: Number(r.IdComprovante),
+                      Imagem: String(r.Imagem),
+                    }
+                  : undefined,
               IdContribuicao: Number(r.IdContribuicao),
               DataContribuicao: String(r.DataContribuicao ?? ""),
               NomeAlimento: r.NomeAlimento ?? undefined,

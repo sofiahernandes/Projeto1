@@ -127,10 +127,11 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
                     </div>
                   ) : (
                     <div>
-                      <p className="text-sm text-gray-600 mb-2">Comprovante</p>
-                      <span className="text-gray-500">
-                        Nenhum comprovante foi anexado
-                      </span>
+                      <img
+                            src={placeholderComprovante.src}
+                            alt="Anexo de comprovante"
+                            className="rounded-md aspect-square max-h-[45px] object-contain border border-gray-200 mb-6"
+                          />
                     </div>
                   )}
                 </div>
