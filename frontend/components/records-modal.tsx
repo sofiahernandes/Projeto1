@@ -86,7 +86,6 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
                       <p className="font-semibold">{formatBRL(data.Gastos)}</p>
                     </div>
                   )}
-
                   {data.NomeAlimento && (
                     <div className="flex justify-between">
                       <div>
