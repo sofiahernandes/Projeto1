@@ -16,115 +16,143 @@ export default function Donations() {
   const raUsuario = Number(params?.RaUsuario ?? 0);
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [raUsuario, setRaUsuario] = useState<number>(RaUsuario);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"finance" | "food">("finance");
-
-const [alimentosFromChild, setAlimentosFromChild] = useState<
-  { id: number; Nome: string; quantidade: number; pesoUnidade: number }[]
->([]);
-
+  const [alimentosFromChild, setAlimentosFromChild] = useState<any[]>([]);
   const [totaisFromChild, setTotaisFromChild] = useState<{ pontos: number }>({
     pontos: 0,
   });
 
-  const [tipoDoacao, setTipoDoacao] = useState<Tipo>("Alimenticia");
-  const [idAlimento, setIdAlimento] = useState<number>(0);
-
-  // ===== ESTADOS =====
-
   interface FinanceiraState {
     tipoDoacao: Tipo;
     fonte: string;
-    meta: number;
-    gastos: number;
-    quantidade: number;
-    comprovante: string;
+    meta?: number;
+    gastos?: number;
+    quantidade?: number;
+    comprovante: File | null;
   }
 
   const [financeira, setFinanceira] = useState<FinanceiraState>({
     tipoDoacao: "Financeira",
     fonte: "",
-    meta: 0,
-    gastos: 0,
-    quantidade: 0,
-    comprovante: "",
+    meta: undefined,
+    gastos: undefined,
+    quantidade: undefined,
+    comprovante: null,
   });
 
   interface AlimenticiaState {
     tipoDoacao: Tipo;
     fonte: string;
-    meta: number;
-    quantidade: number;
-    pesoUnidade: number;
-    comprovante: string;
+    meta?: number;
+    gastos?: number;
+    quantidade?: number;
+    pesoUnidade?: number;
   }
 
   const [alimenticia, setAlimenticia] = useState<AlimenticiaState>({
     tipoDoacao: "Alimenticia",
     fonte: "",
-    meta: 0,
-    quantidade: 0,
+    meta: undefined,
+    quantidade: undefined,
+    gastos: undefined,
     pesoUnidade: 0,
-    comprovante: "",
   });
-
-  // ===== FUNÇÕES =====
 
   const fmt = (value: number) => value.toLocaleString("pt-BR");
 
-  const apiBase =
-    process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/+$/, "") ||
-    "http://localhost:3001";
-  const apiUrl = `${apiBase}/api/createContribution`;
+  const backend_url =
+    process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
+  const apiUrl = `${backend_url}/api/createContribution`;
+  const pontosCalculados =
+    (alimenticia.quantidade || 0) * (alimenticia.pesoUnidade || 0);
 
-  async function handleSubmit(
-    e: React.FormEvent<HTMLFormElement>,
-    tipo: Tipo
-  ) {
+  async function handleFinancialSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
 
     try {
-      let body: any;
+      if (!raUsuario) throw new Error("RaUsuario inválido.");
 
-      if (tipo === "Financeira") {
-        if (!financeira.fonte.trim()) {
-          alert("Preencha o campo de fonte.");
-          setLoading(false);
-          return;
-        }
+      const body = {
+        RaUsuario: raUsuario,
+        TipoDoacao: "Financeira",
+        Quantidade: financeira.quantidade,
+        Meta: financeira.meta,
+        Gastos: financeira.gastos,
+        Fonte: financeira.fonte,
+      };
 
-        body = {
-          TipoDoacao: "Financeira",
-          RaUsuario: raUsuario,
-          Quantidade: financeira.quantidade,
-          Gastos: financeira.gastos,
-          Fonte: financeira.fonte,
-          Comprovante: financeira.comprovante || "sem-comprovante",
-          Meta: financeira.meta,
-        };
-      } else {
-        if (alimentosFromChild.length === 0) {
-          alert("Adicione pelo menos um alimento antes de enviar.");
-          setLoading(false);
-          return;
-        }
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
 
-        body = {
-          TipoDoacao: "Alimenticia",
-          RaUsuario: raUsuario,
-          Fonte: alimenticia.fonte,
-          Comprovante: alimenticia.comprovante || "sem-comprovante",
-          Meta: alimenticia.meta,
-          Alimentos: alimentosFromChild.map((a) => ({
-            IdAlimento: a.id,
-            Quantidade: a.quantidade,
-            PesoUnidade: a.pesoUnidade,
-          })),
-        };
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Erro ao enviar a contribuição");
       }
 
-      console.log("📤 Enviando dados:", body);
+      const data = await res.json();
+      const idContribuicao = data.data?.IdContribuicaoFinanceira;
+
+      if (financeira.comprovante && idContribuicao) {
+        const formData = new FormData();
+        formData.append("file", financeira.comprovante);
+
+        const resComprovante = await fetch(
+          `${backend_url}/api/comprovante/${idContribuicao}`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        if (!resComprovante.ok) {
+          console.warn("Erro ao enviar comprovante");
+        }
+      }
+
+      alert(data.message || "Contribuição financeira enviada com sucesso!");
+
+      setFinanceira({
+        tipoDoacao: "Financeira",
+        fonte: "",
+        meta: undefined,
+        gastos: undefined,
+        quantidade: undefined,
+        comprovante: null,
+      });
+    } catch (err: any) {
+      alert(err?.message || "Erro ao enviar a contribuição");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleFoodSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (loading) return;
+    setLoading(true);
+
+    try {
+      if (!raUsuario) throw new Error("RaUsuario inválido.");
+
+      const body = {
+        RaUsuario: raUsuario,
+        TipoDoacao: "Alimenticia",
+        Quantidade: alimenticia.quantidade,
+        PesoUnidade: alimenticia.pesoUnidade,
+        Gastos: alimenticia.gastos ?? 0,
+        Meta: alimenticia.meta,
+        Fonte: alimenticia.fonte,
+        alimentos: alimentosFromChild.map((a) => ({
+          IdAlimento: Number(a.IdAlimento),
+        })),
+      };
 
       const res = await fetch(apiUrl, {
         method: "POST",
@@ -184,7 +212,6 @@ const [alimentosFromChild, setAlimentosFromChild] = useState<
             </h1>
           </div>
 
-          {/* Abas (mobile) */}
           <div className="md:hidden w-full flex justify-center">
             <div className="inline-grid grid-cols-2 w-full max-w-xs rounded-full border border-gray bg-white p-1 shadow-sm">
               <button
@@ -202,7 +229,9 @@ const [alimentosFromChild, setAlimentosFromChild] = useState<
                 type="button"
                 onClick={() => setActiveTab("food")}
                 className={`rounded-full py-3 text-sm font-medium ${
-                  activeTab === "food" ? "bg-primary text-white" : "text-black"
+                  activeTab === "food"
+                    ? "bg-[#A6B895] text-white"
+                    : "text-[#1F2937] hover:bg-gray-100"
                 }`}
               >
                 Alimentos
@@ -212,28 +241,23 @@ const [alimentosFromChild, setAlimentosFromChild] = useState<
         </div>
       </header>
 
-      <div>
-        <MenuDesktop
-          menuOpen={menuOpen}
-          RaUsuario={raUsuario}
-          setMenuOpen={setMenuOpen}
-        />
-        <MenuMobile RaUsuario={raUsuario} />
+      <div className="page-container">
+        <MenuDesktop menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+        <MenuMobile />
 
         <main className="flex justify-center items-stretch min-h-screen w-full px-9 mt-10">
           <div className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-x-1">
-            {/* FORM FINANCEIRO */}
             <form
-              onSubmit={(e) => handleSubmit(e, "Financeira")}
+              onSubmit={handleFinancialSubmit}
               className={`${
                 activeTab === "finance" ? "block" : "hidden"
-              } md:block bg-secondary/20 border border-gray-100 p-6 rounded-xl shadow-md w-full h-[600px]`}
+              } md:block bg-[#DCA4A9] border border-[#DCA4A9] p-6 rounded-xl shadow-md w-full h-[600px]`}
             >
               <h2 className="text-2xl font-semibold mb-4">Financeiras</h2>
 
               <DonationsForm
                 raUsuario={raUsuario}
-                setRaUsuario={() => {}}
+                setRaUsuario={setRaUsuario}
                 tipoDoacao={financeira.tipoDoacao}
                 setTipoDoacao={() => {}}
                 fonte={financeira.fonte}

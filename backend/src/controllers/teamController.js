@@ -4,7 +4,11 @@ const teamsController = {
   //GET http://localhost:3001/api/teams
   allTeams: async (_, res) => {
     try {
-      const times = await prisma.time.findMany();
+      const times = await prisma.time.findMany({
+        orderby: {
+          time: "desc",
+        },
+      });
       res.json(times);
     } catch (err) {
       res
@@ -46,13 +50,33 @@ const teamsController = {
           .json({ message: "Time não encontrado para este usuário" });
       }
 
-      res.json(timeUsuario.time);
+      const team = {
+        IdTime: timeUsuario.time.IdTime,
+        NomeTime: timeUsuario.time.NomeTime,
+        IdMentor: timeUsuario.time.IdMentor,
+        RaAlunos: [
+          timeUsuario.RaUsuario,
+          timeUsuario.RaAluno2,
+          timeUsuario.RaAluno3,
+          timeUsuario.RaAluno4,
+          timeUsuario.RaAluno5,
+          timeUsuario.RaAluno6,
+          timeUsuario.RaAluno7,
+          timeUsuario.RaAluno8,
+          timeUsuario.RaAluno9,
+          timeUsuario.RaAluno10,
+        ].filter((ra) => ra !== null && ra !== undefined),
+      };
+
+      res.json(team);
+
+      // res.json(timeUsuario.time);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Erro ao buscar o time do usuário" });
     }
   },
-  
+
   //POST http://localhost:3001/api/createTeam
   createTeam: async (req, res) => {
     const {

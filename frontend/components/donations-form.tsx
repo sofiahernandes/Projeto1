@@ -26,8 +26,9 @@ interface Properties {
 
   comprovante: string;
   setComprovante: React.Dispatch<React.SetStateAction<string>>;
-}
-
+  setTipoDoacao: React.Dispatch<
+    React.SetStateAction<"Financeira" | "Alimenticia">
+  >;
 export default function DonationsForm({
   raUsuario,
   setRaUsuario,
@@ -111,6 +112,7 @@ export default function DonationsForm({
       }
     };
   }, []);
+  const toNum = (v: string) => (v === "" ? 0 : Number(v));
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.currentTarget.files?.[0] ?? null;
@@ -122,7 +124,7 @@ export default function DonationsForm({
       return;
     }
 
-    const okType = ["image/png", "image/jpeg"].includes(file.type);
+    const okType = ["image/png", "image/jpeg", "image/jpg"].includes(file.type);
     const okSize = file.size <= 5 * 1024 * 1024;
 
     if (!okType) {
@@ -295,6 +297,6 @@ export default function DonationsForm({
           </span>
         </div>
       </div>
-    </form>
+    </div>
   );
 }

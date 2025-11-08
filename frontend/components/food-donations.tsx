@@ -275,7 +275,7 @@ useEffect(() => {
   };
 
   return (
-    <form className="flex flex-col gap-2 w-full min-h-screen">
+    <div className="flex flex-col gap-2 w-full">
       <div>Nome do Evento</div>
 
       <input
@@ -396,6 +396,6 @@ useEffect(() => {
           </span>
         </div>
       </div>
-    </form>
+    </div>
   );
 }

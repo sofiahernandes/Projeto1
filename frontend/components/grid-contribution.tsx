@@ -26,24 +26,27 @@ export default function RenderContributionCard({
   refreshKey = 0,
 }: RenderContributionProps) {
   const [contributions, setContributions] = useState<Contribution[]>([]);
+  const params = useParams();
+  const RaUsuario = Number(params?.RaUsuario);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const params = useParams();
-  const userId = Number(params.RaUsuario);
 
   useEffect(() => {
     const controller = new AbortController();
-
     let active = true;
 
     async function fetchContributions() {
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch(`${backend_url}/contributions/${userId}`, {
-          cache: "no-store",
-          signal: controller.signal,
-        });
+
+        const res = await fetch(
+          `${backend_url}/api/contributions/${RaUsuario}`,
+          {
+            cache: "no-store",
+            signal: controller.signal,
+          }
+        );
 
         if (!res.ok) throw new Error("Erro ao buscar contribuições");
         const raw = await res.json();
@@ -97,7 +100,7 @@ export default function RenderContributionCard({
       active = false;
       controller.abort();
     };
-  }, [userId, refreshKey]);
+  }, [RaUsuario, refreshKey]);
 
   if (contributions.length === 0) {
     return (
@@ -105,7 +108,6 @@ export default function RenderContributionCard({
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
-              {/* mudar o icone  pra maozinha vazia*/}
               <HandHeart size={44} strokeWidth={1.2} />
             </EmptyMedia>
             <EmptyTitle>Nenhuma contribuição por enquanto!</EmptyTitle>
@@ -128,7 +130,7 @@ export default function RenderContributionCard({
           onClick={() => onSelect?.(c)}
         >
           <p className="font-semibold text-lg ">{c.Fonte}</p>
-          <p className="text-sm text-gray-950">
+          <p className="text-base text-gray-950">
             Data: {new Date(c.DataContribuicao).toLocaleDateString("pt-BR")}
           </p>
           <p className="text-base text-gray-800">

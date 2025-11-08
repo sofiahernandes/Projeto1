@@ -11,7 +11,7 @@ async function tryConnection() {
     // Cria o mentor com senha criptografada
     const Mentor = await prisma.mentor.create({
       data: {
-        EmailMentor: "admin@testelegal",
+        EmailMentor: "admin@Deteste",
         IsAdmin: true,
         SenhaMentor: senhaHash, // senha criptografada
       },

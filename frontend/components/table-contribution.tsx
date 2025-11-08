@@ -51,7 +51,7 @@ export default function RenderContributionTable({
         setLoading(true);
         setError(null);
         const res = await fetch(
-          `${backend_url}/contributions/${RaUsuario}`,
+          `${backend_url}/api/contributions/${RaUsuario}`,
           { cache: "no-store", signal: controller.signal }
         );
 

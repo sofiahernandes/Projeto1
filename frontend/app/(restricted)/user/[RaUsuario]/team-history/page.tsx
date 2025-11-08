@@ -1,6 +1,6 @@
 "use client";
 
-import React, { SetStateAction, useEffect } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import MenuMobile from "@/components/menu-mobile";
 import MenuDesktop from "@/components/menu-desktop";
@@ -13,15 +13,13 @@ import RenderContributionTable from "@/components/table-contribution";
 export default function TeamHistory() {
   const params = useParams();
   const RaUsuario = Number(params.RaUsuario);
-  const [menuOpen, setMenuOpen] = React.useState(false);
-  const [team, setTeam] = React.useState<any>(null);
-  const [user, setUser] = React.useState<any>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [team, setTeam] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
   const [isOpen, setIsOpen] = React.useState(false);
   const [buttonSelected, setButtonSelected] = React.useState(false);
-
-  const [selectedContribution, setSelectedContribution] =
-    React.useState<any>(null);
-  const [refreshKey, setRefreshKey] = React.useState(0);
+  const [selectedContribution, setSelectedContribution] = useState<any>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const fetchTeamData = async () => {
@@ -64,12 +62,11 @@ export default function TeamHistory() {
         {/* Menu lateral quando está no desktop/tablet */}
         <MenuDesktop
           menuOpen={menuOpen}
-          RaUsuario={team?.RaUsuario}
           setMenuOpen={(arg: SetStateAction<boolean>) => setMenuOpen(arg)}
         />
 
         {/* Menu rodapé quando está no mobile */}
-        <MenuMobile RaUsuario={team?.RaUsuario} />
+        <MenuMobile />
 
         {/* main page do historico - todas as contribuições do grupo baseado no RA logado */}
         <main className="w-full max-w-[1300px] p-1.5 md:mt-0 ">
@@ -90,14 +87,16 @@ export default function TeamHistory() {
               {team?.NomeTime ? team?.NomeTime : "Nome do time aparecerá aqui"}
             </h3>
             <h4 className="mb-3 text-xl text-primary/80">
-              Turma {user?.Turma ? user?.Turma : "X"} | Yº Edição
+              Turma {user?.TurmaUsuario ? user?.TurmaUsuario : "X"} | Yº Edição
             </h4>
             <div className="self-end">
               <SwitchViewButton
                 buttonSelected={buttonSelected}
-                setButtonSelected={(arg: SetStateAction<boolean>) => setButtonSelected(arg)}
+                setButtonSelected={(arg: SetStateAction<boolean>) =>
+                  setButtonSelected(arg)
+                }
               />
-            </div>   
+            </div>
           </div>
           <div className="mt-2">
             {buttonSelected ? (
@@ -118,7 +117,6 @@ export default function TeamHistory() {
               />
             )}
           </div>
-        
         </main>
       </div>
     </div>

@@ -46,7 +46,7 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
             <div>
               <h2 className="text-xl font-semibold">{data.Fonte}</h2>
               <div>
-                <p className="text-sm text-gray-600 mt-3 mb-0">
+                <p className="text-base text-gray-600 mt-3 mb-0">
                   Data da Contribuição -{" "}
                   {new Date(data.DataContribuicao).toLocaleDateString()}{" "}
                 </p>
@@ -65,25 +65,27 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
 
                   <div>
                     <p className="text-sm text-gray-600">Quantidade</p>
-                    <p className="font-semibold">{Intl.NumberFormat("pt-BR").format(data.Quantidade)} 
+                    <p className="font-semibold">
+                      {Intl.NumberFormat("pt-BR").format(data.Quantidade)}
                     </p>
                   </div>
 
-                  {data.Meta && (
+                  {data.Meta !== null && (
                     <div>
                       <p className="text-sm text-gray-600">Meta</p>
-                      <p className="font-semibold">{typeof data.Meta === "number" &&
+                      <p className="font-semibold">
+                        {typeof data.Meta === "number" &&
                         Number.isFinite(data.Meta)
                           ? new Intl.NumberFormat("pt-BR").format(data.Meta)
                           : "-"}
-                        </p>
+                      </p>
                     </div>
                   )}
 
-                  {data.Gastos && (
+                  {data.Gastos !== null && (
                     <div>
                       <p className="text-sm text-gray-600">Gastos</p>
-                      <p className="font-semibold">{formatBRL(data.Gastos)}</p>
+                      <p className="font-semibold"> {formatBRL(data.Gastos)}</p>
                     </div>
                   )}
 
@@ -95,9 +97,7 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
                       </div>
 
                       <div>
-                        <p className="text-sm text-gray-600">
-                          Peso unitário:
-                        </p>
+                        <p className="text-sm text-gray-600">Peso unitário:</p>
                         <p className="font-semibold ">
                           {data.PesoUnidade} kg/g
                         </p>
@@ -105,23 +105,15 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
                     </div>
                   )}
 
-                  {data.Comprovante && (
+                  {data.Comprovante !== null && (
                     <div>
                       <p className="text-sm text-gray-600 mb-2">Comprovantes</p>
                       <div className="flex items-start">
-                        {data.Comprovante ? (
-                          <img
-                            src={data.Comprovante}
-                            alt="Anexo de comprovante"
-                            className="rounded-md w-full max-h-[300px] object-contain border border-gray-300"
-                          />
-                        ) : (
-                          <img
-                            src={placeholderComprovante.src}
-                            alt="Anexo de comprovante"
-                            className="rounded-md aspect-square max-h-[45px] object-contain border border-gray-200 mb-6"
-                          />
-                        )}
+                        <img
+                          src={data.Comprovante || placeholderComprovante.src}
+                          alt="Anexo de comprovante"
+                          className="rounded-md aspect-square max-h-[45px] object-contain mb-6"
+                        />
                       </div>
                     </div>
                   )}
