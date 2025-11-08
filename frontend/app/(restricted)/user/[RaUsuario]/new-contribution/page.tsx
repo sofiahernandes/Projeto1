@@ -12,16 +12,12 @@ import FoodDonations from "@/components/food-donations";
 type Tipo = "Financeira" | "Alimenticia";
 
 export default function Donations() {
-  
-const params = useParams() as { RaUsuario?: string };
+  const params = useParams() as { RaUsuario?: string };
   const raUsuario = params?.RaUsuario ? Number(params.RaUsuario) : undefined;
 
-
-if (raUsuario === undefined) {
-  return <div className="p-4">Carregando usuário…</div>;
-}
-
-
+  if (raUsuario === undefined) {
+    return <div className="p-4">Carregando usuário…</div>;
+  }
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -63,6 +59,7 @@ if (raUsuario === undefined) {
     gastos?: number;
     quantidade?: number;
     pesoUnidade?: number;
+    comprovante: string;
   }
 
   const [alimenticia, setAlimenticia] = useState<AlimenticiaState>({
@@ -71,6 +68,7 @@ if (raUsuario === undefined) {
     meta: undefined,
     quantidade: undefined,
     pesoUnidade: 0,
+    comprovante: "",
   });
 
   const fmt = (value: number) => value.toLocaleString("pt-BR");
@@ -78,7 +76,6 @@ if (raUsuario === undefined) {
   const apiBase =
     process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/+$/, "") ||
     "http://localhost:3001";
-
   const apiUrl = `${apiBase}/api/createContribution`;
 
   async function handleSubmit(
@@ -92,22 +89,33 @@ if (raUsuario === undefined) {
       let body: any;
 
       if (tipo === "Financeira") {
+        if (!financeira.fonte) {
+          alert("Preencha todos os campos obrigatórios (fonte).");
+          setLoading(false);
+          return;
+        }
+
         body = {
           TipoDoacao: "Financeira",
           RaUsuario: raUsuario,
           Quantidade: 1,
           Gastos: financeira.gastos ?? 0,
           Fonte: financeira.fonte,
-          Comprovante: "sem-comprovante",
+          Comprovante: financeira.comprovante || "sem-comprovante",
           Meta: financeira.meta ?? 0,
         };
       } else {
-        // ✅ Alimentícia com lista de alimentos
+        if (alimentosFromChild.length === 0) {
+          alert("Adicione pelo menos um alimento antes de enviar.");
+          setLoading(false);
+          return;
+        }
+
         body = {
           TipoDoacao: "Alimenticia",
           RaUsuario: raUsuario,
           Fonte: alimenticia.fonte,
-          Comprovante: "sem-comprovante",
+          Comprovante: alimenticia.comprovante || "sem-comprovante",
           Meta: alimenticia.meta ?? 0,
           Alimentos: alimentosFromChild.map((a) => ({
             IdAlimento: a.id,
@@ -116,6 +124,8 @@ if (raUsuario === undefined) {
           })),
         };
       }
+
+      console.log("📤 Dados enviados:", body);
 
       const res = await fetch(apiUrl, {
         method: "POST",
@@ -144,11 +154,12 @@ if (raUsuario === undefined) {
           meta: undefined,
           quantidade: undefined,
           pesoUnidade: 0,
+          comprovante: "",
         });
         setAlimentosFromChild([]);
       }
     } catch (err: any) {
-      console.error("Erro ao enviar:", err);
+      console.error("❌ Erro ao enviar:", err);
       alert(err?.message || "Erro ao enviar contribuição");
     } finally {
       setLoading(false);
@@ -202,7 +213,7 @@ if (raUsuario === undefined) {
         </div>
       </header>
 
-      <div className="">
+      <div>
         <MenuDesktop
           menuOpen={menuOpen}
           RaUsuario={raUsuario!}
@@ -212,6 +223,7 @@ if (raUsuario === undefined) {
 
         <main className="flex justify-center items-stretch min-h-screen w-full px-9 mt-10">
           <div className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-x-1">
+            {/* FORM FINANCEIRO */}
             <form
               onSubmit={(e) => handleSubmit(e, "Financeira")}
               className={`${
@@ -246,8 +258,9 @@ if (raUsuario === undefined) {
                   setFinanceira({ ...financeira, comprovante: v as string })
                 }
               />
+
               <div className="mt-4 flex flex-none items-center gap-3 justify-end">
-              <button
+                <button
                   type="submit"
                   onClick={() => setTipoDoacao("Financeira")}
                   disabled={loading}
@@ -255,9 +268,10 @@ if (raUsuario === undefined) {
                 >
                   {loading ? "Enviando..." : "Cadastrar"}
                 </button>
-                </div>
+              </div>
             </form>
 
+            {/* FORM ALIMENTÍCIO */}
             <form
               onSubmit={(e) => handleSubmit(e, "Alimenticia")}
               className={`${
@@ -288,13 +302,14 @@ if (raUsuario === undefined) {
                   setFonte={(v) =>
                     setAlimenticia({ ...alimenticia, fonte: v as string })
                   }
-                           comprovante={financeira.comprovante}
-                setComprovante={(v) =>
-                  setFinanceira({ ...financeira, comprovante: v as string })
-                }
+                  comprovante={alimenticia.comprovante}
+                  setComprovante={(v) =>
+                    setAlimenticia({ ...alimenticia, comprovante: v as string })
+                  }
                   onTotaisChange={setTotaisFromChild}
                   idAlimento={idAlimento}
                   setIdAlimento={setIdAlimento}
+                  onAlimentosChange={setAlimentosFromChild} // ✅ envia alimentos ao pai
                 />
               </div>
 
