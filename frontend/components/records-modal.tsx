@@ -10,7 +10,7 @@ interface ContributionData {
   Meta?: number;
   Gastos?: number;
   Fonte?: string;
-  Comprovante?: {
+  comprovante?: {
     IdComprovante: number;
     Imagem: string;
   };
@@ -40,7 +40,7 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };
-  console.log("Comprovante recebido:", data.Comprovante);
+  console.log("Comprovante recebido:", data.comprovante);
 
   return (
     <Modal isActive={isOpen} onClose={toggleModal}>
@@ -109,24 +109,28 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
                     </div>
                   )}
 
-                  {data.Comprovante?.Imagem ? (
+                  {data.comprovante?.Imagem? (
                     <div>
                       <p className="text-sm text-gray-600 mb-2">Comprovante</p>
                       <a
-                        href={data.Comprovante.Imagem}
+                        href={data.comprovante.Imagem}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 underline"
                       >
-                        Abrir comprovante
+                        <img
+                          src={data.comprovante.Imagem}
+                          alt="Comprovante"
+                          className="w-48 h-48 object-cover rounded-md shadow"
+                        />
                       </a>
                     </div>
                   ) : (
                     <div>
                       <p className="text-sm text-gray-600 mb-2">Comprovante</p>
-                      <p className="text-gray-500">
+                      <span className="text-gray-500">
                         Nenhum comprovante foi anexado
-                      </p>
+                      </span>
                     </div>
                   )}
                 </div>

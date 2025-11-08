@@ -106,6 +106,7 @@ const contributionController = {
         orderBy: { DataContribuicao: "desc" },
         include: {
           usuario: true,
+          comprovante: true,
           contribuicoes_alimento: {
             include: {
               alimento: true,
@@ -134,7 +135,7 @@ const contributionController = {
       allContribs.sort(
         (a, b) => new Date(b.DataContribuicao) - new Date(a.DataContribuicao)
       );
-console.log(allContribs);
+      console.log(allContribs);
       res.json(allContribs);
     } catch (err) {
       console.error("Erro ao buscar contribuições por RA:", err);
@@ -354,32 +355,55 @@ console.log(allContribs);
       });
     }
   },
-
   deleteContribution: async (req, res) => {
-    const { TipoDoacao, IdContribuicao } = req.params;
-
+    const { TipoDoacao, RaUsuario } = req.params;
     try {
       let contribuicao;
-
       if (TipoDoacao === "Financeira") {
+        const contrib = await prisma.contribuicao_Financeira.findFirst({
+          where: { RaUsuario: Number(RaUsuario) },
+          orderBy: { DataContribuicao: "desc" },
+        });
+
+        if (!contrib) {
+          return res.status(404).json({
+            error:
+              "Nenhuma contribuição financeira encontrada para este usuário.",
+          });
+        }
+
         contribuicao = await prisma.contribuicao_Financeira.delete({
-          where: { IdContribuicaoFinanceira: Number(IdContribuicao) },
+          where: { IdContribuicaoFinanceira: contrib.IdContribuicaoFinanceira },
         });
       } else if (TipoDoacao === "Alimenticia") {
-        await prisma.contribuicao_Alimento.deleteMany({
-          where: { IdContribuicaoAlimenticia: Number(IdContribuicao) },
+        const contrib = await prisma.contribuicao_Alimenticia.findFirst({
+          where: { RaUsuario: Number(RaUsuario) },
+          orderBy: { DataContribuicao: "desc" },
         });
 
+        if (!contrib) {
+          return res.status(404).json({
+            error:
+              "Nenhuma contribuição alimentícia encontrada para este usuário.",
+          });
+        }
+        await prisma.contribuicao_Alimento.deleteMany({
+          where: {
+            IdContribuicaoAlimenticia: contrib.IdContribuicaoAlimenticia,
+          },
+        });
         contribuicao = await prisma.contribuicao_Alimenticia.delete({
-          where: { IdContribuicaoAlimenticia: Number(IdContribuicao) },
+          where: {
+            IdContribuicaoAlimenticia: contrib.IdContribuicaoAlimenticia,
+          },
         });
       } else {
         return res.status(400).json({
-          error: "Tipo de doação inválido.",
+          error: "Tipo de doação inválido. Use 'Financeira' ou 'Alimenticia'.",
         });
       }
 
-      res.json({
+      res.status(200).json({
         message: "Contribuição deletada com sucesso!",
         data: contribuicao,
       });

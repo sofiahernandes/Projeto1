@@ -38,7 +38,7 @@ export default function DeleteContribution({
       setError(null);
 
       const res = await fetch(
-        `${backend_url}/api/deleteContribution/${TipoDoacao}/${IdContribuicao}`,
+        `${backend_url}/api/contribuicao/${TipoDoacao}/${IdContribuicao}`,
         { method: "DELETE" }
       );
 

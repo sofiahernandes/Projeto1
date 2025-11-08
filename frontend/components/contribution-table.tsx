@@ -22,6 +22,7 @@ interface Contribution {
   Fonte?: string;
   Comprovante?: string;
   IdContribuicao: number;
+  Imagem: string;
   DataContribuicao: string;
 }
 
@@ -49,6 +50,7 @@ export default function RenderContribution() {
             <TableCell className="text-right">
               {new Date(c.DataContribuicao).toLocaleDateString()}
             </TableCell>
+            <TableCell>{c.Imagem}</TableCell>
           </TableRow>
         ))}
       </TableBody>
