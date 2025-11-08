@@ -1,6 +1,27 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+import homeDefault from "@/assets/icons/home.png";
+import homeActive from "@/assets/icons/home-active.png";
+import homePressed from "@/assets/icons/home-pressed.png";
+
+import addDefault from "@/assets/icons/add.png";
+import addActive from "@/assets/icons/add-active.png";
+import addPressed from "@/assets/icons/add-pressed.png";
+
+import historyDefault from "@/assets/icons/history.png";
+import historyActive from "@/assets/icons/history-active.png";
+import historyPressed from "@/assets/icons/history-pressed.png";
+
+interface Properties {
+  RaUsuario: number;
+}
+
+export default function MenuMobile({ RaUsuario }: Properties) {
 import { usePathname, useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -29,100 +50,155 @@ export default function MenuMobile() {
     }
   };
 
-  // Estilos base dos "pills"
+  // ---------- Estilos base ----------
   const basePill =
-    "relative flex items-center px-4 justify-center h-12 rounded-[40px] border-transparent transition-all duration-300 ease-out will-change-transform will-change-auto";
+    "relative flex items-center justify-center h-10 w-16 rounded-[10px] transition-all duration-300 ease-out";
+  const neutralPill = "bg-transparent x'hover:bg-primary/20";
+  const activePill = "bg-[#3B5D3D] text-white border border-[#3B5D3D]";
 
-  // Neutral (não selecionado)
-  const neutralPill =
-    "bg-[#A6B895] text-white hover:bg-[#F2D1D4] active:scale-95";
+  // ---------- Ícones ----------
+  const icons = useMemo(
+    () => ({
+      home: { default: homeDefault, active: homeActive, pressed: homePressed },
+      add: { default: addDefault, active: addActive, pressed: addPressed },
+      history: {
+        default: historyDefault,
+        active: historyActive,
+        pressed: historyPressed,
+      },
+    }),
+    []
+  );
 
-  // Selecionado: ícone rosa + halo/anel verde claro + leve scale
-  const activePill =
-    "bg-[#70805A] text-white ring-2 ring-[#6B7E5D] ring-offset-2 ring-offset-white animate-selected-pop";
+  // ---------- Efeito "pop" ----------
+  const [pressed, setPressed] = useState<{ [key: string]: boolean }>({});
+  const timersRef = useRef<{ [key: string]: number }>({});
 
+  const triggerPress = (key: string) => {
+    if (timersRef.current[key]) window.clearTimeout(timersRef.current[key]);
+    setPressed((p) => ({ ...p, [key]: true }));
+    timersRef.current[key] = window.setTimeout(() => {
+      setPressed((p) => ({ ...p, [key]: false }));
+    }, 150);
+  };
+
+  useEffect(() => {
+    return () => {
+      Object.values(timersRef.current).forEach((t) => window.clearTimeout(t));
+    };
+  }, []);
+
+  // ---------- Escolher ícone ----------
+  const getIconSrc = (
+    set: { default: any; active: any; pressed?: any },
+    isTabActive: boolean,
+    isPressed: boolean
+  ) => {
+    if (isPressed && set.pressed) return set.pressed;
+    if (isTabActive) return set.active;
+    return set.default;
+  };
+
+  // ---------- JSX ----------
   return (
     <nav
-      className="
-        md:hidden
-        fixed bottom-0 left-0 right-0 z-40
-        pb-[calc(env(safe-area-inset-bottom,0px)+10px)] pt-3
-      "
       role="navigation"
       aria-label="Menu mobile"
+      className="md:hidden fixed inset-x-0 bottom-0 z-50"
     >
-      <div className="mx-auto max-w-lg px-4">
-        <div
-          className="
-            grid grid-cols-3 gap-2
-            p-2 
-            bg-[#A6B895]
-            rounded-[30px]   
-          "
-        >
+      <style jsx global>{`
+        @keyframes pop {
+          0% {
+            transform: scale(1);
+          }
+          40% {
+            transform: scale(1.12);
+          }
+          100% {
+            transform: scale(1);
+          }
+        }
+        .animate-pop {
+          animation: pop 150ms ease-out;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .animate-pop {
+            animation: none !important;
+          }
+          .transition-all {
+            transition: none !important;
+          }
+        }
+      `}</style>
+
+      <div className="mx-auto w-[300px] px-4 sm:px-6 rounded-2xl">
+        <div className="flex items-center justify-center gap-8 sm:gap-12 py-2 bg-primary rounded-[30px]">
+          {/* Aba 1: Home */}
           <Link
             href={homeHref}
             aria-label="Início"
-            className={`${basePill} ${
-              isActive(homeHref) ? activePill : neutralPill
+            className={`${basePill} ${isActive(homeHref) ? activePill : neutralPill} ${
+              pressed.home ? "animate-pop" : ""
             }`}
+            onMouseDown={() => triggerPress("home")}
+            onTouchStart={() => triggerPress("home")}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1.8}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 10.5 12 3l9 7.5M5 10v10a1 1 0 0 0 1 1h4.5a.5.5 0 0 0 .5-.5V15a1 1 0 0 1 1-1h0a1 1 0 0 1 1 1v6.5a.5.5 0 0 0 .5.5H18a1 1 0 0 0 1-1V10"
-              />
-            </svg>
+            <Image
+              src={getIconSrc(icons.home, isActive(homeHref), !!pressed.home)}
+              alt="Início"
+              width={24}
+              height={24}
+              className="pointer-events-none select-none"
+              draggable={false}
+              priority
+            />
           </Link>
 
+          {/* Aba 2: Cadastrar */}
           <Link
             href={createHref}
             aria-label="Cadastrar"
             onClick={onCreateClick}
             className={`${basePill} ${
-              isActive(createHref)
-                ? activePill
-                : "text-white border-transparent hover:bg-[#466C4D] active:scale-95"
-            }`}
+              isActive(createHref) ? activePill : neutralPill
+            } ${pressed.add ? "animate-pop" : ""}`}
+            onMouseDown={() => triggerPress("add")}
+            onTouchStart={() => triggerPress("add")}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14M5 12h14" />
-            </svg>
+            <Image
+              src={getIconSrc(icons.add, isActive(createHref), !!pressed.add)}
+              alt="Cadastrar"
+              width={24}
+              height={24}
+              className="pointer-events-none select-none"
+              draggable={false}
+              priority
+            />
           </Link>
 
+          {/* Aba 3: Histórico */}
           <Link
             href={historyHref}
             aria-label="Histórico"
             className={`${basePill} ${
               isActive(historyHref) ? activePill : neutralPill
-            }`}
+            } ${pressed.history ? "animate-pop" : ""}`}
+            onMouseDown={() => triggerPress("history")}
+            onTouchStart={() => triggerPress("history")}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.8}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l3 3" />
-              <circle cx="12" cy="12" r="9" />
-            </svg>
+            <Image
+              src={getIconSrc(
+                icons.history,
+                isActive(historyHref),
+                !!pressed.history
+              )}
+              alt="Histórico"
+              width={24}
+              height={24}
+              className="pointer-events-none select-none"
+              draggable={false}
+              priority
+            />
           </Link>
         </div>
       </div>

@@ -1,8 +1,18 @@
-import "dotenv/config";
-import app from "./app.js";
+import express from "express";
+import cors from "cors";
+import routes from "./routes.js";
 
-const PORT = process.env.PORT || 3001;
+const app = express(); 
+const PORT = 3001;
 
-app.listen(PORT, () =>{
-  console.log(`Server sunning on port http://localhost:${PORT}`);
+app.use(cors());
+app.use(express.json());
+app.use("/api", routes);
+
+app.get("/health", (req, res) => {
+  res.json({ ok: true, server: "up" });
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
 });

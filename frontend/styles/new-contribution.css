@@ -37,14 +37,6 @@ input[type="file"]::file-selector-button {
   cursor: pointer;
 }
 
-#calendar button:hover {
-  background-color: #ccc;
-  color: #000;
-}
-
-button:hover {
-  color: #66d3bb;
-}
 
 /* ===========================
    Menu lateral / Mobile

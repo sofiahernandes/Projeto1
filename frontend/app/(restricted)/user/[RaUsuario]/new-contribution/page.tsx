@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import "@/styles/globals.css";
+
 import MenuDesktop from "@/components/menu-desktop";
 import MenuMobile from "@/components/menu-mobile";
 import DonationsForm from "@/components/donations-form";
@@ -11,13 +12,12 @@ import FoodDonations from "@/components/food-donations";
 type Tipo = "Financeira" | "Alimenticia";
 
 export default function Donations() {
-  const params = useParams();
-  const RaUsuario = Number(params.RaUsuario);
+  const params = useParams() as { RaUsuario?: string };
+  const raUsuario = Number(params?.RaUsuario ?? 0);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [raUsuario, setRaUsuario] = useState<number>(RaUsuario);
   const [loading, setLoading] = useState(false);
-
   const [activeTab, setActiveTab] = useState<"finance" | "food">("finance");
   const [alimentosFromChild, setAlimentosFromChild] = useState<any[]>([]);
   const [totaisFromChild, setTotaisFromChild] = useState<{ pontos: number }>({
@@ -160,36 +160,46 @@ export default function Donations() {
         body: JSON.stringify(body),
       });
 
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Erro ao enviar a contribuição");
+      if (!res.ok)
+        throw new Error(`Erro ao enviar (${res.status}): ${await res.text()}`);
+
+      alert(`Contribuição ${tipo.toLowerCase()} enviada com sucesso!`);
+
+      if (tipo === "Financeira") {
+        setFinanceira({
+          tipoDoacao: "Financeira",
+          fonte: "",
+          meta: 0,
+          gastos: 0,
+          quantidade: 0,
+          comprovante: "",
+        });
+      } else {
+        setAlimenticia({
+          tipoDoacao: "Alimenticia",
+          fonte: "",
+          meta: 0,
+          quantidade: 0,
+          pesoUnidade: 0,
+          comprovante: "",
+        });
+        setAlimentosFromChild([]);
       }
-
-      const data = await res.json();
-      alert(data.message || "Contribuição alimentícia enviada com sucesso!");
-
-      setAlimenticia({
-        tipoDoacao: "Alimenticia",
-        fonte: "",
-        meta: undefined,
-        gastos: undefined,
-        quantidade: undefined,
-        pesoUnidade: 0,
-      });
-      setAlimentosFromChild([]);
-      setTotaisFromChild({ pontos: 0 });
     } catch (err: any) {
-      alert(err?.message || "Erro ao enviar a contribuição");
+      console.error("❌ Erro ao enviar:", err);
+      alert(err?.message || "Erro ao enviar contribuição");
     } finally {
       setLoading(false);
     }
   }
 
+  // ===== RENDER =====
+
   return (
     <div className="container w-full">
       <header className="w-full">
         <button
-          className={`open-menu ${menuOpen ? "menu-icon hidden" : "menu-icon"}`}
+          className={`open-menu ${menuOpen ? "hidden" : "menu-icon"}`}
           onClick={() => setMenuOpen(true)}
         >
           ☰
@@ -197,20 +207,20 @@ export default function Donations() {
 
         <div className="sticky top-0 left-0 right-0 z-10 md:static bg-white/80 supports-[backdrop-filter]:bg-white/60">
           <div className="mx-auto max-w-4xl px-14 py-5">
-            <h1 className="text-[#A6B895] tracking-tight text-center text-[32px]">
+            <h1 className="text-primary tracking-tight text-center text-[32px]">
               Adicionar Contribuição
             </h1>
           </div>
 
           <div className="md:hidden w-full flex justify-center">
-            <div className="inline-grid grid-cols-2 w-full max-w-xs rounded-full border border-[#A6B895] bg-white p-0.5 shadow-sm">
+            <div className="inline-grid grid-cols-2 w-full max-w-xs rounded-full border border-gray bg-white p-1 shadow-sm">
               <button
                 type="button"
                 onClick={() => setActiveTab("finance")}
                 className={`rounded-full py-3 text-sm font-medium ${
                   activeTab === "finance"
-                    ? "bg-[#A6B895] text-white"
-                    : "text-black hover:bg-gray-100"
+                    ? "bg-primary text-white"
+                    : "text-black"
                 }`}
               >
                 Financeira
@@ -268,45 +278,40 @@ export default function Donations() {
                 }
                 comprovante={financeira.comprovante}
                 setComprovante={(v) =>
-                  setFinanceira({
-                    ...financeira,
-                    comprovante: v as File | null,
-                  })
+                  setFinanceira({ ...financeira, comprovante: v as string })
                 }
               />
 
-              <div className="mt-2 flex justify-end">
+              <div className="mt-4 flex items-center gap-3 justify-end">
                 <button
                   type="submit"
+                  onClick={() => setTipoDoacao("Financeira")}
                   disabled={loading}
-                  className="px-10 py-2 rounded-lg bg-[#B27477] hover:bg-[#9B5B60] text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-fit px-4 py-2 rounded-[8px] bg-primary hover:bg-primary/70 text-white hover:opacity-90 disabled:opacity-50"
                 >
-                  {loading ? "Cadastrando..." : "Cadastrar Financeira"}
+                  {loading ? "Enviando..." : "Cadastrar"}
                 </button>
               </div>
             </form>
 
+            {/* FORM ALIMENTÍCIO */}
             <form
-              onSubmit={handleFoodSubmit}
+              onSubmit={(e) => handleSubmit(e, "Alimenticia")}
               className={`${
                 activeTab === "food" ? "block" : "hidden"
-              } md:flex md:flex-col bg-[#F2D1D4] border border-gray-100 p-6 rounded-xl shadow-md w-full h-[600px]`}
+              } md:flex md:flex-col bg-secondary/20 border border-gray-100 p-6 rounded-xl shadow-md w-full h-[600px] overflow-hidden`}
             >
               <h2 className="text-2xl font-semibold mb-3">Alimentícias</h2>
 
-              <div className="min-h-0 flex-1 overflow-y-auto rounded-lg">
+              <div className="min-h-0 flex-1 overflow-y-auto">
                 <FoodDonations
                   raUsuario={raUsuario}
-                  setRaUsuario={setRaUsuario}
+                  setRaUsuario={() => {}}
                   tipoDoacao={alimenticia.tipoDoacao}
                   setTipoDoacao={() => {}}
                   pesoUnidade={alimenticia.pesoUnidade}
                   setPesoUnidade={(v) =>
                     setAlimenticia({ ...alimenticia, pesoUnidade: Number(v) })
-                  }
-                  gastos={alimenticia.gastos}
-                  setGastos={(v) =>
-                    setAlimenticia({ ...alimenticia, gastos: Number(v) })
                   }
                   quantidade={alimenticia.quantidade}
                   setQuantidade={(v) =>
@@ -320,25 +325,29 @@ export default function Donations() {
                   setFonte={(v) =>
                     setAlimenticia({ ...alimenticia, fonte: v as string })
                   }
-                  onAlimentosChange={setAlimentosFromChild}
+                  comprovante={alimenticia.comprovante}
+                  setComprovante={(v) =>
+                    setAlimenticia({ ...alimenticia, comprovante: v as string })
+                  }
                   onTotaisChange={setTotaisFromChild}
+                  idAlimento={idAlimento ?? 0}
+                  setIdAlimento={setIdAlimento}
+                  onAlimentosChange={setAlimentosFromChild}
                 />
               </div>
 
-              <div className="mt-4 flex flex-none items-center gap-3 justify-end">
-                <div className="bg-[#DCA4A9] border text-sm rounded-lg py-2 px-16 whitespace-nowrap w-[300px] overflow-hidden text-ellipsis">
-                  Pontuação:{" "}
-                  <span>
-                    {fmt(totaisFromChild?.pontos ?? pontosCalculados)}
-                  </span>
+              <div className="mt-4 flex items-center gap-3 justify-end">
+                <div className="bg-secondary/30 text-sm rounded-[20px] py-2 px-16 whitespace-nowrap w-[300px] overflow-hidden text-ellipsis">
+                  Pontuação: <span>{fmt(totaisFromChild?.pontos ?? 0)}</span>
                 </div>
 
                 <button
                   type="submit"
+                  onClick={() => setTipoDoacao("Alimenticia")}
                   disabled={loading}
-                  className="w-fit px-4 py-2 rounded-lg bg-emerald-600 text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-fit px-4 py-2 rounded-[8px] bg-primary hover:bg-primary/70 text-white hover:opacity-90 disabled:opacity-50"
                 >
-                  {loading ? "Enviando..." : "Cadastrar Alimentícia"}
+                  {loading ? "Enviando..." : "Cadastrar"}
                 </button>
               </div>
             </form>

@@ -2,7 +2,25 @@
 @import "tw-animate-css";
 
 
+/* Força o menu mobile a aparecer até 900px */
+@media (max-width: 900px) {
+  .menu-desktop {
+    display: none !important;
+  }
+  .menu-mobile {
+    display: block !important;
+  }
+}
 
+/* E acima de 900px, mostra o desktop */
+@media (min-width: 901px) {
+  .menu-desktop {
+    display: block !important;
+  }
+  .menu-mobile {
+    display: none !important;
+  }
+}
 /* ====== Animação de seleção (pop) ====== */
 @keyframes selected-pop {
   0% { transform: scale(1); }
