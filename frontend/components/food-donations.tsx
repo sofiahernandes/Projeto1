@@ -294,7 +294,7 @@ useEffect(() => {
       <input
         type="number"
         placeholder="Ex: 1200"
-        value={meta ?? ""}
+        value={meta === 0 ? "" : meta}
         onChange={(e) =>
           setMeta(e.currentTarget.value === "" ? 0 : Number(e.currentTarget.value))
         }

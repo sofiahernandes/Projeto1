@@ -13,7 +13,9 @@ interface Properties {
   setRaUsuario: React.Dispatch<React.SetStateAction<number>>;
   tipoDoacao: "Financeira" | "Alimenticia";
   setTipoDoacao: React.Dispatch<React.SetStateAction<"Financeira" | "Alimenticia">>;
-  quantidade: number | undefined;
+
+  // ⬇️ O PAI CONTINUA USANDO number (ou 0). Não usamos undefined aqui.
+  quantidade: number;
   setQuantidade: React.Dispatch<React.SetStateAction<number>>;
   fonte: string;
   setFonte: React.Dispatch<React.SetStateAction<string>>;
@@ -21,6 +23,7 @@ interface Properties {
   setMeta: React.Dispatch<React.SetStateAction<number>>;
   gastos: number;
   setGastos: React.Dispatch<React.SetStateAction<number>>;
+
   comprovante: string;
   setComprovante: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -49,18 +52,28 @@ export default function DonationsForm({
   const [picking, setPicking] = useState(false);
   const timerRef = useRef<number | null>(null);
 
-  const toNum = (v: string) => (v === "" ? 0 : Number(v));
+  // 🔤 Estados **locais** em string para inputs numéricos
+  const [metaInput, setMetaInput] = useState<string>("");
+  const [gastosInput, setGastosInput] = useState<string>("");
+  const [quantidadeInput, setQuantidadeInput] = useState<string>("");
 
-  // CSS da animação "pop" (se ainda não tiver global)
-  // Você pode mover isso para o layout global se preferir.
+  // 🧠 Funções utilitárias
+  const normalize = (s: string) => s.replace(",", ".").trim();
+  const toNumberOrNaN = (s: string) => Number(normalize(s));
+
+  // 👉 Inicializa os inputs a partir das props
+  useEffect(() => {
+    // Regras: se o pai vier com 0, exibimos vazio "" (não mostra 0 na UI)
+    setMetaInput(meta ? String(meta) : "");
+    setGastosInput(gastos ? String(gastos) : "");
+    setQuantidadeInput(quantidade ? String(quantidade) : "");
+  }, [meta, gastos, quantidade]);
+
+  // CSS da animação "pop" (pode mover para global)
   useEffect(() => {
     const style = document.createElement("style");
     style.innerHTML = `
-      @keyframes pop {
-        0% { transform: scale(1); }
-        40% { transform: scale(1.12); }
-        100% { transform: scale(1); }
-      }
+      @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.12); } 100% { transform: scale(1); } }
       .animate-pop { animation: pop 150ms ease-out; }
       @media (prefers-reduced-motion: reduce) {
         .animate-pop { animation: none !important; }
@@ -86,10 +99,9 @@ export default function DonationsForm({
     if (timerRef.current) window.clearTimeout(timerRef.current);
     timerRef.current = window.setTimeout(() => {
       stopGif();
-    }, 1000); 
+    }, 1000);
     fileInputRef.current?.click();
   };
-
 
   useEffect(() => {
     return () => {
@@ -99,7 +111,6 @@ export default function DonationsForm({
       }
     };
   }, []);
-
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.currentTarget.files?.[0] ?? null;
@@ -134,18 +145,42 @@ export default function DonationsForm({
     e.preventDefault();
 
     if (!fonte.trim()) return alert("Informe o nome do evento/doador");
-    if (quantidade === undefined) return alert("Informe o valor/quantidade");
+
+    // ✅ Conversões apenas aqui
+    const qNum = toNumberOrNaN(quantidadeInput);
+    if (!quantidadeInput || Number.isNaN(qNum)) {
+      return alert("Informe um valor/quantidade válido");
+    }
+
+    const metaNum = metaInput ? toNumberOrNaN(metaInput) : NaN;
+    const gastosNum = gastosInput ? toNumberOrNaN(gastosInput) : NaN;
+
+    // Se sua regra exigir números válidos, valide:
+    if (metaInput && Number.isNaN(metaNum)) return alert("Meta inválida");
+    if (gastosInput && Number.isNaN(gastosNum)) return alert("Gastos inválidos");
+
+    // Opcional: regras de negócio
+    if (!Number.isNaN(metaNum) && !Number.isNaN(gastosNum) && metaNum < gastosNum) {
+      const ok = confirm("Gastos maiores que a meta. Deseja continuar?");
+      if (!ok) return;
+    }
+
+    // Sincroniza com o pai (se o time quiser manter números coerentes no estado global)
+    setQuantidade(qNum);
+    setMeta(Number.isNaN(metaNum) ? 0 : metaNum);
+    setGastos(Number.isNaN(gastosNum) ? 0 : gastosNum);
 
     setLoading(true);
     try {
       const form = new FormData();
       if (comprovanteFile) form.append("Comprovante", comprovanteFile);
       form.append("RaUsuario", String(raUsuario));
-      form.append("Quantidade", String(quantidade ?? ""));
-      form.append("Meta", String(meta ?? ""));
-      form.append("Gastos", String(gastos ?? ""));
+      form.append("Quantidade", String(qNum));
+      // Se enviar vazio quando não preenchido:
+      form.append("Meta", metaInput ? String(metaNum) : "");
+      form.append("Gastos", gastosInput ? String(gastosNum) : "");
       form.append("Fonte", fonte);
-      form.append("TipoDoacao", tipoDoacao); // já que está no contrato do componente
+      form.append("TipoDoacao", tipoDoacao);
 
       const res = await fetch("/api/createContribution", {
         method: "POST",
@@ -156,13 +191,18 @@ export default function DonationsForm({
 
       alert("Contribuição registrada com sucesso!");
 
-      // Resetar campos
+      // Reset: pai volta para 0 (conforme preferência do time)
       setFonte("");
       setQuantidade(0);
       setMeta(0);
       setGastos(0);
       setComprovante("");
       setComprovanteFile(null);
+
+      // UI limpa (inputs mostrando placeholder)
+      setQuantidadeInput("");
+      setMetaInput("");
+      setGastosInput("");
     } catch (err: any) {
       console.error(err);
       alert(err.message || "Erro de conexão");
@@ -184,30 +224,33 @@ export default function DonationsForm({
           required
         />
 
-        <label className="block mb-1">Meta</label>
+        <label className="block mb-1 mt-3">Meta</label>
         <input
-          type="number"
+          type="text"                  // ← usamos text para não forçar 0 e permitir ","
+          inputMode="decimal"          // ← teclado numérico no mobile
           placeholder="Ex: R$100"
-          value={meta ?? ""}
-          onChange={(e) => setMeta(toNum(e.currentTarget.value))}
+          value={metaInput}
+          onChange={(e) => setMetaInput(e.currentTarget.value)}
           className="w-[80%] bg-white border border-gray-300 rounded px-3 py-1.5"
         />
 
         <label className="block mb-1 mt-3">Gastos</label>
         <input
-          type="number"
+          type="text"
+          inputMode="decimal"
           placeholder="Ex: R$100"
-          value={gastos ?? ""}
-          onChange={(e) => setGastos(toNum(e.currentTarget.value))}
+          value={gastosInput}
+          onChange={(e) => setGastosInput(e.currentTarget.value)}
           className="w-[80%] bg-white border border-gray-300 rounded px-3 py-1.5"
         />
 
         <label className="block mb-1 mt-3">Valor R$</label>
         <input
-          type="number"
+          type="text"
+          inputMode="decimal"
           placeholder="Ex: R$140"
-          value={quantidade ?? ""}
-          onChange={(e) => setQuantidade(toNum(e.currentTarget.value))}
+          value={quantidadeInput}
+          onChange={(e) => setQuantidadeInput(e.currentTarget.value)}
           className="w-[80%] bg-white border border-gray-300 rounded px-3 py-1.5"
           required
         />
