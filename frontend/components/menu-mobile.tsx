@@ -5,11 +5,9 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-
 import homeDefault from "@/assets/icons/home.png";
 import homeActive from "@/assets/icons/home-active.png";
 import homePressed from "@/assets/icons/home-pressed.png";
-
 
 import addDefault from "@/assets/icons/add.png";
 import addActive from "@/assets/icons/add-active.png";
@@ -52,9 +50,9 @@ export default function MenuMobile({ RaUsuario }: Properties) {
 
   // ---------- Estilos base ----------
   const basePill =
-    "relative flex items-center justify-center h-10 w-16 rounded-lg transition-all duration-300 ease-out";
-  const neutralPill = "bg-transparent text-[#70805A] hover:bg-[#8FA17D]";
-  const activePill = "bg-[#8FA17D] text-white border border-[#8FA17D]";
+    "relative flex items-center justify-center h-10 w-16 rounded-[10px] transition-all duration-300 ease-out";
+  const neutralPill = "bg-transparent x'hover:bg-primary/20";
+  const activePill = "bg-[#3B5D3D] text-white border border-[#3B5D3D]";
 
   // ---------- Ícones ----------
   const icons = useMemo(
@@ -104,7 +102,7 @@ export default function MenuMobile({ RaUsuario }: Properties) {
     <nav
       role="navigation"
       aria-label="Menu mobile"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 pb-[calc(env(safe-area-inset-bottom,0px)+10px)] pt-3"
+      className="md:hidden fixed inset-x-0 bottom-0 z-50"
     >
       <style jsx global>{`
         @keyframes pop {
@@ -131,8 +129,8 @@ export default function MenuMobile({ RaUsuario }: Properties) {
         }
       `}</style>
 
-      <div className="mx-auto px-48">
-        <div className="flex justify-center gap-16 py-2 bg-[#A6B895] rounded-[30px]">
+      <div className="mx-auto w-[300px] px-4 sm:px-6 rounded-2xl">
+        <div className="flex items-center justify-center gap-8 sm:gap-12 py-2 bg-primary rounded-[30px]">
           {/* Aba 1: Home */}
           <Link
             href={homeHref}

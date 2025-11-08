@@ -212,8 +212,7 @@ export default function DonationsForm({
           required
         />
 
-        {/* --- Arquivo (ícone + gif) --- */}
-        <label className="block mb-1 mt-3">Comprovante (PNG/JPEG)</label>
+        <label className="block mb-1 mt-8">Comprovante (PNG/JPEG)</label>
 
         {/* Input real (escondido) */}
         <input
@@ -251,15 +250,6 @@ export default function DonationsForm({
           <span className="ml-3 text-sm text-gray-700">
             {comprovante ? `Selecionado: ${comprovante}` : "Nenhum arquivo escolhido"}
           </span>
-        </div>
-        <div className="flex justify-end">
-        <button
-          type="submit"
-          className="mt-3 px-4 py-2 bg-primary text-white rounded hover:opacity-90 disabled:opacity-50"
-          disabled={loading}
-        >
-          {loading ? "Enviando..." : "Cadastrar"}
-        </button>
         </div>
       </div>
     </form>

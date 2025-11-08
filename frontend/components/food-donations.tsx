@@ -1,6 +1,9 @@
 "use client";
+import Image, { StaticImageData } from "next/image";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 
-import React, { useEffect, useMemo, useState } from "react";
+import uploadStatic from "@/assets/icons/upload-static.png";
+import uploadGif from "@/assets/icons/upload-anim.gif";
 
 type AlimentoRow = {
   id: number;
@@ -9,25 +12,29 @@ type AlimentoRow = {
   pesoUnidade: string;
 };
 
+type Img = StaticImageData | string;
+
 interface Properties {
   raUsuario: number;
   setRaUsuario: React.Dispatch<React.SetStateAction<number>>;
-  tipoDoacao: string;
-  setTipoDoacao: React.Dispatch<React.SetStateAction<string>>;
+  tipoDoacao: "Financeira" | "Alimenticia";
+  setTipoDoacao: React.Dispatch<React.SetStateAction<"Financeira" | "Alimenticia">>;
   quantidade: number | undefined;
   setQuantidade: React.Dispatch<React.SetStateAction<number | undefined>>;
   pesoUnidade: number | undefined;
   setPesoUnidade: React.Dispatch<React.SetStateAction<number | undefined>>;
+  comprovante: string;
+  setComprovante: React.Dispatch<React.SetStateAction<string>>;
   fonte: string;
   setFonte: React.Dispatch<React.SetStateAction<string>>;
   meta: number | undefined;
   setMeta: React.Dispatch<React.SetStateAction<number | undefined>>;
-  gastos: number | undefined;
-  setGastos: React.Dispatch<React.SetStateAction<number | undefined>>;
   onAlimentosChange?: (
     alimentos: { id: number; Nome: string; quantidade: string; pesoUnidade: string }[]
   ) => void;
   onTotaisChange?: (totais: { kgTotal: number; pontos: number }) => void;
+  idAlimento?: number;
+  setIdAlimento?: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
 export default function FoodDonations({
@@ -43,34 +50,157 @@ export default function FoodDonations({
   setFonte,
   meta,
   setMeta,
-  gastos,
-  setGastos,
   onAlimentosChange,
   onTotaisChange,
+  idAlimento, 
+  setIdAlimento,
+  comprovante,
+  setComprovante,
 }: Properties) {
+  const [comprovanteFile, setComprovanteFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [picking, setPicking] = useState(false);
+  const timerRef = useRef<number | null>(null);
+
+
+      useEffect(() => {
+        const style = document.createElement("style");
+        style.innerHTML = `
+          @keyframes pop {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.12); }
+            100% { transform: scale(1); }
+          }
+          .animate-pop { animation: pop 150ms ease-out; }
+          @media (prefers-reduced-motion: reduce) {
+            .animate-pop { animation: none !important; }
+          }
+        `;
+        document.head.appendChild(style);
+        return () => {
+          document.head.removeChild(style);
+        };
+      }, []);
+
+    const stopGif = () => {
+    setPicking(false);
+    if (timerRef.current) {
+      window.clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  const handlePickClick = () => {
+    if (loading) return;
+    setPicking(true);
+    if (timerRef.current) window.clearTimeout(timerRef.current);
+    timerRef.current = window.setTimeout(() => {
+      stopGif();
+    }, 1000); 
+    fileInputRef.current?.click();
+  };
+
+    useEffect(() => {
+      return () => {
+        if (timerRef.current) {
+          window.clearTimeout(timerRef.current);
+          timerRef.current = null;
+        }
+      };
+    }, []);
+
+      const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.currentTarget.files?.[0] ?? null;
+    
+        if (!file) {
+          setComprovanteFile(null);
+          setComprovante("");
+          stopGif();
+          return;
+        }
+    
+        const okType = ["image/png", "image/jpeg"].includes(file.type);
+        const okSize = file.size <= 5 * 1024 * 1024;
+         if (!okType) {
+      alert("Apenas PNG/JPEG");
+      stopGif();
+      return;
+    }
+    if (!okSize) {
+      alert("Arquivo muito grande (máx. 5MB)");
+      stopGif();
+      return;
+    }
+
+    setComprovanteFile(file);
+    setComprovante(file.name);
+    stopGif();
+  };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+  
+    if (!fonte.trim()) return alert("Informe o nome do evento/doador");
+    if (quantidade === undefined) return alert("Informe o valor/quantidade");
+
+    setLoading(true);
+    try {
+      const form = new FormData();
+      if (comprovanteFile) form.append("Comprovante", comprovanteFile);
+      form.append("RaUsuario", String(raUsuario));
+      form.append("Quantidade", String(quantidade ?? ""));
+      form.append("PesoUnidade", String(pesoUnidade ?? ""));
+      form.append("Meta", String(meta ?? ""));
+      form.append("Fonte", fonte);
+      form.append("TipoDoacao", tipoDoacao); // já que está no contrato do componente
+
+      const res = await fetch("/api/createContribution", {
+        method: "POST",
+        body: form,
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+
+      alert("Contribuição registrada com sucesso!");
+
+      // Resetar campos
+      setFonte("");
+      setQuantidade(undefined);
+      setMeta(undefined);
+      setPesoUnidade(undefined);
+      setComprovante("");
+      setComprovanteFile(null);
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || "Erro de conexão");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   const [alimentos, setAlimentos] = useState<AlimentoRow[]>([
-    { id: 1, Nome: "Arroz", quantidade: "", pesoUnidade: "" },
-    { id: 2, Nome: "Feijão", quantidade: "", pesoUnidade: "" },
+    { id: 1, Nome: "Arroz Polido", quantidade: "", pesoUnidade: "" },
+    { id: 2, Nome: "Feijão Preto", quantidade: "", pesoUnidade: "" },
     { id: 3, Nome: "Macarrão", quantidade: "", pesoUnidade: "" },
-    { id: 4, Nome: "Farinha de Mandioca", quantidade: "", pesoUnidade: "" },
-    { id: 5, Nome: "Farinha de Trigo", quantidade: "", pesoUnidade: "" },
-    { id: 6, Nome: "Leite Integral", quantidade: "", pesoUnidade: "" },
-    { id: 7, Nome: "Açúcar Refinado", quantidade: "", pesoUnidade: "" },
-    { id: 8, Nome: "Óleo de Soja", quantidade: "", pesoUnidade: "" },
-    { id: 9, Nome: "Café em Pó", quantidade: "", pesoUnidade: "" },
-    { id: 10, Nome: "Manteiga", quantidade: "", pesoUnidade: "" },
-    { id: 11, Nome: "Sal", quantidade: "", pesoUnidade: "" },
-    { id: 12, Nome: "Fubá", quantidade: "", pesoUnidade: "" },
-    { id: 13, Nome: "Sardinha", quantidade: "", pesoUnidade: "" },
-    { id: 14, Nome: "Polpa de Tomate", quantidade: "", pesoUnidade: "" },
-    { id: 15, Nome: "Outros", quantidade: "", pesoUnidade: "" },
-    { id: 16, Nome: "Ervilha Enlatada", quantidade: "", pesoUnidade: "" },
+    { id: 4, Nome: "Fubá", quantidade: "", pesoUnidade: "" },
+    { id: 5, Nome: "Leite em Pó", quantidade: "", pesoUnidade: "" },
+    { id: 6, Nome: "Açúcar Refinado", quantidade: "", pesoUnidade: "" },
+    { id: 7, Nome: "Óleo de Soja", quantidade: "", pesoUnidade: "" },
+    { id: 8, Nome: "Outros", quantidade: "", pesoUnidade: "" },
   ]);
 
   // pontos por kg (exemplo)
   const PONTOS_POR_KG: Record<string, number> = {
-    Arroz: 3,
-    Feijão: 5,
+    "Arroz Polido": 3,
+    "Feijão Preto": 5,
+    "Açúcar Refinado":1,
+    "Leite em Pó": 3,
+    "Fubá":  1.25,
+    "Macarrão": 1.25,
+    "Óleo de Soja": 8,
   };
 
   const parseNumber = (str: string | number): number => {
@@ -140,33 +270,43 @@ export default function FoodDonations({
       <div>Nome do Evento</div>
 
       <input
-        className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-black"
+        className="w-full bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-black"
         type="text"
         placeholder="Ex: Instituto Alma"
         value={fonte}
         onChange={(e) => setFonte(e.target.value)}
       />
 
-      <div>Meta</div>
-      <div className="mb-4 flex items-center gap-3 flex-wrap">
-        <input
-          className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-black"
-          type="text"
-          placeholder="Ex: 1200"
-          value={meta ?? ""}
-          onChange={(e) => {
-            const raw = e.target.value;
-            const num = raw === "" ? undefined : Number(raw.replace(",", "."));
-            setMeta(Number.isFinite(num as number) ? (num as number) : undefined);
-          }}
-        />
-        <div>Total em Kg </div>
-        <div className="mb-4 flex items-center gap-3 flex-wrap">         
-          <span className="w-[80%] bg-white border border-gray-300 rounded-lg px-10 py-1.5 text-black">
-           {(quantidade ?? 0).toLocaleString("pt-BR")}
-            </span>
-        </div>
-      </div>
+
+  <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+    {/* Coluna 1: Meta */}
+    <div className="flex flex-col">
+      <label className="block mb-1 text-gray-700">Meta</label>
+      <input
+        type="number"
+        placeholder="Ex: 1200"
+        value={meta ?? ""}
+        onChange={(e) =>
+          setMeta(e.currentTarget.value === "" ? undefined : Number(e.currentTarget.value))
+        }
+        className="h-10 w-full bg-white border border-gray-300 rounded-lg px-3"
+      />
+    </div>
+
+    {/* Coluna 2: Total em Kg (readOnly, visual idêntico) */}
+    <div className="flex flex-col">
+      <label className="block mb-1 text-gray-700 sm:text-left">Total em Kg</label>
+      <input
+        type="text"
+        readOnly
+            value={totais.kgTotal.toLocaleString("pt-BR")}
+        className="h-10 w-full bg-white border border-gray-300 rounded-lg px-3 text-center"
+        aria-readonly="true"
+        tabIndex={-1}
+      />
+    </div>
+  </div>
+
 
       {/* Cabeçalho */}
       <div className="flex gap-4 font-bold">
@@ -176,6 +316,7 @@ export default function FoodDonations({
       </div>
 
       <div className="flex-1 overflow-auto pr-1">
+        <div className="flex flex-col space-y-3">
         {alimentos.map((a) => (
           <div key={a.id} className="flex gap-4 w-full">
             <div className="w-[30%] bg-white border border-gray-300 rounded-lg flex items-center justify-center text-center px-3 py-2">
@@ -204,6 +345,47 @@ export default function FoodDonations({
             />
           </div>
         ))}
+        </div>
+
+        <label className="block mb-1 mt-8">Imagem dos Alimentos</label>
+
+        {/* Input real (escondido) */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/png,image/jpeg"
+          onChange={handleFileChange}
+          className="hidden"
+          aria-hidden="true"
+          tabIndex={-1}
+        />
+
+        {/* Botão com ícone/gif */}
+        <div className="flex items-center">
+          <button
+            type="button"
+            onClick={handlePickClick}
+            onMouseDown={(e) => e.currentTarget.classList.add("animate-pop")}
+            onAnimationEnd={(e) => e.currentTarget.classList.remove("animate-pop")}
+            className="inline-flex items-center justify-center h-14 w-18 rounded-lg bg-white transition"
+            disabled={loading}
+            aria-label="Selecionar comprovante"
+          >
+            <Image
+              src={picking ? (uploadGif as Img) : (uploadStatic as Img)}
+              alt="Selecionar comprovante"
+              width={35}
+              height={35}
+              className="pointer-events-none select-none"
+              draggable={false}
+              priority
+            />
+          </button>
+
+          <span className="ml-3 text-sm text-gray-700">
+            {comprovante ? `Selecionado: ${comprovante}` : "Nenhum arquivo escolhido"}
+          </span>
+        </div>
       </div>
     </form>
   );

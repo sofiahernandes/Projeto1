@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { useMemo } from "react";
 import "@/styles/globals.css";
 
 import MenuDesktop from "@/components/menu-desktop";
@@ -14,13 +13,11 @@ type Tipo = "Financeira" | "Alimenticia";
 
 export default function Donations() {
   
-
 const params = useParams() as { RaUsuario?: string };
-const userId = Number(params?.RaUsuario ?? "");
-const raUsuario = Number.isFinite(userId) ? userId : undefined;
+  const raUsuario = params?.RaUsuario ? Number(params.RaUsuario) : undefined;
+
 
 if (raUsuario === undefined) {
-  // Mostra um esqueleto ou um fallback rápido
   return <div className="p-4">Carregando usuário…</div>;
 }
 
@@ -120,8 +117,6 @@ if (raUsuario === undefined) {
         };
       }
 
-      console.log("🛰️ Enviando body para o backend:", body);
-
       const res = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -210,14 +205,13 @@ if (raUsuario === undefined) {
       <div className="">
         <MenuDesktop
           menuOpen={menuOpen}
-          raUsuario={raUsuario!}
+          RaUsuario={raUsuario!}
           setMenuOpen={setMenuOpen}
         />
-        <MenuMobile raUsuario={raUsuario!} />
+        <MenuMobile RaUsuario={raUsuario!} />
 
         <main className="flex justify-center items-stretch min-h-screen w-full px-9 mt-10">
           <div className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-x-1">
-            {/* ✅ Financeira */}
             <form
               onSubmit={(e) => handleSubmit(e, "Financeira")}
               className={`${
@@ -228,7 +222,7 @@ if (raUsuario === undefined) {
 
               <DonationsForm
                 raUsuario={raUsuario}
-                setRaUsuario={setRaUsuario}
+                setRaUsuario={() => {}}
                 tipoDoacao={financeira.tipoDoacao}
                 setTipoDoacao={() => {}}
                 fonte={financeira.fonte}
@@ -252,9 +246,18 @@ if (raUsuario === undefined) {
                   setFinanceira({ ...financeira, comprovante: v as string })
                 }
               />
+              <div className="mt-4 flex flex-none items-center gap-3 justify-end">
+              <button
+                  type="submit"
+                  onClick={() => setTipoDoacao("Financeira")}
+                  disabled={loading}
+                  className="w-fit px-4 py-2 rounded-[8px] bg-primary hover:bg-primary/70 text-white hover:opacity-90 disabled:opacity-50"
+                >
+                  {loading ? "Enviando..." : "Cadastrar"}
+                </button>
+                </div>
             </form>
 
-            {/* ✅ Alimentícia */}
             <form
               onSubmit={(e) => handleSubmit(e, "Alimenticia")}
               className={`${
@@ -266,7 +269,7 @@ if (raUsuario === undefined) {
               <div className="min-h-0 flex-1 overflow-y-auto">
                 <FoodDonations
                   raUsuario={raUsuario}
-                  setRaUsuario={setRaUsuario}
+                  setRaUsuario={() => {}}
                   tipoDoacao={alimenticia.tipoDoacao}
                   setTipoDoacao={() => {}}
                   pesoUnidade={alimenticia.pesoUnidade}
@@ -285,6 +288,10 @@ if (raUsuario === undefined) {
                   setFonte={(v) =>
                     setAlimenticia({ ...alimenticia, fonte: v as string })
                   }
+                           comprovante={financeira.comprovante}
+                setComprovante={(v) =>
+                  setFinanceira({ ...financeira, comprovante: v as string })
+                }
                   onTotaisChange={setTotaisFromChild}
                   idAlimento={idAlimento}
                   setIdAlimento={setIdAlimento}
@@ -292,7 +299,7 @@ if (raUsuario === undefined) {
               </div>
 
               <div className="mt-4 flex flex-none items-center gap-3 justify-end">
-                <div className="bg-secondary/30 text-sm rounded-lg py-2 px-16 whitespace-nowrap w-[300px] overflow-hidden text-ellipsis">
+                <div className="bg-secondary/30 text-sm rounded-[20px] py-2 px-16 whitespace-nowrap w-[300px] overflow-hidden text-ellipsis">
                   Pontuação: <span>{fmt(totaisFromChild?.pontos ?? 0)}</span>
                 </div>
 
@@ -300,7 +307,7 @@ if (raUsuario === undefined) {
                   type="submit"
                   onClick={() => setTipoDoacao("Alimenticia")}
                   disabled={loading}
-                  className="w-fit px-4 py-2 rounded-lg bg-primary hover:bg-primary/70 text-white hover:opacity-90 disabled:opacity-50"
+                  className="w-fit px-4 py-2 rounded-[8px] bg-primary hover:bg-primary/70 text-white hover:opacity-90 disabled:opacity-50"
                 >
                   {loading ? "Enviando..." : "Cadastrar"}
                 </button>
