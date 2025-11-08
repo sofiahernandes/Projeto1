@@ -10,17 +10,17 @@ type Img = StaticImageData | string;
 
 interface Properties {
   raUsuario: number;
-  setRaUsuario: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setRaUsuario: React.Dispatch<React.SetStateAction<number>>;
   tipoDoacao: "Financeira" | "Alimenticia";
   setTipoDoacao: React.Dispatch<React.SetStateAction<"Financeira" | "Alimenticia">>;
   quantidade: number | undefined;
-  setQuantidade: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setQuantidade: React.Dispatch<React.SetStateAction<number>>;
   fonte: string;
   setFonte: React.Dispatch<React.SetStateAction<string>>;
-  meta: number | undefined;
-  setMeta: React.Dispatch<React.SetStateAction<number | undefined>>;
-  gastos: number | undefined;
-  setGastos: React.Dispatch<React.SetStateAction<number | undefined>>;
+  meta: number;
+  setMeta: React.Dispatch<React.SetStateAction<number>>;
+  gastos: number;
+  setGastos: React.Dispatch<React.SetStateAction<number>>;
   comprovante: string;
   setComprovante: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -49,7 +49,7 @@ export default function DonationsForm({
   const [picking, setPicking] = useState(false);
   const timerRef = useRef<number | null>(null);
 
-  const toNum = (v: string) => (v === "" ? undefined : Number(v));
+  const toNum = (v: string) => (v === "" ? 0 : Number(v));
 
   // CSS da animação "pop" (se ainda não tiver global)
   // Você pode mover isso para o layout global se preferir.
@@ -158,9 +158,9 @@ export default function DonationsForm({
 
       // Resetar campos
       setFonte("");
-      setQuantidade(undefined);
-      setMeta(undefined);
-      setGastos(undefined);
+      setQuantidade(0);
+      setMeta(0);
+      setGastos(0);
       setComprovante("");
       setComprovanteFile(null);
     } catch (err: any) {

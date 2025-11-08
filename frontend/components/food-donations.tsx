@@ -19,22 +19,22 @@ interface Properties {
   setRaUsuario: React.Dispatch<React.SetStateAction<number>>;
   tipoDoacao: "Financeira" | "Alimenticia";
   setTipoDoacao: React.Dispatch<React.SetStateAction<"Financeira" | "Alimenticia">>;
-  quantidade: number | undefined;
-  setQuantidade: React.Dispatch<React.SetStateAction<number | undefined>>;
-  pesoUnidade: number | undefined;
-  setPesoUnidade: React.Dispatch<React.SetStateAction<number | undefined>>;
+  quantidade: number;
+  setQuantidade: React.Dispatch<React.SetStateAction<number>>;
+  pesoUnidade: number;
+  setPesoUnidade: React.Dispatch<React.SetStateAction<number>>;
   comprovante: string;
   setComprovante: React.Dispatch<React.SetStateAction<string>>;
   fonte: string;
   setFonte: React.Dispatch<React.SetStateAction<string>>;
-  meta: number | undefined;
-  setMeta: React.Dispatch<React.SetStateAction<number | undefined>>;
+  meta: number;
+  setMeta: React.Dispatch<React.SetStateAction<number>>;
   onAlimentosChange?: (
-    alimentos: { id: number; Nome: string; quantidade: string; pesoUnidade: string }[]
-  ) => void;
+  alimentos: { id: number; Nome: string; quantidade: number; pesoUnidade: number }[]
+) => void;
   onTotaisChange?: (totais: { kgTotal: number; pontos: number }) => void;
   idAlimento?: number;
-  setIdAlimento?: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setIdAlimento?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function FoodDonations({
@@ -167,9 +167,9 @@ export default function FoodDonations({
 
       // Resetar campos
       setFonte("");
-      setQuantidade(undefined);
-      setMeta(undefined);
-      setPesoUnidade(undefined);
+      setQuantidade(0);
+      setMeta(0);
+      setPesoUnidade(0);
       setComprovante("");
       setComprovanteFile(null);
     } catch (err: any) {
@@ -242,10 +242,19 @@ export default function FoodDonations({
     if (!nearlyEqual(mediaPeso, pesoUnidade ?? 0)) setPesoUnidade(mediaPeso);
   }, [alimentos, quantidade, pesoUnidade, setQuantidade, setPesoUnidade]);
 
-  // enviar para componente pai
-  useEffect(() => {
-    onAlimentosChange?.(alimentos);
-  }, [alimentos, onAlimentosChange]);
+useEffect(() => {
+  if (!onAlimentosChange) return;
+
+  // Converte os valores string -> number
+  const converted = alimentos.map(({ id, Nome, quantidade, pesoUnidade }) => ({
+    id,
+    Nome,
+    quantidade: Number(quantidade) || 0,
+    pesoUnidade: Number(pesoUnidade) || 0,
+  }));
+
+  onAlimentosChange(converted);
+}, [alimentos, onAlimentosChange]);
 
   useEffect(() => {
     onTotaisChange?.(totais);
@@ -287,7 +296,7 @@ export default function FoodDonations({
         placeholder="Ex: 1200"
         value={meta ?? ""}
         onChange={(e) =>
-          setMeta(e.currentTarget.value === "" ? undefined : Number(e.currentTarget.value))
+          setMeta(e.currentTarget.value === "" ? 0 : Number(e.currentTarget.value))
         }
         className="h-10 w-full bg-white border border-gray-300 rounded-lg px-3"
       />

@@ -13,63 +13,62 @@ type Tipo = "Financeira" | "Alimenticia";
 
 export default function Donations() {
   const params = useParams() as { RaUsuario?: string };
-  const raUsuario = params?.RaUsuario ? Number(params.RaUsuario) : undefined;
-
-  if (raUsuario === undefined) {
-    return <div className="p-4">Carregando usuário…</div>;
-  }
+  const raUsuario = Number(params?.RaUsuario ?? 0);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const [activeTab, setActiveTab] = useState<"finance" | "food">("finance");
-  const [alimentosFromChild, setAlimentosFromChild] = useState<
-    { id: number; quantidade: number; pesoUnidade: number }[]
-  >([]);
+
+const [alimentosFromChild, setAlimentosFromChild] = useState<
+  { id: number; Nome: string; quantidade: number; pesoUnidade: number }[]
+>([]);
 
   const [totaisFromChild, setTotaisFromChild] = useState<{ pontos: number }>({
     pontos: 0,
   });
 
   const [tipoDoacao, setTipoDoacao] = useState<Tipo>("Alimenticia");
-  const [idAlimento, setIdAlimento] = useState<number | undefined>();
+  const [idAlimento, setIdAlimento] = useState<number>(0);
+
+  // ===== ESTADOS =====
 
   interface FinanceiraState {
     tipoDoacao: Tipo;
     fonte: string;
-    meta?: number;
-    gastos?: number;
-    quantidade?: number;
+    meta: number;
+    gastos: number;
+    quantidade: number;
     comprovante: string;
   }
 
   const [financeira, setFinanceira] = useState<FinanceiraState>({
     tipoDoacao: "Financeira",
     fonte: "",
-    meta: undefined,
-    gastos: undefined,
-    quantidade: undefined,
+    meta: 0,
+    gastos: 0,
+    quantidade: 0,
     comprovante: "",
   });
 
   interface AlimenticiaState {
     tipoDoacao: Tipo;
     fonte: string;
-    meta?: number;
-    gastos?: number;
-    quantidade?: number;
-    pesoUnidade?: number;
+    meta: number;
+    quantidade: number;
+    pesoUnidade: number;
     comprovante: string;
   }
 
   const [alimenticia, setAlimenticia] = useState<AlimenticiaState>({
     tipoDoacao: "Alimenticia",
     fonte: "",
-    meta: undefined,
-    quantidade: undefined,
+    meta: 0,
+    quantidade: 0,
     pesoUnidade: 0,
     comprovante: "",
   });
+
+  // ===== FUNÇÕES =====
 
   const fmt = (value: number) => value.toLocaleString("pt-BR");
 
@@ -80,7 +79,7 @@ export default function Donations() {
 
   async function handleSubmit(
     e: React.FormEvent<HTMLFormElement>,
-    tipo: "Financeira" | "Alimenticia"
+    tipo: Tipo
   ) {
     e.preventDefault();
     setLoading(true);
@@ -89,8 +88,8 @@ export default function Donations() {
       let body: any;
 
       if (tipo === "Financeira") {
-        if (!financeira.fonte) {
-          alert("Preencha todos os campos obrigatórios (fonte).");
+        if (!financeira.fonte.trim()) {
+          alert("Preencha o campo de fonte.");
           setLoading(false);
           return;
         }
@@ -98,11 +97,11 @@ export default function Donations() {
         body = {
           TipoDoacao: "Financeira",
           RaUsuario: raUsuario,
-          Quantidade: 1,
-          Gastos: financeira.gastos ?? 0,
+          Quantidade: financeira.quantidade,
+          Gastos: financeira.gastos,
           Fonte: financeira.fonte,
           Comprovante: financeira.comprovante || "sem-comprovante",
-          Meta: financeira.meta ?? 0,
+          Meta: financeira.meta,
         };
       } else {
         if (alimentosFromChild.length === 0) {
@@ -116,16 +115,16 @@ export default function Donations() {
           RaUsuario: raUsuario,
           Fonte: alimenticia.fonte,
           Comprovante: alimenticia.comprovante || "sem-comprovante",
-          Meta: alimenticia.meta ?? 0,
+          Meta: alimenticia.meta,
           Alimentos: alimentosFromChild.map((a) => ({
             IdAlimento: a.id,
-            Quantidade: Number(a.quantidade) || 0,
-            PesoUnidade: Number(a.pesoUnidade) || 0,
+            Quantidade: a.quantidade,
+            PesoUnidade: a.pesoUnidade,
           })),
         };
       }
 
-      console.log("📤 Dados enviados:", body);
+      console.log("📤 Enviando dados:", body);
 
       const res = await fetch(apiUrl, {
         method: "POST",
@@ -142,17 +141,17 @@ export default function Donations() {
         setFinanceira({
           tipoDoacao: "Financeira",
           fonte: "",
-          meta: undefined,
-          gastos: undefined,
-          quantidade: undefined,
+          meta: 0,
+          gastos: 0,
+          quantidade: 0,
           comprovante: "",
         });
       } else {
         setAlimenticia({
           tipoDoacao: "Alimenticia",
           fonte: "",
-          meta: undefined,
-          quantidade: undefined,
+          meta: 0,
+          quantidade: 0,
           pesoUnidade: 0,
           comprovante: "",
         });
@@ -166,11 +165,13 @@ export default function Donations() {
     }
   }
 
+  // ===== RENDER =====
+
   return (
     <div className="container w-full">
       <header className="w-full">
         <button
-          className={`open-menu ${menuOpen ? "menu-icon hidden" : "menu-icon"}`}
+          className={`open-menu ${menuOpen ? "hidden" : "menu-icon"}`}
           onClick={() => setMenuOpen(true)}
         >
           ☰
@@ -201,9 +202,7 @@ export default function Donations() {
                 type="button"
                 onClick={() => setActiveTab("food")}
                 className={`rounded-full py-3 text-sm font-medium ${
-                  activeTab === "food"
-                    ? "bg-primary text-white"
-                    : "text-black"
+                  activeTab === "food" ? "bg-primary text-white" : "text-black"
                 }`}
               >
                 Alimentos
@@ -216,10 +215,10 @@ export default function Donations() {
       <div>
         <MenuDesktop
           menuOpen={menuOpen}
-          RaUsuario={raUsuario!}
+          RaUsuario={raUsuario}
           setMenuOpen={setMenuOpen}
         />
-        <MenuMobile RaUsuario={raUsuario!} />
+        <MenuMobile RaUsuario={raUsuario} />
 
         <main className="flex justify-center items-stretch min-h-screen w-full px-9 mt-10">
           <div className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-x-1">
@@ -259,7 +258,7 @@ export default function Donations() {
                 }
               />
 
-              <div className="mt-4 flex flex-none items-center gap-3 justify-end">
+              <div className="mt-4 flex items-center gap-3 justify-end">
                 <button
                   type="submit"
                   onClick={() => setTipoDoacao("Financeira")}
@@ -307,13 +306,13 @@ export default function Donations() {
                     setAlimenticia({ ...alimenticia, comprovante: v as string })
                   }
                   onTotaisChange={setTotaisFromChild}
-                  idAlimento={idAlimento}
+                  idAlimento={idAlimento ?? 0}
                   setIdAlimento={setIdAlimento}
-                  onAlimentosChange={setAlimentosFromChild} // ✅ envia alimentos ao pai
+                  onAlimentosChange={setAlimentosFromChild}
                 />
               </div>
 
-              <div className="mt-4 flex flex-none items-center gap-3 justify-end">
+              <div className="mt-4 flex items-center gap-3 justify-end">
                 <div className="bg-secondary/30 text-sm rounded-[20px] py-2 px-16 whitespace-nowrap w-[300px] overflow-hidden text-ellipsis">
                   Pontuação: <span>{fmt(totaisFromChild?.pontos ?? 0)}</span>
                 </div>
