@@ -11,6 +11,7 @@ cloudinary.config({
 });
 
 const isDev = process.env.NODE_ENV !== "production";
+
 const storage = isDev
   ? (() => {
       const uploadDir = path.resolve("src", "uploads");
@@ -22,7 +23,9 @@ const storage = isDev
         destination: (req, file, cb) => cb(null, uploadDir),
         filename: (req, file, cb) => {
           const ext = path.extname(file.originalname).toLowerCase();
-          const name = `${Date.now()}-${Math.floor(Math.random() * 1e9)}${ext}`;
+          const timestamp = Date.now();
+          const random = Math.floor(Math.random() * 1e9);
+          const name = `comprovante-${timestamp}-${random}${ext}`;
           cb(null, name);
         },
       });
@@ -31,28 +34,38 @@ const storage = isDev
       cloudinary: cloudinary,
       params: {
         folder: "comprovantes",
-        allowed_formats: ["jpg", "jpeg", "png"],
+        allowed_formats: ["jpg", "jpeg", "png", "webp", "pdf"],
         transformation: [
           {
             width: 1200,
+            height: 1200,
+            crop: "limit",
             quality: "auto",
             fetch_format: "auto",
           },
         ],
-
         public_id: (req, file) => {
           const timestamp = Date.now();
           const random = Math.floor(Math.random() * 1e9);
-          const ext = path.extname(file.originalname).toLowerCase();
-          return `${timestamp}-${random}`;
+          return `comprovante-${timestamp}-${random}`;
         },
       },
     });
 
-const allowed = new Set(["image/png", "image/jpeg", "image/jpg"]);
+const allowed = new Set([
+  "image/png",
+  "image/jpeg",
+  "image/jpg",
+  "image/webp",
+  "application/pdf",
+]);
+
 const fileFilter = (req, file, cb) => {
   if (!allowed.has(file.mimetype)) {
-    return cb(new Error("Apenas arquivos PNG, JPG e JPEG são permitidos"));
+    return cb(
+      new Error("Apenas arquivos PNG, JPG, JPEG, WEBP e PDF são permitidos"),
+      false
+    );
   }
   cb(null, true);
 };
@@ -60,7 +73,10 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
 });
 
+export { upload, cloudinary, isDev };
 export default upload;

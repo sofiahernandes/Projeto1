@@ -82,8 +82,8 @@ const mentorController = {
 
       res.json(timesFormatados);
     } catch (err) {
-      console.error("Erro ao buscar times do mentor:", err);
-      res.status(500).json({ error: "Erro ao buscar times do mentor" });
+      console.error("Erro ao buscar time do mentor:", err);
+      res.status(500).json({ error: "Erro ao buscar time do mentor" });
     }
   },
 

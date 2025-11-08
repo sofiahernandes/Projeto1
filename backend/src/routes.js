@@ -1,5 +1,6 @@
 import express, { Router } from "express";
 import { pool } from "./db.js";
+import upload from "./configs/uploadconfig.js";
 
 import contributionController from "./controllers/contributionController.js";
 import teamController from "./controllers/teamController.js";
@@ -21,7 +22,6 @@ r.get("/db/health", async (_, res) => {
 r.post("/createContribution", contributionController.createContribution);
 r.get("/contributions", contributionController.allContributions);
 r.get("/contributions/:RaUsuario", contributionController.getContributionsByRa);
-r.get("/mentor/:IdMentor/contributions", contributionController.getContributionsByMentor);
 r.get("/contributions/edition/:editionNumber",contributionController.getContributionsByEdition);
 r.delete( "/deleteContribution/:IdContribuicao", contributionController.deleteContribution);
 
@@ -30,8 +30,8 @@ r.post("/loginMentor", mentorController.loginMentor);
 r.get("/mentors", mentorController.allMentors);
 r.post("/createAdmin", mentorController.createAdmin);
 r.post("/loginAdmin", mentorController.loginAdmin);
-r.get("/mentor/id/:IdMentor", mentorController.mentorById);
-r.get("/mentor/:IdMentor/teams", mentorController.mentorByTeam);
+r.get("/mentor/:IdMentor", mentorController.mentorById);
+r.get("/mentor/:IdMentor/team", mentorController.mentorByTeam);
 r.delete("/deleteMentor/:IdMentor", mentorController.deleteMentor);
 
 r.post("/createTeam", teamController.createTeam);
@@ -48,10 +48,9 @@ r.post("/user/login", authController.loginUser);
 r.post("/logOutUser", authController.logOutUser);
 r.delete("/deleteUser/:RaUsuario", userController.deleteUser);
 
-r.post("/comprovante", receiptController.uploadReceipt);
-r.post("/comprovante/:IdContribuicaoFinanceira", receiptController.addReceiptAtContribution);
+r.post("/comprovante/:IdContribuicaoFinanceira", upload.single("file"),receiptController.addReceiptAtContribution);
 r.get("/comprovante/:RaUsuario", receiptController.receiptByRA);
 r.get("/comprovante/:IdComprovante ", receiptController.receiptById);
 r.get("/comprovante/todosComprovantes", receiptController.getAllReceipts);
-r.delete("comprovante/:IdComprovante", receiptController.deleteReceiptById);
+r.delete("/comprovante/:IdComprovante", receiptController.deleteReceiptById);
 export default r;

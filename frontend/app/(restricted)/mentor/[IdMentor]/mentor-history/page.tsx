@@ -3,41 +3,82 @@
 import React, { SetStateAction, useEffect, useState } from "react";
 import BackHome from "@/components/back-home";
 import { useParams } from "next/navigation";
-import { fetchData } from "@/hooks/fetch-user-profile";
 import RecordsMentor from "@/components/records-mentor";
 import RenderContributionCard from "@/components/grid-contribution";
 import SwitchViewButton from "@/components/toggle-button";
 import RenderContributionTable from "@/components/table-contribution";
 
+interface TeamData {
+  IdTime: number;
+  NomeTime: string;
+  RaUsuario: number | null;
+}
+
+const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export default function MentorVision() {
   const params = useParams();
-  const RaUsuario = parseInt(params.RaUsuario as string, 10);
-  const teamId = parseInt(params.teamId as string, 10);
-  const [IdMentor, setIdMentor] = useState<number|null>(null);
-  const [team, setTeam] = useState<any>(null);
+  const IdMentor = params?.IdMentor ? Number(params.IdMentor) : null;
+  const [team, setTeam] = useState<TeamData | null>(null);
   const [user, setUser] = useState<any>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [buttonSelected, setButtonSelected] = useState(false);
-
-  const [selectedContribution, setSelectedContribution] =
-    React.useState<any>(null);
+  const [selectedContribution, setSelectedContribution] = useState<any>(null);
+  const [timesData, setTimesData] = useState<TeamData[]>([]);
+  const [selectedTeam, setSelectedTeam] = useState<TeamData | null>(null);
 
   useEffect(() => {
-    if (params?.IdMentor){
-      setIdMentor(Number(params?.IdMentor))
-    }
-    if (isNaN(RaUsuario) || isNaN(teamId)) {
-      console.error("Parâmetros inválidos:", params);
-      return;
+    if (!IdMentor) return;
+
+    const controller = new AbortController();
+    let active = true;
+
+    async function fetchMentorTeam() {
+      try {
+        const res = await fetch(`${backend_url}/api/mentor/${IdMentor}/team`, {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+
+        if (!res.ok) return;
+
+        const times: TeamData[] = await res.json();
+        if (!active) return;
+
+        setTimesData(times);
+
+        if (times.length > 0) {
+          const firstTeam = times[0];
+          setSelectedTeam(firstTeam);
+          setTeam(firstTeam);
+
+          if (firstTeam.RaUsuario) {
+            const userRes = await fetch(
+              `${backend_url}/api/user/${firstTeam.RaUsuario}`,
+              {
+                cache: "no-store",
+                signal: controller.signal,
+              }
+            );
+
+            if (userRes.ok) {
+              const userData = await userRes.json();
+              if (active) setUser(userData);
+            }
+          }
+        }
+      } catch (err: any) {
+        if (err?.name === "AbortError") return;
+      }
     }
 
-    const fetchTeamData = async () => {
-      const data = await fetchData(RaUsuario, teamId);
-      setUser(data?.user);
-      setTeam(data?.team);
+    fetchMentorTeam();
+
+    return () => {
+      active = false;
+      controller.abort();
     };
-    fetchTeamData();
-  }, [params]);
+  }, [IdMentor]);
 
   return (
     <div className="min-h-dvh w-full overflow-y-hidden overflow-x-hidden flex flex-col bg-[#f4f3f1]/60">
@@ -52,10 +93,8 @@ export default function MentorVision() {
         </header>
       </div>
 
-      <div
-        className={`w-full flex justify-center pt-4 transition-all duration-300 ease-in-out`}
-      >
-        <main className="w-full self-center max-w-[1300px] p-1.5 md:mt-0 ">
+      <div className="w-full flex justify-center pt-4 transition-all duration-300 ease-in-out">
+        <main className="w-full self-center max-w-[1300px] p-1.5 md:mt-0">
           {selectedContribution && (
             <RecordsMentor
               data={selectedContribution}
@@ -64,11 +103,11 @@ export default function MentorVision() {
             />
           )}
           <div className="flex flex-col gap-2 mx-3 text-center">
-            <h3 className="text-2xl uppercase font-semibold text-primary ">
-              {team?.NomeTime ? team?.NomeTime : "Nome do time aparecerá aqui"}
+            <h3 className="text-2xl uppercase font-semibold text-primary">
+              {team?.NomeTime || "Nome do time aparecerá aqui"}
             </h3>
             <h4 className="mb-3 text-xl text-primary text-center">
-              Turma {user?.Turma ? user?.Turma : "X"} | Yº Edição
+              Turma {user?.TurmaUsuario || "X"} | Yº Edição
             </h4>
             <div className="self-end">
               <SwitchViewButton

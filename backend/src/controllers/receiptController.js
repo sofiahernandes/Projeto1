@@ -1,29 +1,11 @@
-import { v2 as cloudinary } from "cloudinary";
+import { cloudinary, upload } from "../configs/uploadconfig.js";
 import { prisma } from "../../prisma/lib/prisma.js";
-import path from "path";
-import fs from "fs";
-
-const isDev = process.env.NODE_ENV !== "production";
+import {
+  getPublicIdFromUrl,
+  deleteImageFromUrl,
+} from "../configs/cloudinaryHelper.js";
 
 const receiptController = {
-  // POST http://localhost:3001/api/comprovante
-  uploadReceipt: async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ error: "Nenhum arquivo enviado." });
-      }
-      const imagemUrl = req.file.path;
-      const comprovante = await prisma.comprovante.create({
-        data: { Imagem: imagemUrl },
-      });
-      res.status(201).json({
-        message: "Imagem enviada com sucesso!",
-        data: comprovante,
-      });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  },
 
   // POST http://localhost:3001/api/comprovante/:IdContribuicaoFinanciera - (adiciona imagem pela contribuição financeira )
   addReceiptAtContribution: async (req, res) => {
@@ -38,39 +20,41 @@ const receiptController = {
       if (!req.file) {
         return res.status(400).json({ error: "Nenhum arquivo enviado." });
       }
+      const imagemUrl = req.file.path;
 
       const contribuicaoExiste =
         await prisma.contribuicao_Financeira.findUnique({
-          where: {
-            IdContribuicaoFinanceira: contributionId,
-          },
-          include: {
-            comprovante: Number(IdComprovante),
-          },
+          where: { IdContribuicaoFinanceira: contributionId },
+          include: { comprovante: true },
         });
 
       if (!contribuicaoExiste) {
-        if (!isDev && req.file.path) {
-          const urlParts = req.file.path.split("/");
-          const publicIdWithExt = urlParts
-            .slice(urlParts.indexOf("upload") + 2)
-            .join("/");
-          const publicId = publicIdWithExt.replace(/\.[^/.]+$/, "");
-          await cloudinary.uploader.destroy(publicId);
-        }
         return res.status(404).json({ error: "Contribuição não encontrada" });
       }
-      if (!contribuicaoExiste.IdComprovante) {
-        return res.status(400).json({
-          error: "Esta contribuição não possui um comprovante vinculado",
+
+      let comprovanteAtualizado;
+
+      if (contribuicaoExiste.IdComprovante) {
+        const comprovanteAntigo = contribuicaoExiste.comprovante;
+
+        if (comprovanteAntigo.Imagem) {
+          await deleteImageFromUrl(cloudinary, comprovanteAntigo.Imagem);
+        }
+
+        comprovanteAtualizado = await prisma.comprovante.update({
+          where: { IdComprovante: contribuicaoExiste.IdComprovante },
+          data: { Imagem: imagemUrl },
+        });
+      } else {
+        comprovanteAtualizado = await prisma.comprovante.create({
+          data: { Imagem: imagemUrl },
+        });
+
+        await prisma.contribuicao_Financeira.update({
+          where: { IdContribuicaoFinanceira: contributionId },
+          data: { IdComprovante: comprovanteAtualizado.IdComprovante },
         });
       }
-      const imagemUrl = req.file.path;
-
-      const comprovanteAtualizado = await prisma.comprovante.update({
-        where: { IdComprovante: contribuicaoExiste.IdComprovante },
-        data: { Imagem: imagemUrl },
-      });
 
       const contribuicaoFinalizada =
         await prisma.contribuicao_Financeira.findUnique({
@@ -86,12 +70,16 @@ const receiptController = {
             },
           },
         });
+
       res.status(200).json({
         message: "Comprovante atualizado com sucesso!",
         data: { ...contribuicaoFinalizada, TipoDoacao: "Financeira" },
       });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({
+        error: "Erro ao adicionar comprovante",
+        details: error.message,
+      });
     }
   },
 
@@ -203,15 +191,12 @@ const receiptController = {
 
       const comprovante = await prisma.comprovante.findUnique({
         where: { IdComprovante: receiptId },
-        include: {
-          contribuicao_financeira: true,
-        },
+        include: { contribuicao_financeira: true },
       });
 
       if (!comprovante) {
         return res.status(404).json({ error: "Comprovante não encontrado" });
       }
-
       if (comprovante.contribuicao_financeira) {
         await prisma.contribuicao_Financeira.update({
           where: {
@@ -222,26 +207,9 @@ const receiptController = {
         });
       }
 
-      if (isDev) {
-        const filepath = path.resolve(comprovante.Imagem);
-        fs.unlink(filepath, (err) => {
-          if (err) alert("Erro ao remover arquivo local:", err);
-        });
-      } else {
-        try {
-          const urlParts = comprovante.Imagem.split("/");
-          const uploadIndex = urlParts.indexOf("upload");
-
-          if (uploadIndex !== -1) {
-            const publicIdWithExt = urlParts.slice(uploadIndex + 2).join("/");
-            const publicId = publicIdWithExt.replace(/\.[^/.]+$/, "");
-            await cloudinary.uploader.destroy(publicId);
-          }
-        } catch (cloudinaryError) {
-          console.warn("Erro ao deletar do Cloudinary:", cloudinaryError);
-        }
+      if (comprovante.Imagem) {
+        await deleteImageFromUrl(cloudinary, comprovante.Imagem);
       }
-
       await prisma.comprovante.delete({
         where: { IdComprovante: receiptId },
       });
@@ -258,7 +226,10 @@ const receiptController = {
         });
       }
 
-      res.status(500).json({ error: error.message });
+      res.status(500).json({
+        error: "Erro ao deletar comprovante",
+        details: error.message,
+      });
     }
   },
 };

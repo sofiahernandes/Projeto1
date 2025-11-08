@@ -23,12 +23,12 @@ export default function TeamHistory() {
 
   useEffect(() => {
     const fetchTeamData = async () => {
-      const data = await fetchData(user, team);
+      const data = await fetchData(RaUsuario);
       setUser(data?.user);
       setTeam(data?.team);
     };
     fetchTeamData();
-  }, [user, team]);
+  }, [RaUsuario]);
 
   return (
     <div className="min-h-dvh w-full overflow-y-hidden overflow-x-hidden flex flex-col bg-[#f4f3f1]/60">
@@ -87,14 +87,16 @@ export default function TeamHistory() {
               {team?.NomeTime ? team?.NomeTime : "Nome do time aparecerá aqui"}
             </h3>
             <h4 className="mb-3 text-xl text-primary/80">
-              Turma {user?.Turma ? user?.Turma : "X"} | Yº Edição
+              Turma {user?.TurmaUsuario ? user?.TurmaUsuario : "X"} | Yº Edição
             </h4>
             <div className="self-end">
               <SwitchViewButton
                 buttonSelected={buttonSelected}
-                setButtonSelected={(arg: SetStateAction<boolean>) => setButtonSelected(arg)}
+                setButtonSelected={(arg: SetStateAction<boolean>) =>
+                  setButtonSelected(arg)
+                }
               />
-            </div>   
+            </div>
           </div>
           <div className="mt-2">
             {buttonSelected ? (
@@ -115,7 +117,6 @@ export default function TeamHistory() {
               />
             )}
           </div>
-        
         </main>
       </div>
     </div>
