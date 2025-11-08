@@ -10,7 +10,10 @@ interface ContributionData {
   Meta?: number;
   Gastos?: number;
   Fonte?: string;
-  Comprovante?: string;
+  Comprovante?: {
+    IdComprovante: number;
+    Imagem: string;
+  };
   IdContribuicao: number;
   DataContribuicao: string;
   NomeAlimento?: string;
@@ -37,6 +40,7 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };
+  console.log("Comprovante recebido:", data.Comprovante);
 
   return (
     <Modal isActive={isOpen} onClose={toggleModal}>
@@ -105,16 +109,24 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
                     </div>
                   )}
 
-                  {data.Comprovante !== null && (
+                  {data.Comprovante?.Imagem ? (
                     <div>
-                      <p className="text-sm text-gray-600 mb-2">Comprovantes</p>
-                      <div className="flex items-start">
-                        <img
-                          src={data.Comprovante || placeholderComprovante.src}
-                          alt="Anexo de comprovante"
-                          className="rounded-md aspect-square max-h-[45px] object-contain mb-6"
-                        />
-                      </div>
+                      <p className="text-sm text-gray-600 mb-2">Comprovante</p>
+                      <a
+                        href={data.Comprovante.Imagem}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline"
+                      >
+                        Abrir comprovante
+                      </a>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-2">Comprovante</p>
+                      <p className="text-gray-500">
+                        Nenhum comprovante foi anexado
+                      </p>
                     </div>
                   )}
                 </div>
@@ -122,6 +134,7 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
             </div>
             <DeleteContribution
               IdContribuicao={data.IdContribuicao}
+              TipoDoacao={data.TipoDoacao}
               onDeleted={() => {
                 setIsOpen(false);
                 onDeleted?.();

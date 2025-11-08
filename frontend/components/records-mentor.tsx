@@ -9,13 +9,15 @@ interface ContributionData {
   Meta?: number;
   Gastos?: number;
   Fonte?: string;
-  Comprovante?: string;
+  Comprovante?: {
+    IdComprovante: number;
+    Imagem: string;
+  };
   IdContribuicao: number;
   DataContribuicao: string;
   NomeAlimento?: string;
   PontuacaoAlimento: number;
   PesoUnidade: number;
-  NomeTime: string,
   uuid: string;
 }
 
@@ -95,23 +97,21 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
                       </div>
 
                       <div>
-                        <p className="text-sm text-gray-600">
-                          Peso unitário:
-                        </p>
+                        <p className="text-sm text-gray-600">Peso unitário:</p>
                         <p className="font-semibold ">
                           {data.PesoUnidade} kg/g
                         </p>
                       </div>
                     </div>
                   )}
-                  
+
                   {data.Comprovante && (
                     <div>
                       <p className="text-sm text-gray-600 mb-2">Comprovantes</p>
                       <div className="flex items-start">
                         {data.Comprovante ? (
                           <img
-                            src={data.Comprovante}
+                            src={data.Comprovante.Imagem}
                             alt="Anexo de comprovante"
                             className="rounded-md w-full max-h-[300px] object-contain border border-gray-300"
                           />

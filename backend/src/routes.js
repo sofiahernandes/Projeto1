@@ -23,7 +23,7 @@ r.post("/createContribution", contributionController.createContribution);
 r.get("/contributions", contributionController.allContributions);
 r.get("/contributions/:RaUsuario", contributionController.getContributionsByRa);
 r.get("/contributions/edition/:editionNumber",contributionController.getContributionsByEdition);
-r.delete( "/deleteContribution/:IdContribuicao", contributionController.deleteContribution);
+r.delete("/deleteContribution/:TipoDoacao/:IdContribuicao", contributionController.deleteContribution);
 
 r.post("/createMentor/:RaUsuario", mentorController.createMentor);
 r.post("/loginMentor", mentorController.loginMentor);
