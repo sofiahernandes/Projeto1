@@ -124,7 +124,6 @@ export default function FoodDonations({
         const okType = ["image/png", "image/jpeg"].includes(file.type);
         const okSize = file.size <= 5 * 1024 * 1024;
          if (!okType) {
-      alert("Apenas PNG/JPEG");
       stopGif();
       return;
     }
@@ -142,8 +141,6 @@ export default function FoodDonations({
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
   
-    if (!fonte.trim()) return alert("Informe o nome do evento/doador");
-    if (quantidade === undefined) return alert("Informe o valor/quantidade");
 
     setLoading(true);
     try {

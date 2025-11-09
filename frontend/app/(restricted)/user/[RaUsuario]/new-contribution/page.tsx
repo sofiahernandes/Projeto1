@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import "@/styles/globals.css";
-
 import MenuDesktop from "@/components/menu-desktop";
 import MenuMobile from "@/components/menu-mobile";
 import DonationsForm from "@/components/donations-form";
@@ -12,12 +11,14 @@ import FoodDonations from "@/components/food-donations";
 type Tipo = "Financeira" | "Alimenticia";
 
 export default function Donations() {
-  const params = useParams() as { RaUsuario?: string };
-  const raUsuario = Number(params?.RaUsuario ?? 0);
+  const params = useParams();
+  const RaUsuario = Number(params?.RaUsuario);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [raUsuario, setRaUsuario] = useState<number>(RaUsuario);
+  const [idAlimento, setIdAlimento] = useState<number>();
   const [loading, setLoading] = useState(false);
+
   const [activeTab, setActiveTab] = useState<"finance" | "food">("finance");
   const [alimentosFromChild, setAlimentosFromChild] = useState<any[]>([]);
   const [totaisFromChild, setTotaisFromChild] = useState<{ pontos: number }>({
@@ -49,6 +50,7 @@ export default function Donations() {
     gastos?: number;
     quantidade?: number;
     pesoUnidade?: number;
+    comprovante: File | null;
   }
 
   const [alimenticia, setAlimenticia] = useState<AlimenticiaState>({
@@ -58,6 +60,7 @@ export default function Donations() {
     quantidade: undefined,
     gastos: undefined,
     pesoUnidade: 0,
+    comprovante: null,
   });
 
   const fmt = (value: number) => value.toLocaleString("pt-BR");
@@ -163,37 +166,21 @@ export default function Donations() {
       if (!res.ok)
         throw new Error(`Erro ao enviar (${res.status}): ${await res.text()}`);
 
-      alert(`Contribuição ${tipo.toLowerCase()} enviada com sucesso!`);
-
-      if (tipo === "Financeira") {
-        setFinanceira({
-          tipoDoacao: "Financeira",
-          fonte: "",
-          meta: 0,
-          gastos: 0,
-          quantidade: 0,
-          comprovante: "",
-        });
-      } else {
-        setAlimenticia({
-          tipoDoacao: "Alimenticia",
-          fonte: "",
-          meta: 0,
-          quantidade: 0,
-          pesoUnidade: 0,
-          comprovante: "",
-        });
-        setAlimentosFromChild([]);
-      }
+      setAlimenticia({
+        tipoDoacao: "Alimenticia",
+        fonte: "",
+        meta: 0,
+        quantidade: 0,
+        pesoUnidade: 0,
+        comprovante: null,
+      });
+      setAlimentosFromChild([]);
     } catch (err: any) {
-      console.error("❌ Erro ao enviar:", err);
-      alert(err?.message || "Erro ao enviar contribuição");
+      alert(err?.message || "Erro ao enviar a contribuição");
     } finally {
       setLoading(false);
     }
   }
-
-  // ===== RENDER =====
 
   return (
     <div className="container w-full">
@@ -264,28 +251,30 @@ export default function Donations() {
                 setFonte={(v) =>
                   setFinanceira({ ...financeira, fonte: v as string })
                 }
-                meta={financeira.meta}
+                Meta={financeira.meta}
                 setMeta={(v) =>
                   setFinanceira({ ...financeira, meta: Number(v) })
                 }
-                gastos={financeira.gastos}
+                Gastos={financeira.gastos}
                 setGastos={(v) =>
                   setFinanceira({ ...financeira, gastos: Number(v) })
                 }
-                quantidade={financeira.quantidade}
+                Quantidade={financeira.quantidade}
                 setQuantidade={(v) =>
                   setFinanceira({ ...financeira, quantidade: Number(v) })
                 }
-                comprovante={financeira.comprovante}
+                Comprovante={financeira.comprovante}
                 setComprovante={(v) =>
-                  setFinanceira({ ...financeira, comprovante: v as string })
+                  setFinanceira({
+                    ...financeira,
+                    comprovante: v as File | null,
+                  })
                 }
               />
 
-              <div className="mt-4 flex items-center gap-3 justify-end">
+              <div className="mt-2 flex justify-end">
                 <button
                   type="submit"
-                  onClick={() => setTipoDoacao("Financeira")}
                   disabled={loading}
                   className="w-fit px-4 py-2 rounded-[8px] bg-primary hover:bg-primary/70 text-white hover:opacity-90 disabled:opacity-50"
                 >
@@ -294,26 +283,29 @@ export default function Donations() {
               </div>
             </form>
 
-            {/* FORM ALIMENTÍCIO */}
             <form
-              onSubmit={(e) => handleSubmit(e, "Alimenticia")}
+              onSubmit={handleFoodSubmit}
               className={`${
                 activeTab === "food" ? "block" : "hidden"
-              } md:flex md:flex-col bg-secondary/20 border border-gray-100 p-6 rounded-xl shadow-md w-full h-[600px] overflow-hidden`}
+              } md:flex md:flex-col bg-[#F2D1D4] border border-gray-100 p-6 rounded-xl shadow-md w-full h-[600px]`}
             >
               <h2 className="text-2xl font-semibold mb-3">Alimentícias</h2>
 
-              <div className="min-h-0 flex-1 overflow-y-auto">
+              <div className="min-h-0 flex-1 overflow-y-auto rounded-lg">
                 <FoodDonations
                   raUsuario={raUsuario}
-                  setRaUsuario={() => {}}
+                  setRaUsuario={setRaUsuario}
                   tipoDoacao={alimenticia.tipoDoacao}
                   setTipoDoacao={() => {}}
                   pesoUnidade={alimenticia.pesoUnidade}
                   setPesoUnidade={(v) =>
                     setAlimenticia({ ...alimenticia, pesoUnidade: Number(v) })
                   }
-                  quantidade={alimenticia.quantidade}
+                  gastos={alimenticia.gastos}
+                  setGastos={(v) =>
+                    setAlimenticia({ ...alimenticia, gastos: Number(v) })
+                  }
+                  Quantidade={alimenticia.quantidade}
                   setQuantidade={(v) =>
                     setAlimenticia({ ...alimenticia, quantidade: Number(v) })
                   }
@@ -336,18 +328,20 @@ export default function Donations() {
                 />
               </div>
 
-              <div className="mt-4 flex items-center gap-3 justify-end">
-                <div className="bg-secondary/30 text-sm rounded-[20px] py-2 px-16 whitespace-nowrap w-[300px] overflow-hidden text-ellipsis">
-                  Pontuação: <span>{fmt(totaisFromChild?.pontos ?? 0)}</span>
+              <div className="mt-4 flex flex-none items-center gap-3 justify-end">
+                <div className="bg-[#DCA4A9] border text-sm rounded-lg py-2 px-16 whitespace-nowrap w-[300px] overflow-hidden text-ellipsis">
+                  Pontuação:{" "}
+                  <span>
+                    {fmt(totaisFromChild?.pontos ?? pontosCalculados)}
+                  </span>
                 </div>
 
                 <button
                   type="submit"
-                  onClick={() => setTipoDoacao("Alimenticia")}
                   disabled={loading}
-                  className="w-fit px-4 py-2 rounded-[8px] bg-primary hover:bg-primary/70 text-white hover:opacity-90 disabled:opacity-50"
+                  className="w-fit px-4 py-2 rounded-lg bg-emerald-600 text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? "Enviando..." : "Cadastrar"}
+                  {loading ? "Enviando..." : "Cadastrar Alimentícia"}
                 </button>
               </div>
             </form>
