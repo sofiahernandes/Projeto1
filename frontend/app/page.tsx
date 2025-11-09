@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, BookOpen } from "lucide-react";
 import Link from "next/link";
+import { v4 as uuidv4 } from "uuid";
 
 import Hero from "@/components/hero";
 import Footer from "@/components/footer";
 
 import { overallMetrics } from "@/lib/overall-metrics";
 import { useEffect, useState } from "react";
+import { Contribution } from "@/components/contribution-table-admin/columns";
 
 interface ContribuicaoFinanceira {
   IdContribuicaoFinanceira: number;
@@ -42,51 +44,122 @@ export default function PublicDashboard() {
   const [biggestFoodDonations, setBiggestFoodDonations] = useState<
     ContribuicaoAlimenticia[]
   >([]);
+  const [contributions, setContributions] = useState<Contribution[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchDonations = async () => {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const controller = new AbortController();
+    const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
+    let active = true;
 
-      if (!backendUrl) {
-        console.error("NEXT_PUBLIC_BACKEND_URL não está configurada");
-        return;
-      }
-
+    async function fetchContributions() {
       try {
-        // Fetch Finance Donations
-        const [financeRes, foodRes] = await Promise.all([
-          fetch(`${backendUrl}/api/contributions/financeiras`),
-          fetch(`${backendUrl}/api/contributions/alimenticias`),
-        ]);
+        setLoading(true);
+        setError(null);
+        const res = await fetch(`${backend_url}/api/contributions`, {
+          cache: "no-store",
+          signal: controller.signal,
+        });
 
-        if (!financeRes.ok || !foodRes.ok) {
-          throw new Error("Erro ao buscar dados de contribuições");
+        if (!res.ok) throw new Error("Erro ao buscar contribuições");
+        const raw = await res.json();
+        if (!active) return;
+
+        const data: Contribution[] = Array.isArray(raw)
+          ? raw.map((r: any) => {
+              const IdContribuicao = Number(
+                r.IdContribuicao ??
+                  r.IdContribuicaoFinanceira ??
+                  r.IdContribuicaoAlimenticia
+              );
+
+              const idComp =
+                r?.comprovante?.IdComprovante ?? r?.IdComprovante ?? null;
+
+              const rawImg =
+                r?.Comprovante ??
+                r?.comprovante?.Imagem ??
+                r?.Comprovante?.Imagem ??
+                r?.Imagem ??
+                r?.comprovantes?.[0]?.Imagem ??
+                r?.UrlComprovante ??
+                null;
+
+              let comprovante:
+                | { IdComprovante: number; Imagem: string }
+                | undefined;
+
+              if (rawImg && String(rawImg).trim() !== "") {
+                const s = String(rawImg).trim();
+                const isAbsolute = /^https?:\/\//i.test(s);
+                const base = (
+                  process.env.NEXT_PUBLIC_BACKEND_URL || ""
+                ).replace(/\/$/, "");
+                const finalUrl = isAbsolute
+                  ? s
+                  : `${base}/uploads/${s.replace(/^\/+/, "")}`;
+
+                comprovante = {
+                  IdComprovante: idComp != null ? Number(idComp) : 0,
+                  Imagem: finalUrl,
+                };
+              }
+
+              return {
+                RaUsuario: Number(r.RaUsuario),
+                TipoDoacao: String(r.TipoDoacao ?? ""),
+                Quantidade:
+                  r.Quantidade != null
+                    ? Number(
+                        String(r.Quantidade)
+                          .replace(/\./g, "")
+                          .replace(",", ".")
+                      )
+                    : 0,
+                Meta:
+                  r.Meta != null
+                    ? Number(
+                        String(r.Meta).replace(/\./g, "").replace(",", ".")
+                      )
+                    : undefined,
+                Gastos:
+                  r.Gastos != null
+                    ? Number(
+                        String(r.Gastos).replace(/\./g, "").replace(",", ".")
+                      )
+                    : undefined,
+                Fonte: r.Fonte ?? "",
+                comprovante,
+                IdContribuicao,
+                DataContribuicao: String(r.DataContribuicao ?? ""),
+                NomeAlimento: r.NomeAlimento ?? undefined,
+                PontuacaoAlimento: r.PontuacaoAlimento ?? undefined,
+                NomeTime: r.NomeTime ?? undefined,
+                PesoUnidade: r.PesoUnidade ?? undefined,
+                uuid: uuidv4(),
+              };
+            })
+          : [];
+        console.log(raw);
+        setContributions(data);
+      } catch (err: any) {
+        if (err?.name === "AbortError") {
+          return;
         }
-
-        const financeiras: ContribuicaoFinanceira[] = await financeRes.json();
-        const alimenticias: ContribuicaoAlimenticia[] = await foodRes.json();
-
-        // Sort and get top 6 for each
-        const topFinance = [...financeiras]
-          .sort((a, b) => b.Quantidade - a.Quantidade)
-          .slice(0, 6);
-
-        const topFood = [...alimenticias]
-          .sort(
-            (a, b) =>
-              b.Quantidade * b.PesoUnidade - a.Quantidade * a.PesoUnidade
-          )
-          .slice(0, 6);
-
-        setBiggestMoneyDonations(topFinance);
-        setBiggestFoodDonations(topFood);
-      } catch (error) {
-        console.error("Erro ao buscar doações:", error);
+        setError(err?.message ?? "Erro inesperado");
+      } finally {
+        if (active) setLoading(false);
       }
-    };
+    }
 
-    fetchDonations();
-  }, []);
+    fetchContributions();
+
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [contributions.length]);
 
   return (
     <div className="flex flex-col">
@@ -133,7 +206,7 @@ export default function PublicDashboard() {
                   </h2>
                   <div>
                     {biggestMoneyDonations.length > 0 ? (
-                      biggestMoneyDonations.map((item, index) => (
+                      biggestMoneyDonations.slice(0,6).map((item, index) => (
                         <div
                           key={index}
                           className="flex items-center justify-between p-2 rounded-lg hover:bg-secondary/20 cursor-pointer transition-colors"
@@ -161,7 +234,7 @@ export default function PublicDashboard() {
                   </h2>
                   <div>
                     {biggestFoodDonations.length > 0 ? (
-                      biggestFoodDonations.map((item, index) => (
+                      biggestFoodDonations.slice(0,6).map((item, index) => (
                         <div
                           key={index}
                           className="flex items-center justify-between p-2 rounded-lg hover:bg-secondary/20 cursor-pointer transition-colors"

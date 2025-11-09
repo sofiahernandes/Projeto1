@@ -1,17 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import { HandHeart } from "lucide-react";
 import {
   Empty,
-  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import formatBRL from "./formatBRL";
 import { v4 as uuidv4 } from "uuid";
 import { Contribution } from "./contribution-table-admin/columns";
 
