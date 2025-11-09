@@ -20,7 +20,7 @@ export default function AdminProfile() {
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const response = await fetch(`${BACKEND_URL}/api/mentor/id/${adminId}`);
+        const response = await fetch(`${BACKEND_URL}/api/mentor/${adminId}`);
         if (!response.ok) throw new Error("Erro ao buscar dados do mentor");
         const data = await response.json();
         setAdminLogado(data.EmailMentor);

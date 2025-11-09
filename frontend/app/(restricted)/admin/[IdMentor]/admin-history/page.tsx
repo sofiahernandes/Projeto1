@@ -72,8 +72,7 @@ export default function AdminPageVision() {
           )}
           <div className="flex flex-col gap-2 mx-3 text-center">
             <h3 className="text-2xl uppercase font-semibold text-primary ">
-              Histórico de contribuições da Edição Yº do Projeto Lideranças
-              Empáticas {/** definir a edição no codigo */}
+              Histórico de contribuições de todos os grupos
             </h3>
             <div className="self-end">
               <SwitchViewButton

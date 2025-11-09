@@ -52,7 +52,7 @@ export default function MenuMobileAdmin() {
       <div className="mx-auto max-w-lg px-4">
         <div
           className="
-            grid grid-cols-3 gap-2
+            grid grid-cols-2 gap-2
             p-2 
             bg-[#A6B895]
             rounded-[30px]   

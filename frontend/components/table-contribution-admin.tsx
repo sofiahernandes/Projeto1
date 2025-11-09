@@ -59,35 +59,81 @@ export default function RenderContributionTableAdmin({
         if (!active) return;
 
         const data: Contribution[] = Array.isArray(raw)
-          ? raw.map((r: any) => ({
-              RaUsuario: Number(r.RaUsuario),
-              TipoDoacao: String(r.TipoDoacao ?? ""),
-              Quantidade:
-                r.Quantidade != null
-                  ? Number(
-                      String(r.Quantidade).replace(/\./g, "").replace(",", ".")
-                    )
-                  : 0,
-              Meta:
-                r.Meta != null
-                  ? Number(String(r.Meta).replace(/\./g, "").replace(",", "."))
-                  : undefined,
-              Gastos:
-                r.Gastos != null
-                  ? Number(
-                      String(r.Gastos).replace(/\./g, "").replace(",", ".")
-                    )
-                  : undefined,
-              Fonte: r.Fonte ?? "",
-              Comprovante: r.Comprovante ?? undefined,
-              IdContribuicao: Number(r.IdContribuicao),
-              DataContribuicao: String(r.DataContribuicao ?? ""),
-              NomeAlimento: r.NomeAlimento ?? undefined,
-              PontuacaoAlimento: r.PontuacaoAlimento ?? undefined,
-              PesoUnidade: r.PesoUnidade ?? undefined,
-              NomeTime: r.NomeTime ?? undefined,
-              uuid: uuidv4(),
-            }))
+          ? raw.map((r: any) => {
+             const IdContribuicao = Number(
+                r.IdContribuicao ??
+                  r.IdContribuicaoFinanceira ??
+                  r.IdContribuicaoAlimenticia
+              );
+
+              const idComp =
+                r?.comprovante?.IdComprovante ?? 
+                r?.IdComprovante ??
+                null;
+
+              const rawImg =
+                r?.Comprovante ??
+                r?.comprovante?.Imagem ??
+                r?.Comprovante?.Imagem ??
+                r?.Imagem ??
+                r?.comprovantes?.[0]?.Imagem ??
+                r?.UrlComprovante ??
+                null;
+
+              let comprovante:
+                | { IdComprovante: number; Imagem: string }
+                | undefined;
+
+              if (rawImg && String(rawImg).trim() !== "") {
+                const s = String(rawImg).trim();
+                const isAbsolute = /^https?:\/\//i.test(s);
+                const base = (
+                  process.env.NEXT_PUBLIC_BACKEND_URL || ""
+                ).replace(/\/$/, "");
+                const finalUrl = isAbsolute
+                  ? s
+                  : `${base}/uploads/${s.replace(/^\/+/, "")}`;
+
+                comprovante = {
+                  IdComprovante: idComp != null ? Number(idComp) : 0,
+                  Imagem: finalUrl,
+                };
+              }
+
+              return {
+                RaUsuario: Number(r.RaUsuario),
+                TipoDoacao: String(r.TipoDoacao ?? ""),
+                Quantidade:
+                  r.Quantidade != null
+                    ? Number(
+                        String(r.Quantidade)
+                          .replace(/\./g, "")
+                          .replace(",", ".")
+                      )
+                    : 0,
+                Meta:
+                  r.Meta != null
+                    ? Number(
+                        String(r.Meta).replace(/\./g, "").replace(",", ".")
+                      )
+                    : undefined,
+                Gastos:
+                  r.Gastos != null
+                    ? Number(
+                        String(r.Gastos).replace(/\./g, "").replace(",", ".")
+                      )
+                    : undefined,
+                Fonte: r.Fonte ?? "",
+                comprovante,
+                IdContribuicao,
+                DataContribuicao: String(r.DataContribuicao ?? ""),
+                NomeAlimento: r.NomeAlimento ?? undefined,
+                NomeTime: r.NomeTime ?? undefined,
+                PontuacaoAlimento: r.PontuacaoAlimento ?? undefined,
+                PesoUnidade: r.PesoUnidade ?? undefined,
+                uuid: uuidv4(),
+              };
+            })
           : [];
         console.log(raw);
         setContributions(data);
@@ -100,9 +146,7 @@ export default function RenderContributionTableAdmin({
         if (active) setLoading(false);
       }
     }
-
     fetchContributions();
-
     return () => {
       active = false;
       controller.abort();

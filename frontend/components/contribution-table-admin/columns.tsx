@@ -15,19 +15,22 @@ import { MoreHorizontal, Clipboard, Eye } from "lucide-react";
 import formatBRL from "../formatBRL";
 
 export type Contribution = {
+  IdContribuicao: number;
   RaUsuario: number;
   TipoDoacao: string;
   Quantidade: number;
   Meta?: number;
   Gastos?: number;
   Fonte?: string;
-  Comprovante?: string;
-  IdContribuicao: number;
+  comprovante?: {
+    IdComprovante: number;
+    Imagem: string;
+  };
   DataContribuicao: string;
   NomeAlimento?: string;
   PontuacaoAlimento: number;
+  NomeTime: string;
   PesoUnidade: number;
-  NomeTime: string,
   uuid: string;
 };
 
@@ -223,10 +226,10 @@ export const makeContributionColumns = (
     },
   },
   {
-    accessorKey: "Comprovante",
+ id: "comprovante",
     header: "Comprovante",
     cell: ({ row }) => {
-      const url = row.original.Comprovante;
+      const url = row.original.comprovante?.Imagem;
       return url ? (
         <a
           href={url}
@@ -246,7 +249,7 @@ export const makeContributionColumns = (
     header: "",
     cell: ({ row }) => {
       const c = row.original;
-      const hasReceipt = !!c.Comprovante;
+      const hasReceipt = !!c.comprovante?.IdComprovante;
 
       return (
         <DropdownMenu>

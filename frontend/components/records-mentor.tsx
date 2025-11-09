@@ -70,7 +70,7 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
                     </p>
                   </div>
 
-                  {data.Meta !== null && (
+                  {data.Meta != null && (
                     <div>
                       <p className="text-sm text-gray-600">Meta</p>
                       <p className="font-semibold">

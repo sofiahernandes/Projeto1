@@ -6,7 +6,7 @@ const contributionController = {
       const financeContribs = await prisma.contribuicao_Financeira.findMany({
         orderBy: { DataContribuicao: "desc" },
         include: {
-          comprovante: { select: { Imagem: true } },
+        comprovante: { select: { IdComprovante: true, Imagem: true } },
           usuario: {
             include: {
               time_usuarios: {
@@ -26,6 +26,7 @@ const contributionController = {
       const foodContribs = await prisma.contribuicao_Alimenticia.findMany({
         orderBy: { DataContribuicao: "desc" },
         include: {
+        comprovante: { select: { IdComprovante: true, Imagem: true } },
           usuario: {
             include: {
               time_usuarios: {
@@ -52,6 +53,7 @@ const contributionController = {
           Gastos: c.Gastos,
           IdContribuicao: c.IdContribuicaoFinanceira,
           TipoDoacao: "Financeira",
+          Meta: c.Meta,
           DataContribuicao: c.DataContribuicao,
           Quantidade: c.Quantidade,
           Fonte: c.Fonte,
@@ -63,6 +65,7 @@ const contributionController = {
           IdContribuicao: c.IdContribuicaoAlimenticia,
           Gastos: c.Gastos,
           TipoDoacao: "Alimenticia",
+          Meta: c.Meta,
           DataContribuicao: c.DataContribuicao,
           Quantidade: c.Quantidade,
           Fonte: c.Fonte,
