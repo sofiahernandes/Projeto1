@@ -12,21 +12,17 @@ interface Properties {
   raUsuario: number;
   setRaUsuario: React.Dispatch<React.SetStateAction<number>>;
   tipoDoacao: "Financeira" | "Alimenticia";
-  setTipoDoacao: React.Dispatch<
-    React.SetStateAction<"Financeira" | "Alimenticia">
-  >;
-
-  quantidade: number;
-  setQuantidade: React.Dispatch<React.SetStateAction<number>>;
+  setTipoDoacao: React.Dispatch<React.SetStateAction<"Financeira" | "Alimenticia">>;
+  Quantidade?: number; 
+  setQuantidade: React.Dispatch<React.SetStateAction<number | undefined>>;
   fonte: string;
   setFonte: React.Dispatch<React.SetStateAction<string>>;
-  meta: number;
-  setMeta: React.Dispatch<React.SetStateAction<number>>;
-  gastos: number;
-  setGastos: React.Dispatch<React.SetStateAction<number>>;
-
-  comprovante: string;
-  setComprovante: React.Dispatch<React.SetStateAction<string>>;
+  Meta?: number;
+  setMeta: React.Dispatch<React.SetStateAction<number | undefined>>;
+  Gastos?: number;
+  setGastos: React.Dispatch<React.SetStateAction<number | undefined>>;
+  Comprovante: File | null; 
+  setComprovante: React.Dispatch<React.SetStateAction<File | null>>;
 }
 
 export default function DonationsForm({
@@ -34,36 +30,21 @@ export default function DonationsForm({
   setRaUsuario,
   tipoDoacao,
   setTipoDoacao,
-  quantidade,
+  Quantidade,
   setQuantidade,
   fonte,
   setFonte,
-  meta,
+  Meta,
   setMeta,
-  gastos,
+  Gastos,
   setGastos,
-  comprovante,
+  Comprovante,
   setComprovante,
 }: Properties) {
-  const [comprovanteFile, setComprovanteFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [picking, setPicking] = useState(false);
   const timerRef = useRef<number | null>(null);
-
-  const [metaInput, setMetaInput] = useState<string>("");
-  const [gastosInput, setGastosInput] = useState<string>("");
-  const [quantidadeInput, setQuantidadeInput] = useState<string>("");
-
-  const normalize = (s: string) => s.replace(",", ".").trim();
-  const toNumberOrNaN = (s: string) => Number(normalize(s));
-
-  useEffect(() => {
-    setMetaInput(meta ? String(meta) : "");
-    setGastosInput(gastos ? String(gastos) : "");
-    setQuantidadeInput(quantidade ? String(quantidade) : "");
-  }, [meta, gastos, quantidade]);
 
   useEffect(() => {
     const style = document.createElement("style");
@@ -109,21 +90,18 @@ export default function DonationsForm({
     const file = e.currentTarget.files?.[0] ?? null;
 
     if (!file) {
-      setComprovanteFile(null);
-      setComprovante("");
+      setComprovante(null);
       stopGif();
       return;
     }
 
-    const okType = [
-      "image/png",
-      "image/jpeg",
-      "image/jpg",
-      "application/pdf",
-    ].includes(file.type);
+    const okType = ["image/png", "image/jpeg", "image/jpg", "application/pdf"].includes(
+      file.type
+    );
     const okSize = file.size <= 5 * 1024 * 1024;
 
     if (!okType) {
+      alert("Formato inválido. Use PNG, JPEG ou PDF.");
       stopGif();
       return;
     }
@@ -133,125 +111,78 @@ export default function DonationsForm({
       return;
     }
 
-    setComprovanteFile(file);
-    setComprovante(file.name);
+    setComprovante(file);
     stopGif();
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!fonte.trim()) return alert("Informe o nome do evento/doador");
-
-    setLoading(true);
-    try {
-      const form = new FormData();
-
-      const res = await fetch("/api/createContribution", {
-        method: "POST",
-        body: form,
-      });
-
-      if (!res.ok) throw new Error(await res.text());
-
-      alert("Contribuição registrada com sucesso!");
-
-      setFonte("");
-      setQuantidade(0);
-      setMeta(0);
-      setGastos(0);
-      setComprovante("");
-      setComprovanteFile(null);
-      setQuantidadeInput("");
-      setMetaInput("");
-      setGastosInput("");
-    } catch (err: any) {
-      alert(err.message || "Erro de conexão.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col gap-4 w-full max-w-xl"
-    >
-      <div className="rounded-xl p-4">
-        <label className="block mb-1">Nome do Evento / doador</label>
+    <div className="flex flex-col gap-4 w-full">
+      <div className="rounded-xl">
+        <label className="block mb-1">Nome do Evento / Doador</label>
         <input
           type="text"
           placeholder="Ex: Instituto Alma"
           value={fonte}
           onChange={(e) => setFonte(e.currentTarget.value)}
-          className="w-[80%] bg-white border border-gray-300 rounded px-3 py-1.5"
-          required
+          className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
+
         <label className="block mb-1 mt-3">Meta</label>
         <input
-          type="text"
-          inputMode="decimal"
-          placeholder="Ex: R$100"
-          value={metaInput}
-          onChange={(e) => {
-            setMetaInput(e.currentTarget.value);
-            const num = toNumberOrNaN(e.currentTarget.value);
-            if (!isNaN(num)) setMeta(num);
-          }}
-          className="w-[80%] bg-white border border-gray-300 rounded px-3 py-1.5"
+          type="number"
+          step="0.01"
+          placeholder="Ex: 1000"
+          value={Meta === 0 || Meta === undefined ? "" : Meta}
+          onChange={(e) =>
+            setMeta(e.currentTarget.value === "" ? 0 : Number(e.currentTarget.value))
+          }
+          className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
 
         <label className="block mb-1 mt-3">Gastos</label>
         <input
-          type="text"
-          inputMode="decimal"
-          placeholder="Ex: R$100"
-          value={gastosInput}
-          onChange={(e) => {
-            setGastosInput(e.currentTarget.value);
-            const num = toNumberOrNaN(e.currentTarget.value);
-            if (!isNaN(num)) setGastos(num); //
-          }}
-          className="w-[80%] bg-white border border-gray-300 rounded px-3 py-1.5"
+          type="number"
+          step="0.01"
+          placeholder="Ex: 100"
+          value={Gastos === 0 || Gastos === undefined ? "" : Gastos}
+          onChange={(e) =>
+            setGastos(e.currentTarget.value === "" ? 0 : Number(e.currentTarget.value))
+          }
+          className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
 
         <label className="block mb-1 mt-3">Valor R$</label>
         <input
-          type="text"
-          inputMode="decimal"
-          placeholder="Ex: R$140"
-          value={quantidadeInput}
-          onChange={(e) => {
-            setQuantidadeInput(e.currentTarget.value);
-            const num = toNumberOrNaN(e.currentTarget.value);
-            if (!isNaN(num)) setQuantidade(num);
-          }}
-          className="w-[80%] bg-white border border-gray-300 rounded px-3 py-1.5"
-          required
+          type="number"
+          step="0.01"
+          placeholder="Ex: 140"
+          value={Quantidade === 0 || Quantidade === undefined ? "" : Quantidade}
+          onChange={(e) =>
+            setQuantidade(
+              e.currentTarget.value === "" ? 0 : Number(e.currentTarget.value)
+            )
+          }
+          className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
 
-        <label className="block mb-1 mt-8">Comprovante (PNG/JPEG)</label>
+        <label className="block mb-1 mt-8">Comprovante (PNG/JPEG/JPG/PDF)</label>
 
-        {/* Input real (escondido) */}
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/png,image/jpeg"
+          accept="image/png,image/jpeg,image/jpg,application/pdf"
           onChange={handleFileChange}
           className="hidden"
           aria-hidden="true"
           tabIndex={-1}
         />
 
-        {/* Botão com ícone/gif */}
         <div className="flex items-center">
           <button
             type="button"
             onClick={handlePickClick}
             onMouseDown={(e) => e.currentTarget.classList.add("animate-pop")}
-            onAnimationEnd={(e) =>
-              e.currentTarget.classList.remove("animate-pop")
-            }
+            onAnimationEnd={(e) => e.currentTarget.classList.remove("animate-pop")}
             className="inline-flex items-center justify-center h-14 w-18 rounded-lg bg-white transition"
             disabled={loading}
             aria-label="Selecionar comprovante"
@@ -268,12 +199,10 @@ export default function DonationsForm({
           </button>
 
           <span className="ml-3 text-sm text-gray-700">
-            {comprovante
-              ? `Selecionado: ${comprovante}`
-              : "Nenhum arquivo escolhido"}
+            {Comprovante ? `Selecionado: ${Comprovante.name}` : "Nenhum arquivo escolhido"}
           </span>
         </div>
       </div>
-    </form>
+    </div>
   );
 }

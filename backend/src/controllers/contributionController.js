@@ -7,7 +7,7 @@ const contributionController = {
       const financeContribs = await prisma.contribuicao_Financeira.findMany({
         orderBy: { DataContribuicao: "desc" },
         include: {
-        comprovante: { select: { IdComprovante: true, Imagem: true } },
+          comprovante: { select: { IdComprovante: true, Imagem: true } },
           usuario: {
             include: {
               time_usuarios: {
@@ -27,7 +27,7 @@ const contributionController = {
       const foodContribs = await prisma.contribuicao_Alimenticia.findMany({
         orderBy: { DataContribuicao: "desc" },
         include: {
-        comprovante: { select: { IdComprovante: true, Imagem: true } },
+          comprovante: { select: { IdComprovante: true, Imagem: true } },
           usuario: {
             include: {
               time_usuarios: {
@@ -285,15 +285,53 @@ const contributionController = {
           data: { ...resultado, TipoDoacao: "Financeira" },
         });
       } else if (TipoDoacao === "Alimenticia") {
-        if (
-          !Quantidade ||
-          !PesoUnidade ||
-          !alimentos ||
-          alimentos.length === 0
-        ) {
+        if (!PesoUnidade || !alimentos || alimentos.length === 0) {
           return res.status(400).json({
             error:
-              "Quantidade, PesoUnidade e alimentos são obrigatórios para doação alimentícia.",
+              "PesoUnidade e alimentos são obrigatórios para doação alimentícia.",
+          });
+        }
+
+        const alimentosValidos = alimentos.filter(
+          (a) => Number(a.quantidade) > 0 && Number(a.IdAlimento) > 0
+        );
+
+        if (alimentosValidos.length === 0) {
+          return res.status(400).json({
+            error:
+              "É necessário adicionar pelo menos um alimento com quantidade.",
+          });
+        }
+
+        const quantidadeTotal = alimentosValidos.reduce(
+          (acc, a) => acc + (Number(a.quantidade) || 0),
+          0
+        );
+
+        const alimentoIds = alimentosValidos.map((a) => Number(a.IdAlimento));
+
+        const invalidIds = alimentoIds.filter((id) => !id || isNaN(id));
+        if (invalidIds.length > 0) {
+          return res.status(400).json({
+            error: "IDs de alimentos inválidos detectados.",
+          });
+        }
+
+        const existingAlimentos = await prisma.alimento.findMany({
+          where: { IdAlimento: { in: alimentoIds } },
+          select: { IdAlimento: true },
+        });
+
+        const existingIds = existingAlimentos.map((a) => a.IdAlimento);
+        const missingIds = alimentoIds.filter(
+          (id) => !existingIds.includes(id)
+        );
+
+        if (missingIds.length > 0) {
+          return res.status(400).json({
+            error: `Alimentos não encontrados no sistema: ${missingIds.join(
+              ", "
+            )}.`,
           });
         }
 
@@ -303,39 +341,21 @@ const contributionController = {
               uuid: uuidv4(),
               RaUsuario: Number(RaUsuario),
               TipoDoacao,
-              Quantidade: Number(Quantidade),
+              Quantidade: quantidadeTotal,
               PesoUnidade: Number(PesoUnidade),
               Gastos: Gastos ? Number(Gastos) : 0,
               Meta: Meta ? Number(Meta) : null,
               Fonte: Fonte || null,
-              IdAlimento:
-                alimentos.length === 1 ? Number(alimentos[0].IdAlimento) : null,
+              IdAlimento: alimentosValidos.length === 1 ? alimentoIds[0] : null,
             },
           });
 
-          if (alimentos && alimentos.length > 0) {
-            console.log(
-              ` Criando ${alimentos.length} relações com alimentos...`
-            );
-
-            await Promise.all(
-              alimentos.map((alimento) => {
-                console.log("Criando relação:", {
-                  IdContribuicaoAlimenticia:
-                    contribuicao.IdContribuicaoAlimenticia,
-                  IdAlimento: Number(alimento.IdAlimento),
-                });
-
-                return tx.contribuicao_Alimento.create({
-                  data: {
-                    IdContribuicaoAlimenticia:
-                      contribuicao.IdContribuicaoAlimenticia,
-                    IdAlimento: Number(alimento.IdAlimento),
-                  },
-                });
-              })
-            );
-          }
+          await tx.contribuicao_Alimento.createMany({
+            data: alimentosValidos.map((alimento) => ({
+              IdContribuicaoAlimenticia: contribuicao.IdContribuicaoAlimenticia,
+              IdAlimento: Number(alimento.IdAlimento),
+            })),
+          });
 
           return contribuicao;
         });
@@ -354,13 +374,10 @@ const contributionController = {
                 },
               },
               alimento: true,
-              contribuicoes_alimento: {
-                include: {
-                  alimento: true,
-                },
-              },
+              contribuicoes_alimento: { include: { alimento: true } },
             },
           });
+
         return res.status(201).json({
           message: "Contribuição alimentícia criada com sucesso!",
           data: contribuicaoCompleta,
