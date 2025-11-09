@@ -1,4 +1,5 @@
 import { prisma } from "../../prisma/lib/prisma.js";
+import { v4 as uuidv4 } from "uuid";
 
 const contributionController = {
   allContributions: async (_, res) => {
@@ -219,7 +220,9 @@ const contributionController = {
       Gastos,
       Fonte,
       PesoUnidade,
-      NomeAlimento,
+      alimentos,
+      uuid,
+      Imagem,
     } = req.body;
 
     if (!RaUsuario || !TipoDoacao) {
@@ -238,21 +241,26 @@ const contributionController = {
         }
 
         const resultado = await prisma.$transaction(async (tx) => {
-          const comprovante = await tx.comprovante.create({
-            data: {
-              Imagem: "",
-            },
-          });
+          let comprovanteId = null;
+          if (Imagem) {
+            const comprovante = await tx.comprovante.create({
+              data: {
+                Imagem: Imagem,
+              },
+            });
+            comprovanteId = comprovante.IdComprovante;
+          }
 
           const contribuicao = await tx.contribuicao_Financeira.create({
             data: {
+              uuid: uuidv4(),
               RaUsuario: Number(RaUsuario),
               TipoDoacao,
               Quantidade: Number(Quantidade),
               Meta: Meta ? Number(Meta) : null,
               Gastos: Number(Gastos),
               Fonte,
-              IdComprovante: comprovante.IdComprovante,
+              IdComprovante: comprovanteId,
             },
             include: {
               usuario: {
@@ -277,8 +285,8 @@ const contributionController = {
         if (
           !Quantidade ||
           !PesoUnidade ||
-          !NomeAlimento ||
-          NomeAlimento.length === 0
+          !alimentos ||
+          alimentos.length === 0
         ) {
           return res.status(400).json({
             error:
@@ -289,6 +297,7 @@ const contributionController = {
         const resultado = await prisma.$transaction(async (tx) => {
           const contribuicao = await tx.contribuicao_Alimenticia.create({
             data: {
+              uuid: uuidv4(),
               RaUsuario: Number(RaUsuario),
               TipoDoacao,
               Quantidade: Number(Quantidade),
@@ -297,23 +306,31 @@ const contributionController = {
               Meta: Meta ? Number(Meta) : null,
               Fonte: Fonte || null,
               IdAlimento:
-                NomeAlimento.length === 1
-                  ? Number(NomeAlimento[0].IdAlimento)
-                  : null,
+                alimentos.length === 1 ? Number(alimentos[0].IdAlimento) : null,
             },
           });
 
-          if (NomeAlimento && NomeAlimento.length > 0) {
+          if (alimentos && alimentos.length > 0) {
+            console.log(
+              ` Criando ${alimentos.length} relações com alimentos...`
+            );
+
             await Promise.all(
-              NomeAlimento.map((alimento) =>
-                tx.contribuicoes_alimento.create({
+              alimentos.map((alimento) => {
+                console.log("Criando relação:", {
+                  IdContribuicaoAlimenticia:
+                    contribuicao.IdContribuicaoAlimenticia,
+                  IdAlimento: Number(alimento.IdAlimento),
+                });
+
+                return tx.contribuicao_Alimento.create({
                   data: {
                     IdContribuicaoAlimenticia:
                       contribuicao.IdContribuicaoAlimenticia,
                     IdAlimento: Number(alimento.IdAlimento),
                   },
-                })
-              )
+                });
+              })
             );
           }
 
@@ -326,7 +343,14 @@ const contributionController = {
               IdContribuicaoAlimenticia: resultado.IdContribuicaoAlimenticia,
             },
             include: {
-              usuario: true,
+              usuario: {
+                select: {
+                  RaUsuario: true,
+                  NomeUsuario: true,
+                  EmailUsuario: true,
+                },
+              },
+              alimento: true,
               contribuicoes_alimento: {
                 include: {
                   alimento: true,
@@ -334,7 +358,6 @@ const contributionController = {
               },
             },
           });
-
         return res.status(201).json({
           message: "Contribuição alimentícia criada com sucesso!",
           data: contribuicaoCompleta,
@@ -351,6 +374,7 @@ const contributionController = {
       });
     }
   },
+
   deleteContribution: async (req, res) => {
     const { TipoDoacao, IdContribuicao } = req.params;
 
