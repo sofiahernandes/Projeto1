@@ -67,6 +67,7 @@ export default function PublicReports() {
 
   const editions = generateEditions();
 
+   const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
   // Fetch contributions filtered by edition
   useEffect(() => {
     async function fetchContributions() {
@@ -74,7 +75,7 @@ export default function PublicReports() {
       setError(null);
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/contributions/edition/${edition}`
+          `${backend_url}/api/contributions/edition/${edition}`
         );
         if (!res.ok) throw new Error("Erro ao buscar contribuições");
         const data = await res.json();
@@ -105,7 +106,7 @@ export default function PublicReports() {
               <EmptyTitle>Nenhuma contribuição por enquanto!</EmptyTitle>
               <EmptyDescription>
                 Ainda não foi arrecadada nenhuma doação. Quando os alunos
-                adicionarem contribuições ao Arkana, aparecerão aqui!
+                adicionarem contribuições ao Arkana, aparecerão aqui.
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent />
