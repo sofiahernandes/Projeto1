@@ -131,11 +131,10 @@ export default function UserProfile() {
       >
         <MenuDesktop
           menuOpen={menuOpen}
-          RaUsuario={team?.RaUsuario}
           setMenuOpen={(arg: SetStateAction<boolean>) => setMenuOpen(arg)}
         />
 
-        <MenuMobile RaUsuario={team?.RaUsuario} />
+        <MenuMobile />
 
         <section className="w-[90%] md:max-w-[1300px] md:mt-0 grid grid-cols-1 md:grid-cols-2 h-150  my-5 mb-10 gap-2">
           <div className="flex flex-col gap-3 p-5 border rounded-xl border-gray-200 shadow-xl">

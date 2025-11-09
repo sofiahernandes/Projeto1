@@ -12,10 +12,11 @@ type Tipo = "Financeira" | "Alimenticia";
 
 export default function Donations() {
   const params = useParams();
-  const RaUsuario = Number(params.RaUsuario);
+  const RaUsuario = Number(params?.RaUsuario);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [raUsuario, setRaUsuario] = useState<number>(RaUsuario);
+  const [idAlimento, setIdAlimento] = useState<number>();
   const [loading, setLoading] = useState(false);
 
   const [activeTab, setActiveTab] = useState<"finance" | "food">("finance");
@@ -49,6 +50,7 @@ export default function Donations() {
     gastos?: number;
     quantidade?: number;
     pesoUnidade?: number;
+    comprovante: File | null;
   }
 
   const [alimenticia, setAlimenticia] = useState<AlimenticiaState>({
@@ -58,6 +60,7 @@ export default function Donations() {
     quantidade: undefined,
     gastos: undefined,
     pesoUnidade: 0,
+    comprovante: null,
   });
 
   const fmt = (value: number) => value.toLocaleString("pt-BR");
@@ -160,24 +163,18 @@ export default function Donations() {
         body: JSON.stringify(body),
       });
 
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Erro ao enviar a contribuição");
-      }
-
-      const data = await res.json();
-      alert(data.message || "Contribuição alimentícia enviada com sucesso!");
+      if (!res.ok)
+        throw new Error(`Erro ao enviar (${res.status}): ${await res.text()}`);
 
       setAlimenticia({
         tipoDoacao: "Alimenticia",
         fonte: "",
-        meta: undefined,
-        gastos: undefined,
-        quantidade: undefined,
+        meta: 0,
+        quantidade: 0,
         pesoUnidade: 0,
+        comprovante: null,
       });
       setAlimentosFromChild([]);
-      setTotaisFromChild({ pontos: 0 });
     } catch (err: any) {
       alert(err?.message || "Erro ao enviar a contribuição");
     } finally {
@@ -189,7 +186,7 @@ export default function Donations() {
     <div className="container w-full">
       <header className="w-full">
         <button
-          className={`open-menu ${menuOpen ? "menu-icon hidden" : "menu-icon"}`}
+          className={`open-menu ${menuOpen ? "hidden" : "menu-icon"}`}
           onClick={() => setMenuOpen(true)}
         >
           ☰
@@ -197,20 +194,20 @@ export default function Donations() {
 
         <div className="sticky top-0 left-0 right-0 z-10 md:static bg-white/80 supports-[backdrop-filter]:bg-white/60">
           <div className="mx-auto max-w-4xl px-14 py-5">
-            <h1 className="text-[#A6B895] tracking-tight text-center text-[32px]">
+            <h1 className="text-primary tracking-tight text-center text-[32px]">
               Adicionar Contribuição
             </h1>
           </div>
 
           <div className="md:hidden w-full flex justify-center">
-            <div className="inline-grid grid-cols-2 w-full max-w-xs rounded-full border border-[#A6B895] bg-white p-0.5 shadow-sm">
+            <div className="inline-grid grid-cols-2 w-full max-w-xs rounded-full border border-gray bg-white p-1 shadow-sm">
               <button
                 type="button"
                 onClick={() => setActiveTab("finance")}
                 className={`rounded-full py-3 text-sm font-medium ${
                   activeTab === "finance"
-                    ? "bg-[#A6B895] text-white"
-                    : "text-black hover:bg-gray-100"
+                    ? "bg-primary text-white"
+                    : "text-black"
                 }`}
               >
                 Financeira
@@ -254,19 +251,19 @@ export default function Donations() {
                 setFonte={(v) =>
                   setFinanceira({ ...financeira, fonte: v as string })
                 }
-                meta={financeira.meta}
+                Meta={financeira.meta}
                 setMeta={(v) =>
                   setFinanceira({ ...financeira, meta: Number(v) })
                 }
-                gastos={financeira.gastos}
+                Gastos={financeira.gastos}
                 setGastos={(v) =>
                   setFinanceira({ ...financeira, gastos: Number(v) })
                 }
-                quantidade={financeira.quantidade}
+                Quantidade={financeira.quantidade}
                 setQuantidade={(v) =>
                   setFinanceira({ ...financeira, quantidade: Number(v) })
                 }
-                comprovante={financeira.comprovante}
+                Comprovante={financeira.comprovante}
                 setComprovante={(v) =>
                   setFinanceira({
                     ...financeira,
@@ -279,9 +276,9 @@ export default function Donations() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-10 py-2 rounded-lg bg-[#B27477] hover:bg-[#9B5B60] text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-fit px-4 py-2 rounded-[8px] bg-primary hover:bg-primary/70 text-white hover:opacity-90 disabled:opacity-50"
                 >
-                  {loading ? "Cadastrando..." : "Cadastrar Financeira"}
+                  {loading ? "Enviando..." : "Cadastrar"}
                 </button>
               </div>
             </form>
@@ -308,7 +305,7 @@ export default function Donations() {
                   setGastos={(v) =>
                     setAlimenticia({ ...alimenticia, gastos: Number(v) })
                   }
-                  quantidade={alimenticia.quantidade}
+                  Quantidade={alimenticia.quantidade}
                   setQuantidade={(v) =>
                     setAlimenticia({ ...alimenticia, quantidade: Number(v) })
                   }
@@ -320,8 +317,14 @@ export default function Donations() {
                   setFonte={(v) =>
                     setAlimenticia({ ...alimenticia, fonte: v as string })
                   }
-                  onAlimentosChange={setAlimentosFromChild}
+                  comprovante={alimenticia.comprovante}
+                  setComprovante={(v) =>
+                    setAlimenticia({ ...alimenticia, comprovante: v as string })
+                  }
                   onTotaisChange={setTotaisFromChild}
+                  idAlimento={idAlimento ?? 0}
+                  setIdAlimento={setIdAlimento}
+                  onAlimentosChange={setAlimentosFromChild}
                 />
               </div>
 

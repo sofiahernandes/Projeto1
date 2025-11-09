@@ -23,7 +23,8 @@
 <br/>
 
 # Entregas
-- [Banner](https://github.com/2025-2-MCC2/Projeto1/blob/main/entregas)
+- [Banner Apresentação](https://github.com/2025-2-MCC2/Projeto1/blob/main/entregas/Banner_FECAP_CCOMP2MA_Arkana.md)
+- [DERS - Documento Especificação de Requisitos](https://github.com/2025-2-MCC2/Projeto1/blob/main/entregas/DERS.md)
 
 | Disciplina | Entrega 1 | Entrega 2 |  
 | :-------: | :------: | :-------: |

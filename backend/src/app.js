@@ -11,14 +11,16 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+/* ------------------------- 🔹 MIDDLEWARES ------------------------- */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || true, // em dev, pode deixar true
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
     allowedHeaders: ["Content-Type", "Authorization"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    credentials: true
+    credentials: true,
   })
 );
 
@@ -27,15 +29,18 @@ app.use((req, res, next) => {
   next();
 });
 
-// Servir /uploads (arquivos salvos pelo Multer)
-app.use("/uploads", express.static(path.resolve("src", "uploads")));
+/* ------------------------- 🔹 ARQUIVOS ESTÁTICOS ------------------------- */
+// ✅ Servir corretamente a pasta uploads (garante compatibilidade no build)
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Health simples do app
+/* ------------------------- 🔹 ROTAS ------------------------- */
 app.get("/health", (_, res) => {
   res.json({ ok: true, server: "up" });
 });
 
 app.use("/api", routes);
+
+/* ------------------------- 🔹 ERROS DE UPLOAD ------------------------- */
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     if (err.code === "LIMIT_FILE_SIZE") {
@@ -43,16 +48,17 @@ app.use((err, req, res, next) => {
     }
     return res.status(400).json({ error: `Erro no upload: ${err.code}` });
   }
+
   if (err && err.message === "Arquivo Inválido") {
     return res.status(415).json({ error: "Tipo de arquivo não suportado. Envie PNG/JPG." });
   }
+
   next(err);
 });
 
-// 404 handler (depois das rotas)
+/* ------------------------- 🔹 404 HANDLER ------------------------- */
 app.use((req, res) => {
   res.status(404).json({ error: "Rota não encontrada" });
 });
-
 
 export default app;

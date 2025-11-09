@@ -25,9 +25,6 @@ export default function AdminPageVision() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [selectedContribution, setSelectedContribution] =
     React.useState<any>(null);
-  const params = useParams();
-  const adminId = parseInt(params.IdMentor as string, 10);
-
 
   return (
     <div className="min-h-dvh w-full overflow-y-hidden overflow-x-hidden flex flex-col bg-[#f4f3f1]/60">
