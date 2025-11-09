@@ -18,11 +18,13 @@ import { Contribution } from "./contribution-table-admin/columns";
 interface RenderContributionProps {
   onSelect?: (contribution: Contribution) => void;
   refreshKey?: number;
+  isPublicReport?: boolean;
 }
 
 export default function RenderContributionCardAdmin({
   onSelect,
   refreshKey = 0,
+  isPublicReport = false,
 }: RenderContributionProps) {
   const [contributions, setContributions] = useState<Contribution[]>([]);
   const [loading, setLoading] = useState(false);
@@ -54,9 +56,9 @@ export default function RenderContributionCardAdmin({
                   r.IdContribuicaoAlimenticia
               );
 
-            const idComp =
+              const idComp =
                 r?.comprovante?.IdComprovante ?? 
-                r?.IdComprovante ??
+                r?.IdComprovante ?? 
                 null;
 
               const rawImg =
@@ -117,7 +119,7 @@ export default function RenderContributionCardAdmin({
                 DataContribuicao: String(r.DataContribuicao ?? ""),
                 NomeAlimento: r.NomeAlimento ?? undefined,
                 PontuacaoAlimento: r.PontuacaoAlimento ?? undefined,
-                NomeTime: r.NomeTime ?? undefined, 
+                NomeTime: r.NomeTime ?? undefined,
                 PesoUnidade: r.PesoUnidade ?? undefined,
                 uuid: uuidv4(),
               };
@@ -163,27 +165,62 @@ export default function RenderContributionCardAdmin({
   }
 
   return (
-    <div className="mx-4 mb-15 grid grid-cols-1 md:grid-cols-3 gap-4.5 rounded-sm p-2.5">
-      {contributions.map((c) => (
-        <div
-          key={c.uuid}
-          className="p-3 rounded-xl bg-[#f4f3f1]/80 hover:bg-[#cc3983]/15 border border-gray-200 shadow-md  hover:shadow-2xl transition-shadow duration-300 cursor-pointer"
-          onClick={() => onSelect?.(c)}
-        >
-          <p className="font-semibold text-lg ">{c.NomeTime}</p>
-          <p className="text-base text-gray-950">
-            Data: {new Date(c.DataContribuicao).toLocaleDateString("pt-BR")}
-          </p>
-          <p className="text-base text-gray-950">Fonte da doação: {c.Fonte}</p>
-          <p className="text-base text-gray-950">Ra do Aluno: {c.RaUsuario}</p>
-          <p className="text-base text-gray-800">
-            Tipo de Doação: {c.TipoDoacao}
-          </p>
-          <p className="text-base text-gray-800">
-            Quantidade: {Intl.NumberFormat("pt-BR").format(c.Quantidade)}
-          </p>
+    <>
+      {isPublicReport ? (
+        <div className="md:mx-4 mb-15 grid grid-cols-1 md:grid-cols-3 gap-4.5 rounded-sm md:p-2.5">
+          {contributions.map((c) => (
+            <div
+              key={c.uuid}
+              className="p-3 rounded-xl hover:bg-secondary/5 hover:text-secondary border border-gray-200 shadow-md transition-shadow duration-300 cursor-pointer"
+              onClick={() => onSelect?.(c)}
+            >
+              <p className="font-semibold text-lg ">{c.NomeTime}</p>
+              <p className="text-base text-gray-950">
+                Data: {new Date(c.DataContribuicao).toLocaleDateString("pt-BR")}
+              </p>
+              <p className="text-base text-gray-950">
+                Fonte da doação: {c.Fonte}
+              </p>
+              <p className="text-base text-gray-950">
+                Ra do Aluno: {c.RaUsuario}
+              </p>
+              <p className="text-base text-gray-800">
+                Tipo de Doação: {c.TipoDoacao}
+              </p>
+              <p className="text-base text-gray-800">
+                Quantidade: {Intl.NumberFormat("pt-BR").format(c.Quantidade)}
+              </p>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
+      ) : (
+        <div className="mx-4 mb-15 grid grid-cols-1 md:grid-cols-3 gap-4.5 rounded-sm p-2.5">
+          {contributions.map((c) => (
+            <div
+              key={c.uuid}
+              className="p-3 rounded-xl hover:bg-[#cc3983]/15 border border-gray-200 shadow-md  hover:shadow-2xl transition-shadow duration-300 cursor-pointer"
+              onClick={() => onSelect?.(c)}
+            >
+              <p className="font-semibold text-lg ">{c.NomeTime}</p>
+              <p className="text-base text-gray-950">
+                Data: {new Date(c.DataContribuicao).toLocaleDateString("pt-BR")}
+              </p>
+              <p className="text-base text-gray-950">
+                Fonte da doação: {c.Fonte}
+              </p>
+              <p className="text-base text-gray-950">
+                Ra do Aluno: {c.RaUsuario}
+              </p>
+              <p className="text-base text-gray-800">
+                Tipo de Doação: {c.TipoDoacao}
+              </p>
+              <p className="text-base text-gray-800">
+                Quantidade: {Intl.NumberFormat("pt-BR").format(c.Quantidade)}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
   );
 }
