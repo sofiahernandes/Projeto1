@@ -4,17 +4,18 @@ const prisma = new PrismaClient();
 async function tryConnection() {
   try {
     
-    const Alimento = await prisma.alimento.create({
+    const Admin = await prisma.mentor.create({
       data: {
-        NomeAlimento: "Ervilha enlatado",
-        Pontuacao: null
+        EmailMentor: "",
+        SenhaMentor: "",
+        IsAdmin: "",
       },
     });
 
-    console.log("Alimento criado:", Alimento);
+    console.log("Mentor criado:", Admin);
 
-    const alimento = await prisma.alimento.findMany();
-    console.log("Alimentos no banco:", Alimento);
+    const admin = await prisma.mentor.findMany();
+    console.log("Mentores no banco:", admin);
   } catch (err) {
     console.error("Erro de conexão:", err.message);
   } finally {
