@@ -10,7 +10,10 @@ interface ContributionData {
   Meta?: number;
   Gastos?: number;
   Fonte?: string;
-  Comprovante?: string;
+  comprovante?: {
+    IdComprovante: number;
+    Imagem: string;
+  };
   IdContribuicao: number;
   DataContribuicao: string;
   NomeAlimento?: string;
@@ -105,16 +108,24 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
                     </div>
                   )}
 
-                  {data.Comprovante !== null && (
+                  {data.comprovante?.Imagem? (
                     <div>
-                      <p className="text-sm text-gray-600 mb-2">Comprovantes</p>
-                      <div className="flex items-start">
-                        <img
-                          src={data.Comprovante || placeholderComprovante.src}
-                          alt="Anexo de comprovante"
-                          className="rounded-md aspect-square max-h-[45px] object-contain mb-6"
-                        />
-                      </div>
+                      <p className="text-sm text-gray-600 mb-2">Comprovante da doação</p>
+                      <a
+                        href={data.comprovante.Imagem}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-black-600 underline"
+                      > Abrir comprovante
+                      </a>
+                    </div>
+                  ) : (
+                    <div>
+                      <img
+                            src={placeholderComprovante.src}
+                            alt="Sem comprovantes anexados"
+                            className="rounded-md aspect-square max-h-[45px] object-contain border border-gray-200 mb-6"
+                          />
                     </div>
                   )}
                 </div>
@@ -122,6 +133,7 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
             </div>
             <DeleteContribution
               IdContribuicao={data.IdContribuicao}
+              TipoDoacao={data.TipoDoacao}
               onDeleted={() => {
                 setIsOpen(false);
                 onDeleted?.();

@@ -26,7 +26,7 @@ r.post("/createContribution", contributionController.createContribution);
 r.get("/contributions", contributionController.allContributions);
 r.get("/contributions/:RaUsuario", contributionController.getContributionsByRa);
 r.get("/contributions/edition/:editionNumber",contributionController.getContributionsByEdition);
-r.delete( "/deleteContribution/:IdContribuicao", contributionController.deleteContribution);
+r.delete("/contribution/:TipoDoacao/:IdContribuicao", contributionController.deleteContribution);
 
 /* ------------------------- 🔹 MENTORES ------------------------- */
 r.post("/createMentor/:RaUsuario", mentorController.createMentor);

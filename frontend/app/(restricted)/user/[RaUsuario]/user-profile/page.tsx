@@ -2,13 +2,11 @@
 
 import React, { SetStateAction, useEffect } from "react";
 import { useParams } from "next/navigation";
-
+import Arkana from "@/assets/Arkana.png";
 import MenuMobile from "@/components/menu-mobile";
 import MenuDesktop from "@/components/menu-desktop";
 import { fetchData } from "@/hooks/fetch-user-profile";
-import { Chart } from "@/components/area-chart";
 import { Contribution } from "@/components/contribution-table/columns";
-
 
 export default function UserProfile() {
   const params = useParams();
@@ -31,17 +29,6 @@ export default function UserProfile() {
     };
     fetchTeamData();
 
-    // const allContributions = [
-    //   { month: "January", desktop: 10 },
-    //   { month: "February", desktop: 20 },
-    //   { month: "March", desktop: 30 },
-    //   { month: "April", desktop: 50 },
-    //   { month: "May", desktop: 30 },
-    //   { month: "June", desktop: 10 },
-    // ];
-
-    // setContributions(allContributions);
-
     const fetchContributions = async () => {
       try {
         const res = await fetch(
@@ -51,12 +38,12 @@ export default function UserProfile() {
         if (!res.ok) {
           const errorData = await res.json();
           console.warn("Erro ao buscar contribuições:", errorData.error);
-          return; 
+          return;
         }
 
         const contributions = await res.json();
-        
-    console.log("Contribuições recebidas:", contributions);
+
+        console.log("Contribuições recebidas:", contributions);
 
         setContributions(contributions);
       } catch (err) {
@@ -149,19 +136,19 @@ export default function UserProfile() {
 
         <MenuMobile />
 
-        <section className="w-[90%] md:max-w-[1300px] md:mt-0 grid grid-cols-1 md:grid-cols-2 h-150 my-5 mb-10 gap-2">
+        <section className="w-[90%] md:max-w-[1300px] md:mt-0 grid grid-cols-1 md:grid-cols-2 h-150  my-5 mb-10 gap-2">
           <div className="flex flex-col gap-3 p-5 border rounded-xl border-gray-200 shadow-xl">
             <h3 className="text-3xl pt-5 uppercase font-semibold text-primary">
               {team?.NomeTime ? team?.NomeTime : "Nome do time aparecerá aqui"}
             </h3>
             <h4 className="mb-3 text-xl text-black">
-              Turma {user?.TurmaUsuario ? user?.TurmaUsuario : "X"} | Yº Edição
+              Turma {user?.TurmaUsuario ? user?.TurmaUsuario : "X"}
             </h4>
 
             <p className="font-semibold">Email Mentor</p>
-            <div className="block min-h-9 border rounded-md border-gray-400 px-2 w-full text-black placeholder-gray-400 pt-1 text-base focus:outline-none">
+            <div className="block min-h-9 border rounded-md border-gray-400 px-2 w-full text-black placeholder-gray-400 pt-1 text-base focus:outline-none overflow-hidden">
               {team?.IdMentor ? (
-                <p>{emailMentor}</p>
+                <p className="break-words break-all">{emailMentor}</p>
               ) : (
                 <form onSubmit={handleSubmit} className="flex justify-between">
                   <input
@@ -186,7 +173,7 @@ export default function UserProfile() {
             </div>
 
             <p className="font-semibold">Aluno-Mentor</p>
-            <p className="block w-full min-h-9 border rounded-md border-gray-400 px-2 text-black placeholder-gray-400 py-1 text-base focus:outline-none">
+            <p className="block w-full min-h-9 border rounded-md border-gray-400 px-2 text-black placeholder-gray-400 py-1 text-base focus:outline-none overflow-hidden break-words break-all">
               {user?.RaUsuario
                 ? user?.NomeUsuario
                 : "Nome do Usuario aparecerá aqui"}
@@ -195,38 +182,28 @@ export default function UserProfile() {
             <div className="border border-gray-400 rounded-md h-full py-1 px-2 max-w-50">
               {team?.RaAlunos?.length > 0
                 ? team.RaAlunos.map((RA: number, index: number) => (
-                    <p key={index} className=" mb-1 font-medium">{RA}</p>
+                    <p key={index} className=" mb-1 font-medium">
+                      {RA}
+                    </p>
                   ))
                 : "RAs dos alunos aparecerão aqui"}
             </div>
           </div>
 
-         
-
-          {/* <div className="flex flex-col gap-2 mx-3">
-            <p className="font-semibold">Pontuação por Alimento</p>
-            <div className="block w-full h-65 md:h-full border rounded-md border-gray-400 px-2 py-1 mt-1 text-black placeholder-red-400 text-base focus:outline-none">
-              {/* {team?.RaAlunos
-                ? team?.RaAlunos.split(", ").map((raAluno: string) => (
-                    <p className="p-2">{raAluno}</p>
-                  ))
-                : "*Adicionar lógica de pontuação*"} 
-               
-            </div>
-          </div> 
-
-          <div className="flex flex-col justify-between gap-2 mx-3">
-            <div className="h-fit md:h-50 items-center w-full rounded-md my-9">
-             <Chart chartData={contributions} /> 
-            </div>
-            <div className="h-[150px] bg-primary items-center w-full rounded-md mb-30 md:mb-0 md:mt-25"></div>
-          </div> */}
-          <div className="bg-secondary/40 min-h-70 rounded-xl border border-gray-200 shadow-xl">
-            <p className=" text-white font-extrabold text-4xl">
-              {" "}
-              Arkana +
-              <br /> Lideranças Empáticas{" "}
+          <div
+            className="bg-secondary/40 rounded-xl border border-gray-200 shadow-xl p-10
+                flex flex-col items-center justify-center text-center gap-4 overflow-hidden min-h-[280px] md:min-h-[360px]"
+          >
+            <p className="text-white font-extrabold text-3xl md:text-4xl leading-tight break-words">
+              Arkana +<br />
+              Lideranças Empáticas
             </p>
+
+            <img
+              src={Arkana.src}
+              alt="logo lideranças empáticas"
+              className="max-w-full h-auto w-[290px] md:w-[400px] object-contain"
+            />
           </div>
         </section>
       </div>

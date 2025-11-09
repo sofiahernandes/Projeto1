@@ -9,13 +9,15 @@ interface ContributionData {
   Meta?: number;
   Gastos?: number;
   Fonte?: string;
-  Comprovante?: string;
+  comprovante?: {
+    IdComprovante: number;
+    Imagem: string;
+  };
   IdContribuicao: number;
   DataContribuicao: string;
   NomeAlimento?: string;
   PontuacaoAlimento: number;
   PesoUnidade: number;
-  NomeTime: string,
   uuid: string;
 }
 
@@ -43,8 +45,8 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
           <div className="">
             <div>
               <h2 className="text-xl font-semibold">{data.Fonte}</h2>
-              <div>
-                <p className="text-sm text-gray-600 mt-3 mb-0">
+             <div>
+                <p className="text-base text-gray-600 mt-3 mb-0">
                   Data da Contribuição -{" "}
                   {new Date(data.DataContribuicao).toLocaleDateString()}{" "}
                 </p>
@@ -68,7 +70,7 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
                     </p>
                   </div>
 
-                  {data.Meta && (
+                  {data.Meta != null && (
                     <div>
                       <p className="text-sm text-gray-600">Meta</p>
                       <p className="font-semibold">
@@ -80,10 +82,10 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
                     </div>
                   )}
 
-                  {data.Gastos && (
+                  {data.Gastos !== null && (
                     <div>
                       <p className="text-sm text-gray-600">Gastos</p>
-                      <p className="font-semibold">{formatBRL(data.Gastos)}</p>
+                      <p className="font-semibold"> {formatBRL(data.Gastos)}</p>
                     </div>
                   )}
 
@@ -95,34 +97,32 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
                       </div>
 
                       <div>
-                        <p className="text-sm text-gray-600">
-                          Peso unitário:
-                        </p>
+                        <p className="text-sm text-gray-600">Peso unitário:</p>
                         <p className="font-semibold ">
                           {data.PesoUnidade} kg/g
                         </p>
                       </div>
                     </div>
                   )}
-                  
-                  {data.Comprovante && (
+
+                  {data.comprovante?.Imagem? (
                     <div>
-                      <p className="text-sm text-gray-600 mb-2">Comprovantes</p>
-                      <div className="flex items-start">
-                        {data.Comprovante ? (
-                          <img
-                            src={data.Comprovante}
-                            alt="Anexo de comprovante"
-                            className="rounded-md w-full max-h-[300px] object-contain border border-gray-300"
-                          />
-                        ) : (
-                          <img
+                      <p className="text-sm text-gray-600 mb-2">Comprovante da doação</p>
+                      <a
+                        href={data.comprovante.Imagem}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-black-600 underline"
+                      > Abrir comprovante
+                      </a>
+                    </div>
+                  ) : (
+                    <div>
+                      <img
                             src={placeholderComprovante.src}
-                            alt="Anexo de comprovante"
+                            alt="Sem comprovantes anexados"
                             className="rounded-md aspect-square max-h-[45px] object-contain border border-gray-200 mb-6"
                           />
-                        )}
-                      </div>
                     </div>
                   )}
                 </div>

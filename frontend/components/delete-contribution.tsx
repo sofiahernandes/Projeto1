@@ -1,6 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { fetchData } from "@/hooks/fetch-user-profile";
 
 import {
   AlertDialog,
@@ -16,14 +18,15 @@ import {
 
 type DeleteContributionProps = {
   IdContribuicao: number;
+  TipoDoacao: string;
   onDeleted?: () => void;
-  apiBaseUrl?: string;
 };
+const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export default function DeleteContribution({
   IdContribuicao,
+  TipoDoacao,
   onDeleted,
-  apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001",
 }: DeleteContributionProps) {
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -37,7 +40,7 @@ export default function DeleteContribution({
       setError(null);
 
       const res = await fetch(
-        `${apiBaseUrl}/api/deleteContribution/${IdContribuicao}`,
+        `${backend_url}/api/contribution/${TipoDoacao}/${IdContribuicao}`,
         { method: "DELETE" }
       );
 
@@ -75,7 +78,7 @@ export default function DeleteContribution({
                     text-white font-medium transition-colors duration-200 cursor-pointer
                     shadow-[0_6px_20px_rgba(247,201,212,0.5)] hover:shadow-[0_10px_28px_rgba(247,201,212,0.6)]`}
           >
-            <svg //iconezinho de lixeira
+            <svg
               className="w-5 h-5"
               viewBox="0 0 24 24"
               fill="none"
@@ -93,7 +96,7 @@ export default function DeleteContribution({
           </button>
         </AlertDialogTrigger>
 
-        <AlertDialogContent >
+        <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
             <AlertDialogDescription>

@@ -41,11 +41,9 @@ const usersController = {
           },
           contribuicoes_financeiras: {
             orderBy: { DataContribuicao: "desc" },
-            take: 5,
           },
           contribuicoes_alimenticias: {
             orderBy: { DataContribuicao: "desc" },
-            take: 5,
           },
         },
       });
