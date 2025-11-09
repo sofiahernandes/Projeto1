@@ -218,11 +218,8 @@ const contributionController = {
       Meta,
       Gastos,
       Fonte,
-      Valor,
       PesoUnidade,
-      IdAlimento,
-      alimentos,
-      Imagem,
+      NomeAlimento,
     } = req.body;
 
     if (!RaUsuario || !TipoDoacao) {
@@ -232,8 +229,6 @@ const contributionController = {
     }
 
     try {
-      let contribuicao;
-
       if (TipoDoacao === "Financeira") {
         if (!Quantidade || !Fonte || Gastos === undefined) {
           return res.status(400).json({
@@ -241,6 +236,7 @@ const contributionController = {
               "Quantidade, Fonte e Gastos são obrigatórios para doação financeira.",
           });
         }
+
         const resultado = await prisma.$transaction(async (tx) => {
           const comprovante = await tx.comprovante.create({
             data: {
@@ -272,6 +268,7 @@ const contributionController = {
 
           return contribuicao;
         });
+
         return res.status(201).json({
           message: "Contribuição financeira criada com sucesso!",
           data: { ...resultado, TipoDoacao: "Financeira" },
@@ -280,8 +277,8 @@ const contributionController = {
         if (
           !Quantidade ||
           !PesoUnidade ||
-          !alimentos ||
-          alimentos.length === 0
+          !NomeAlimento ||
+          NomeAlimento.length === 0
         ) {
           return res.status(400).json({
             error:
@@ -290,22 +287,7 @@ const contributionController = {
         }
 
         const resultado = await prisma.$transaction(async (tx) => {
-          const alimento = alimentos.map((alimento) => {
-            return tx.alimento.create({
-              data: {
-                IdAlimento: Number(alimento.IdAlimento),
-              },
-              include: {
-                contribuicoes_alimento: {
-                  select: {
-                    IdContribuicaoAlimento: alimento.IdContribuicaoAlimento,
-                  },
-                  IdAlimento: true,
-                },
-              },
-            });
-          });
-          contribuicao = await tx.contribuicao_Alimenticia.create({
+          const contribuicao = await tx.contribuicao_Alimenticia.create({
             data: {
               RaUsuario: Number(RaUsuario),
               TipoDoacao,
@@ -315,18 +297,33 @@ const contributionController = {
               Meta: Meta ? Number(Meta) : null,
               Fonte: Fonte || null,
               IdAlimento:
-                alimentos.length === 1 ? Number(alimentos[0].IdAlimento) : null,
-            },
-            include: {
-              usuario: true,
+                NomeAlimento.length === 1
+                  ? Number(NomeAlimento[0].IdAlimento)
+                  : null,
             },
           });
+
+          if (NomeAlimento && NomeAlimento.length > 0) {
+            await Promise.all(
+              NomeAlimento.map((alimento) =>
+                tx.contribuicoes_alimento.create({
+                  data: {
+                    IdContribuicaoAlimenticia:
+                      contribuicao.IdContribuicaoAlimenticia,
+                    IdAlimento: Number(alimento.IdAlimento),
+                  },
+                })
+              )
+            );
+          }
+
+          return contribuicao;
         });
 
         const contribuicaoCompleta =
           await prisma.contribuicao_Alimenticia.findUnique({
             where: {
-              IdContribuicaoAlimenticia: contribuicao.IdContribuicaoAlimenticia,
+              IdContribuicaoAlimenticia: resultado.IdContribuicaoAlimenticia,
             },
             include: {
               usuario: true,
@@ -348,8 +345,7 @@ const contributionController = {
         });
       }
     } catch (err) {
-      console.error("Erro ao criar contribuição:", err);
-      res.status(500).json({
+      return res.status(500).json({
         error: "Erro ao criar contribuição.",
         details: err.message,
       });

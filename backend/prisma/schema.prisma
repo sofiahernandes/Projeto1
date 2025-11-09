@@ -9,18 +9,18 @@ datasource db {
 
 model Mentor {
   IdMentor    Int      @id @default(autoincrement())
-  EmailMentor String  @unique @db.VarChar(250) 
-  IsAdmin     Boolean?
   SenhaMentor String   @db.VarChar(80)
-  time       Time[]   // Relação com Time
+  EmailMentor String   @unique @db.VarChar(250)
+  IsAdmin     Boolean?
+  time        Time[]
 }
 
 model Time {
-  IdTime        Int             @id @default(autoincrement())
-  NomeTime      String          @db.VarChar(250)
+  IdTime        Int            @id @default(autoincrement())
+  NomeTime      String         @db.VarChar(250)
   IdMentor      Int?
-  mentor        Mentor?         @relation(fields: [IdMentor], references: [IdMentor])
-  time_usuarios Time_Usuario[]  // Relação com Time_Usuario
+  mentor        Mentor?        @relation(fields: [IdMentor], references: [IdMentor])
+  time_usuarios Time_Usuario[]
 
   @@index([IdMentor], map: "IdMentor")
 }
@@ -38,8 +38,6 @@ model Time_Usuario {
   RaAluno8      Int
   RaAluno9      Int?
   RaAluno10     Int?
-  
-  // Relações
   time          Time?    @relation(fields: [IdTime], references: [IdTime])
   usuario       Usuario? @relation(fields: [RaUsuario], references: [RaUsuario])
 
@@ -48,55 +46,54 @@ model Time_Usuario {
 }
 
 model Usuario {
-  RaUsuario                  Int                          @id
-  NomeUsuario                String                       @db.VarChar(250)
-  EmailUsuario               String                       @db.VarChar(250)
-  SenhaUsuario               String                       @db.VarChar(255)
-  TurmaUsuario               String                       @db.VarChar(20)
-  TelefoneUsuario            String?                      @db.VarChar(20)
-  
-  // Relações
-  time_usuarios              Time_Usuario[]
-  contribuicoes_financeiras  Contribuicao_Financeira[]
+  RaUsuario                  Int                        @id
+  NomeUsuario                String                     @db.VarChar(250)
+  EmailUsuario               String                     @db.VarChar(250)
+  SenhaUsuario               String                     @db.VarChar(255)
+  TelefoneUsuario            String?                    @db.VarChar(20)
+  TurmaUsuario               String                     @db.VarChar(20)
   contribuicoes_alimenticias Contribuicao_Alimenticia[]
+  contribuicoes_financeiras  Contribuicao_Financeira[]
+  time_usuarios              Time_Usuario[]
 }
 
 model Contribuicao_Financeira {
-  IdContribuicaoFinanceira Int       @id @default(autoincrement())
-  DataContribuicao         DateTime? @default(now()) @db.Timestamp(0)
-  Quantidade               Decimal   @db.Decimal(10, 2)
-  TipoDoacao               String    @db.VarChar(20)
-  Gastos                   Decimal   @db.Decimal(10, 2)
-  Meta                     Decimal?  @db.Decimal(10, 2)
-  Fonte                    String?   @db.VarChar(200)
-  IdComprovante            Int? @unique
+  IdContribuicaoFinanceira Int          @id @default(autoincrement())
+  DataContribuicao         DateTime?    @default(now()) @db.Timestamp(0)
+  Quantidade               Decimal      @db.Decimal(10, 2)
+  Gastos                   Decimal      @db.Decimal(10, 2)
+  Meta                     Decimal?     @db.Decimal(10, 2)
+  Fonte                    String?      @db.VarChar(200)
   RaUsuario                Int?
-  
-  usuario                  Usuario?  @relation(fields: [RaUsuario], references: [RaUsuario])
+  TipoDoacao               String       @db.VarChar(20)
+  IdComprovante            Int?         @unique
+  uuid                     String?      @db.Char(60)
   comprovante              Comprovante? @relation(fields: [IdComprovante], references: [IdComprovante])
-  @@index([IdComprovante], map:"IdComprovante")
+  usuario                  Usuario?     @relation(fields: [RaUsuario], references: [RaUsuario])
+
+  @@index([IdComprovante], map: "IdComprovante")
   @@index([RaUsuario], map: "RaUsuario")
 }
 
 model Contribuicao_Alimenticia {
-  IdContribuicaoAlimenticia Int       @id @default(autoincrement())
-  DataContribuicao          DateTime? @default(now()) @db.Timestamp(0)
-  TipoDoacao                String    @db.VarChar(20)
-  Quantidade                Decimal   @db.Decimal(10, 2)
-  PesoUnidade               Decimal?  @db.Decimal(10,2)
-  Gastos                    Decimal   @db.Decimal(10, 2)
-  Meta                      Decimal?  @db.Decimal(10, 2)
-  Fonte                     String?   @db.VarChar(200)
-  IdComprovante             Int?      @unique
+  IdContribuicaoAlimenticia Int                     @id @default(autoincrement())
+  DataContribuicao          DateTime?               @default(now()) @db.Timestamp(0)
+  Quantidade                Decimal                 @db.Decimal(10, 2)
+  PesoUnidade               Decimal?                @db.Decimal(10, 2)
+  Gastos                    Decimal                 @db.Decimal(10, 2)
+  Meta                      Decimal?                @db.Decimal(10, 2)
+  Fonte                     String?                 @db.VarChar(200)
   RaUsuario                 Int?
   IdAlimento                Int?
-  
-  usuario                   Usuario?  @relation(fields: [RaUsuario], references: [RaUsuario])
-  alimento                  Alimento? @relation(fields: [IdAlimento], references: [IdAlimento]) 
-  comprovante              Comprovante? @relation(fields: [IdComprovante], references: [IdComprovante])
+  TipoDoacao                String                  @db.VarChar(20)
+  IdComprovante             Int?                    @unique
+  uuid                      String?                 @db.Char(60)
+  alimento                  Alimento?               @relation(fields: [IdAlimento], references: [IdAlimento])
+  comprovante               Comprovante?            @relation(fields: [IdComprovante], references: [IdComprovante])
+  usuario                   Usuario?                @relation(fields: [RaUsuario], references: [RaUsuario])
   contribuicoes_alimento    Contribuicao_Alimento[]
 
-  @@index([IdComprovante], map:"IdComprovante")
+  @@index([IdComprovante], map: "IdComprovante")
   @@index([IdAlimento], map: "IdAlimento")
   @@index([RaUsuario], map: "RaUsuario")
 }
@@ -104,8 +101,7 @@ model Contribuicao_Alimenticia {
 model Alimento {
   IdAlimento                 Int                        @id @default(autoincrement())
   NomeAlimento               String                     @db.VarChar(100)
-  Pontuacao                  Decimal?                   @db.Decimal(10,2)
-  
+  Pontuacao                  Decimal?                   @db.Decimal(10, 2)
   contribuicoes_alimenticias Contribuicao_Alimenticia[]
   contribuicoes_alimento     Contribuicao_Alimento[]
 }
@@ -114,7 +110,6 @@ model Contribuicao_Alimento {
   IdContribuicaoAlimento    Int                       @id @default(autoincrement())
   IdAlimento                Int?
   IdContribuicaoAlimenticia Int?
-  
   alimento                  Alimento?                 @relation(fields: [IdAlimento], references: [IdAlimento])
   contribuicao_alimenticia  Contribuicao_Alimenticia? @relation(fields: [IdContribuicaoAlimenticia], references: [IdContribuicaoAlimenticia])
 
@@ -122,10 +117,9 @@ model Contribuicao_Alimento {
   @@index([IdContribuicaoAlimenticia], map: "IdContribuicaoAlimenticia")
 }
 
-model Comprovante{
-  IdComprovante Int @id @default(autoincrement())
-  Imagem String @db.VarChar(255)
-
-  contribuicao_financeira   Contribuicao_Financeira?
+model Comprovante {
+  IdComprovante             Int                       @id @default(autoincrement())
+  Imagem                    String                    @db.VarChar(255)
   contribuicao_alimenticias Contribuicao_Alimenticia?
+  contribuicao_financeira   Contribuicao_Financeira?
 }
