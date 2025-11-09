@@ -40,7 +40,6 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };
-  console.log("Comprovante recebido:", data.comprovante);
 
   return (
     <Modal isActive={isOpen} onClose={toggleModal}>
@@ -111,18 +110,13 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
 
                   {data.comprovante?.Imagem? (
                     <div>
-                      <p className="text-sm text-gray-600 mb-2">Comprovante</p>
+                      <p className="text-sm text-gray-600 mb-2">Comprovante da doação</p>
                       <a
                         href={data.comprovante.Imagem}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 underline"
-                      >
-                        <img
-                          src={data.comprovante.Imagem}
-                          alt="Comprovante anexado"
-                          className="h-40 w-30 object-cover rounded-md shadow"
-                        />
+                        className="text-black-600 underline"
+                      > Abrir comprovante
                       </a>
                     </div>
                   ) : (

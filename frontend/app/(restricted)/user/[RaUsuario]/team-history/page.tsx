@@ -84,7 +84,7 @@ export default function TeamHistory() {
               {team?.NomeTime ? team?.NomeTime : "Nome do time aparecerá aqui"}
             </h3>
             <h4 className="mb-3 text-xl text-primary/80">
-              Turma {user?.TurmaUsuario ? user?.TurmaUsuario : "X"} | Yº Edição
+              Turma {user?.TurmaUsuario ? user?.TurmaUsuario : "X"}
             </h4>
             <div className="self-end">
               <SwitchViewButton

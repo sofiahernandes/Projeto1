@@ -16,18 +16,27 @@ import { v4 as uuidv4 } from "uuid";
 import { Contribution } from "./contribution-table/columns";
 
 interface RenderContributionProps {
+  raUsuario?: number,
   onSelect?: (contribution: Contribution) => void;
   refreshKey?: number;
 }
 const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export default function RenderContributionCard({
+  raUsuario,
   onSelect,
   refreshKey = 0,
 }: RenderContributionProps) {
   const [contributions, setContributions] = useState<Contribution[]>([]);
   const params = useParams();
-  const RaUsuario = Number(params?.RaUsuario);
+  const raFromParams = params?.RaUsuario ? Number(params.RaUsuario) : undefined;
+  const RaUsuario =
+    typeof raUsuario === "number" && Number.isFinite(raUsuario)
+      ? raUsuario
+      : typeof raFromParams === "number" && Number.isFinite(raFromParams)
+      ? raFromParams
+      : undefined;
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

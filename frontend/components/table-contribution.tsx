@@ -20,11 +20,12 @@ import {
 } from "@/components/ui/empty";
 
 interface RenderContributionProps {
+  raUsuario?: number,
   onSelect?: (contribution: Contribution) => void;
   refreshKey?: number;
 }
-
 export default function RenderContributionTable({
+  raUsuario,
   onSelect,
   refreshKey = 0,
 }: RenderContributionProps) {
@@ -32,7 +33,14 @@ export default function RenderContributionTable({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const params = useParams();
-  const RaUsuario = Number(params.RaUsuario);
+    const raFromParams = params?.RaUsuario ? Number(params.RaUsuario) : undefined;
+
+  const RaUsuario =
+    typeof raUsuario === "number" && Number.isFinite(raUsuario)
+      ? raUsuario
+      : typeof raFromParams === "number" && Number.isFinite(raFromParams)
+      ? raFromParams
+      : undefined;
 
   const columns = useMemo(
     () =>
