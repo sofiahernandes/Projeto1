@@ -128,7 +128,7 @@ export default function PublicDashboard() {
                 .sort((a, b) => b.Quantidade - a.Quantidade)
                 .slice(0, 10);
             });
-          } else if (contribution.TipoDoacao === "Alimentícia") {
+          } else if (contribution.TipoDoacao === "Alimenticia") {
             setBiggestFoodDonations((prev) => {
               const updated = [...prev, contribution];
               return updated
