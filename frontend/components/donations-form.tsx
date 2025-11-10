@@ -234,7 +234,7 @@ export default function DonationsForm({
           className="w-full bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
 
-        <label className="block mb-1 mt-3">Valor R$</label>
+        <label className="block mb-1 mt-3">Valor Arrecadado</label>
         <input
           type="number"
           step="0.01"
