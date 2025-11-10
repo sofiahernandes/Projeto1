@@ -12,8 +12,10 @@ interface Properties {
   raUsuario: number;
   setRaUsuario: React.Dispatch<React.SetStateAction<number>>;
   tipoDoacao: "Financeira" | "Alimenticia";
-  setTipoDoacao: React.Dispatch<React.SetStateAction<"Financeira" | "Alimenticia">>;
-  Quantidade?: number; 
+  setTipoDoacao: React.Dispatch<
+    React.SetStateAction<"Financeira" | "Alimenticia">
+  >;
+  Quantidade?: number;
   setQuantidade: React.Dispatch<React.SetStateAction<number | undefined>>;
   fonte: string;
   setFonte: React.Dispatch<React.SetStateAction<string>>;
@@ -21,7 +23,7 @@ interface Properties {
   setMeta: React.Dispatch<React.SetStateAction<number | undefined>>;
   Gastos?: number;
   setGastos: React.Dispatch<React.SetStateAction<number | undefined>>;
-  Comprovante: File | null; 
+  Comprovante: File | null;
   setComprovante: React.Dispatch<React.SetStateAction<File | null>>;
 }
 
@@ -95,9 +97,12 @@ export default function DonationsForm({
       return;
     }
 
-    const okType = ["image/png", "image/jpeg", "image/jpg", "application/pdf"].includes(
-      file.type
-    );
+    const okType = [
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "application/pdf",
+    ].includes(file.type);
     const okSize = file.size <= 5 * 1024 * 1024;
 
     if (!okType) {
@@ -134,7 +139,9 @@ export default function DonationsForm({
           placeholder="Ex: 1000"
           value={Meta === 0 || Meta === undefined ? "" : Meta}
           onChange={(e) =>
-            setMeta(e.currentTarget.value === "" ? 0 : Number(e.currentTarget.value))
+            setMeta(
+              e.currentTarget.value === "" ? 0 : Number(e.currentTarget.value)
+            )
           }
           className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
@@ -146,7 +153,9 @@ export default function DonationsForm({
           placeholder="Ex: 100"
           value={Gastos === 0 || Gastos === undefined ? "" : Gastos}
           onChange={(e) =>
-            setGastos(e.currentTarget.value === "" ? 0 : Number(e.currentTarget.value))
+            setGastos(
+              e.currentTarget.value === "" ? 0 : Number(e.currentTarget.value)
+            )
           }
           className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
@@ -165,7 +174,9 @@ export default function DonationsForm({
           className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
 
-        <label className="block mb-1 mt-8">Comprovante (PNG/JPEG/JPG/PDF)</label>
+        <label className="block mb-1 mt-8">
+          Comprovante (PNG/JPEG/JPG/PDF)
+        </label>
 
         <input
           ref={fileInputRef}
@@ -182,7 +193,9 @@ export default function DonationsForm({
             type="button"
             onClick={handlePickClick}
             onMouseDown={(e) => e.currentTarget.classList.add("animate-pop")}
-            onAnimationEnd={(e) => e.currentTarget.classList.remove("animate-pop")}
+            onAnimationEnd={(e) =>
+              e.currentTarget.classList.remove("animate-pop")
+            }
             className="inline-flex items-center justify-center h-14 w-18 rounded-lg bg-white transition"
             disabled={loading}
             aria-label="Selecionar comprovante"
@@ -199,7 +212,9 @@ export default function DonationsForm({
           </button>
 
           <span className="ml-3 text-sm text-gray-700">
-            {Comprovante ? `Selecionado: ${Comprovante.name}` : "Nenhum arquivo escolhido"}
+            {Comprovante
+              ? `Selecionado: ${Comprovante.name}`
+              : "Nenhum arquivo escolhido"}
           </span>
         </div>
       </div>

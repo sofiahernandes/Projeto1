@@ -4,6 +4,6 @@ const formatBRL = (v?: number) =>
         style: "currency",
         currency: "BRL",
       }).format(v)
-    : "-"; 
+    : "-";
 
-    export default formatBRL;
+export default formatBRL;

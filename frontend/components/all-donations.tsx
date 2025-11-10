@@ -5,16 +5,11 @@ import React, { useState } from "react";
 interface Properties {
   nomeEvento: string;
   setNomeEvento: React.Dispatch<React.SetStateAction<string>>;
-  //metaEvento: number;
-  //setMetaEvento: React.Dispatch<React.SetStateAction<number>>; 
 }
 
 export default function AllDonations({
-  //metaEvento,
-  //setMetaEvento,
-  nomeEvento,         
-  setNomeEvento
-
+  nomeEvento,
+  setNomeEvento,
 }: Properties) {
   const [loading, setLoading] = useState(false);
 
@@ -28,8 +23,7 @@ export default function AllDonations({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           //meta: Number(metaEvento),
-          nomeEvento: String (nomeEvento),
-
+          nomeEvento: String(nomeEvento),
         }),
       });
 
@@ -54,14 +48,13 @@ export default function AllDonations({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      
-     <input
+      <input
         className="w-[80%] bg-white border border-[#b4b4b4] rounded-lg text-black placeholder-gray-400 px-3 py-1.5 text-base focus:outline-none"
         type="text"
         placeholder="Nome do evento"
         value={nomeEvento}
         onChange={(e) => setNomeEvento(e.target.value)}
-        />
+      />
     </form>
   );
 }

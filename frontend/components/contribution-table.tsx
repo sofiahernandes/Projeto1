@@ -1,7 +1,6 @@
 "use client";
-{/* Para fazer um teste depois*/}
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -22,8 +21,9 @@ interface Contribution {
   Gastos?: number;
   Fonte?: string;
   comprovante?: {
-  IdComprovante: number;
-  Imagem: string;}
+    IdComprovante: number;
+    Imagem: string;
+  };
   DataContribuicao: string;
 }
 

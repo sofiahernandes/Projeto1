@@ -99,13 +99,13 @@ export default function PublicReports() {
                   )}
 
                   <div className="mt-2">
-                      <RenderContributionCard
-                        isPublicReport
-                        onSelect={(contribution: any) => {
-                          setSelectedContribution(contribution);
-                          setIsOpen(true);
-                        }}
-                      />
+                    <RenderContributionCard
+                      isPublicReport
+                      onSelect={(contribution: any) => {
+                        setSelectedContribution(contribution);
+                        setIsOpen(true);
+                      }}
+                    />
                   </div>
                 </main>
               </div>

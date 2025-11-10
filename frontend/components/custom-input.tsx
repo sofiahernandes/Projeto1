@@ -13,4 +13,4 @@ export default function CustomInput({ placeholder, type, name }: Properties) {
       name={name}
     />
   );
-};
+}

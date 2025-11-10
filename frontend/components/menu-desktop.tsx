@@ -8,7 +8,7 @@ interface Properties {
   setMenuOpen: (arg: SetStateAction<boolean>) => void;
 }
 
-export default function MenuDesktop({ menuOpen, setMenuOpen}: Properties) {
+export default function MenuDesktop({ menuOpen, setMenuOpen }: Properties) {
   const params = useParams();
   const [RaUsuario, setRaUsuario] = useState<number | null>(null);
 

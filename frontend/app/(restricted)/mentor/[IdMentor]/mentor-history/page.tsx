@@ -148,15 +148,13 @@ export default function MentorVision() {
           )}
           <div className="flex flex-col gap-2 mx-3 text-center">
             <h3 className="text-2xl uppercase font-semibold text-primary">
-              
-{loadingTeam
+              {loadingTeam
                 ? "Carregando time…"
                 : team?.NomeTime || "Nenhum time encontrado"}
             </h3>
 
             <h4 className="mb-3 text-xl text-primary text-center">
-              {
-loadingUser
+              {loadingUser
                 ? "Carregando turma…"
                 : `Turma ${user?.TurmaUsuario || "—"}`}
             </h4>

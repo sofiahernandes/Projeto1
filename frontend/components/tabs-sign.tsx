@@ -62,9 +62,8 @@ export default function SigninTabs({ setIsLogged, setRaUsuario }: Props) {
       const newUser = await res.json();
       console.log("Usuário cadastrado:", newUser);
 
-      setRaUsuario(Number(raAlunoMentor)) // State used on the sign team route
+      setRaUsuario(Number(raAlunoMentor)); // State used on the sign team route
       setIsLogged(true); // Go to sign team page
-
     } catch (error) {
       console.error("Erro ao cadastrar usuário:", error);
 

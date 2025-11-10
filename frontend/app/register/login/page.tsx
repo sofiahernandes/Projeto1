@@ -28,7 +28,8 @@ export default function Login() {
               Cadastre-se
             </Link>
             <p className="text-center text-sm max-w-[220px]">
-              Registre-se com seus dados institucionais para utilizar os recursos do site.
+              Registre-se com seus dados institucionais para utilizar os
+              recursos do site.
             </p>
           </section>
 

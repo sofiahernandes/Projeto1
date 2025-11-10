@@ -60,16 +60,14 @@ export default function RenderContributionTableAdmin({
 
         const data: Contribution[] = Array.isArray(raw)
           ? raw.map((r: any) => {
-             const IdContribuicao = Number(
+              const IdContribuicao = Number(
                 r.IdContribuicao ??
                   r.IdContribuicaoFinanceira ??
                   r.IdContribuicaoAlimenticia
               );
 
               const idComp =
-                r?.comprovante?.IdComprovante ?? 
-                r?.IdComprovante ??
-                null;
+                r?.comprovante?.IdComprovante ?? r?.IdComprovante ?? null;
 
               const rawImg =
                 r?.Comprovante ??
@@ -162,6 +160,7 @@ export default function RenderContributionTableAdmin({
       </div>
     );
   }
+
   if (!contributions.length) {
     return (
       <div className="col-start-2 border rounded-xl border-gray-200 shadow-xl w-auto max-w-100 mx-auto">

@@ -45,7 +45,7 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
           <div className="">
             <div>
               <h2 className="text-xl font-semibold">{data.Fonte}</h2>
-             <div>
+              <div>
                 <p className="text-base text-gray-600 mt-3 mb-0">
                   Data da Contribuição -{" "}
                   {new Date(data.DataContribuicao).toLocaleDateString()}{" "}
@@ -105,24 +105,28 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
                     </div>
                   )}
 
-                  {data.comprovante?.Imagem? (
+                  {data.comprovante?.Imagem ? (
                     <div>
-                      <p className="text-sm text-gray-600 mb-2">Comprovante da doação</p>
+                      <p className="text-sm text-gray-600 mb-2">
+                        Comprovante da doação
+                      </p>
                       <a
                         href={data.comprovante.Imagem}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-black-600 underline"
-                      > Abrir comprovante
+                      >
+                        {" "}
+                        Abrir comprovante
                       </a>
                     </div>
                   ) : (
                     <div>
                       <img
-                            src={placeholderComprovante.src}
-                            alt="Sem comprovantes anexados"
-                            className="rounded-md aspect-square max-h-[45px] object-contain border border-gray-200 mb-6"
-                          />
+                        src={placeholderComprovante.src}
+                        alt="Sem comprovantes anexados"
+                        className="rounded-md aspect-square max-h-[45px] object-contain border border-gray-200 mb-6"
+                      />
                     </div>
                   )}
                 </div>

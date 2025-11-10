@@ -42,7 +42,7 @@ export type ContributionActions = {
 export const makeContributionColumns = (
   actions: ContributionActions = {}
 ): ColumnDef<Contribution>[] => [
- {
+  {
     accessorKey: "NomeTime",
     header: ({ column }) => {
       return (
@@ -57,7 +57,8 @@ export const makeContributionColumns = (
     },
     cell: ({ row }) => (
       <span className="font-medium w-[220px] block truncate">
-        {row.original.NomeTime ?? "-"}</span>
+        {row.original.NomeTime ?? "-"}
+      </span>
     ),
   },
   {
@@ -75,7 +76,8 @@ export const makeContributionColumns = (
     },
     cell: ({ row }) => (
       <span className="w-[220px] block truncate">
-        {row.original.Fonte ?? "-"}</span>
+        {row.original.Fonte ?? "-"}
+      </span>
     ),
   },
   {
@@ -134,58 +136,64 @@ export const makeContributionColumns = (
     },
   },
   {
-  id: "PesoTotal",
-  accessorFn: (row) => {
-    if (row.TipoDoacao !== "Alimenticia") return null;
-    const q = Number(row.Quantidade);
-    const pu = Number(row.PesoUnidade);
-    const PesoTotal = q * pu;
-    return Number.isFinite(PesoTotal) ? PesoTotal : null;
+    id: "PesoTotal",
+    accessorFn: (row) => {
+      if (row.TipoDoacao !== "Alimenticia") return null;
+      const q = Number(row.Quantidade);
+      const pu = Number(row.PesoUnidade);
+      const PesoTotal = q * pu;
+      return Number.isFinite(PesoTotal) ? PesoTotal : null;
+    },
+    header: ({ column }) => (
+      <Button
+        variant="prettyHeader"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Peso Total
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ getValue, row }) => {
+      const v = getValue<number | null>();
+      return row.original.TipoDoacao === "Alimenticia" && v != null ? (
+        <span className="w-[80px] block truncate">
+          {new Intl.NumberFormat("pt-BR").format(v)} kg
+        </span>
+      ) : (
+        <span> - </span>
+      );
+    },
   },
-  header: ({ column }) => (
-    <Button
-      variant="prettyHeader"
-      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-    >
-      Peso Total
-      <ArrowUpDown className="ml-2 h-4 w-4" />
-    </Button>
-  ),
-  cell: ({ getValue, row }) => {
-    const v = getValue<number | null>();
-    return row.original.TipoDoacao === "Alimenticia" && v != null
-      ? <span className="w-[80px] block truncate">
-        {new Intl.NumberFormat("pt-BR").format(v)} kg</span>
-      : <span> - </span>;
-  },
-},
 
-{
-  id: "PontuacaoTotal",
-  accessorFn: (row) => {
-    if (row.TipoDoacao !== "Alimenticia") return null;
-    const quant = Number(row.Quantidade);
-    const pont = Number(row.PontuacaoAlimento);
-    const PontuacaoTotal = quant * pont;
-    return Number.isFinite(PontuacaoTotal) ? PontuacaoTotal : null;
+  {
+    id: "PontuacaoTotal",
+    accessorFn: (row) => {
+      if (row.TipoDoacao !== "Alimenticia") return null;
+      const quant = Number(row.Quantidade);
+      const pont = Number(row.PontuacaoAlimento);
+      const PontuacaoTotal = quant * pont;
+      return Number.isFinite(PontuacaoTotal) ? PontuacaoTotal : null;
+    },
+    header: ({ column }) => (
+      <Button
+        variant="prettyHeader"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Pontuação Total
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ getValue, row }) => {
+      const v = getValue<number | null>();
+      return row.original.TipoDoacao === "Alimenticia" && v != null ? (
+        <span className="w-[60px] block truncate">
+          {new Intl.NumberFormat("pt-BR").format(v)}
+        </span>
+      ) : (
+        <span> - </span>
+      );
+    },
   },
-  header: ({ column }) => (
-    <Button
-      variant="prettyHeader"
-      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-    >
-      Pontuação Total
-      <ArrowUpDown className="ml-2 h-4 w-4" />
-    </Button>
-  ),
-  cell: ({ getValue, row }) => {
-    const v = getValue<number | null>();
-    return row.original.TipoDoacao === "Alimenticia" && v != null
-      ? <span className="w-[60px] block truncate">
-        {new Intl.NumberFormat("pt-BR").format(v)}</span>
-      : <span> - </span>;
-  },
-},
   {
     accessorKey: "Gastos",
     header: ({ column }) => {
@@ -226,7 +234,7 @@ export const makeContributionColumns = (
     },
   },
   {
- id: "comprovante",
+    id: "comprovante",
     header: "Comprovante",
     cell: ({ row }) => {
       const url = row.original.comprovante?.Imagem;

@@ -16,9 +16,8 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-
 interface Contribution {
-  month: string
+  month: string;
   desktop: number;
 }
 
@@ -36,7 +35,6 @@ interface ChartProps {
 export function Chart({ chartData }: ChartProps) {
   return (
     <Card className="rounded-md border border-gray-400 shadow-none">
-  
       <CardHeader>
         <CardTitle>Histórico de Arrecadações</CardTitle>
         <CardDescription>
@@ -45,32 +43,32 @@ export function Chart({ chartData }: ChartProps) {
           </div>
         </CardDescription>
       </CardHeader>
-      
-        <CardContent className="px-0 mx-2">
-          <ChartContainer config={chartConfig}>
-            <AreaChart accessibilityLayer data={chartData}>
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="month"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                tickFormatter={(value) => value.slice(0, 3)}
-              />
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent indicator="line" />}
-              />
-              <Area
-                dataKey="desktop"
-                type="natural"
-                fill="var(--color-desktop)"
-                fillOpacity={0.4}
-                stroke="var(--color-desktop)"
-              />
-            </AreaChart>
-          </ChartContainer>
-        </CardContent>
+
+      <CardContent className="px-0 mx-2">
+        <ChartContainer config={chartConfig}>
+          <AreaChart accessibilityLayer data={chartData}>
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="month"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={(value) => value.slice(0, 3)}
+            />
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent indicator="line" />}
+            />
+            <Area
+              dataKey="desktop"
+              type="natural"
+              fill="var(--color-desktop)"
+              fillOpacity={0.4}
+              stroke="var(--color-desktop)"
+            />
+          </AreaChart>
+        </ChartContainer>
+      </CardContent>
     </Card>
   );
 }
