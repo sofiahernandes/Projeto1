@@ -161,13 +161,13 @@ export default function FoodDonations({
   ]);
 
   const PONTOS_POR_KG: Record<string, number> = {
-    "Arroz Polido": 3,
+    "Arroz Polido": 5,
     "Feijão Preto": 5,
-    "Açúcar Refinado": 1,
-    "Leite em Pó": 3,
-    "Fubá": 1.25,
-    "Macarrão": 1.25,
-    "Óleo de Soja": 8,
+    "Açúcar Refinado": 4,
+    "Leite em Pó": 37.5,     //400 - 15    800 - 30    200-7,5
+    "Fubá": 5,
+    "Macarrão": 5,
+    "Óleo de Soja": 7,
   };
 
   const parseNumber = (str: string | number): number => {
@@ -178,7 +178,7 @@ export default function FoodDonations({
     return Number.isFinite(n) ? n : 0;
   };
 
-  // totais gerais
+
   const totais = useMemo(() => {
     let kgTotal = 0;
     let pontos = 0;
@@ -225,7 +225,6 @@ const handleAlimentoChange = (
   setAlimentos((prev) =>
     prev.map((row) => (row.id === id ? { ...row, [campo]: v } : row))
   );
-  setIdAlimento(id);
 };
   
 
