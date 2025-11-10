@@ -14,7 +14,9 @@ import { useEffect, useState } from "react";
 import { Contribution } from "@/components/contribution-table-admin/columns";
 
 export default function PublicDashboard() {
-  const [biggestMoneyDonations, setBiggestMoneyDonations] = useState<Contribution[]>([]);
+  const [biggestMoneyDonations, setBiggestMoneyDonations] = useState<
+    Contribution[]
+  >([]);
   const [biggestFoodDonations, setBiggestFoodDonations] = useState<
     Contribution[]
   >([]);
@@ -210,7 +212,7 @@ export default function PublicDashboard() {
                             {item.Fonte ?? "Fonte desconhecida"}
                           </p>
                           <span className="text-secondary text-md">
-                            R${item.Quantidade.toLocaleString("pt-BR")}
+                            R$ {item.Quantidade}
                           </span>
                         </div>
                       ))
@@ -238,10 +240,7 @@ export default function PublicDashboard() {
                             {item.Fonte ?? "Fonte desconhecida"}
                           </p>
                           <span className="text-secondary text-md">
-                            {(
-                              item.Quantidade * item.PesoUnidade
-                            ).toLocaleString("pt-BR")}{" "}
-                            kg
+                            {item.Quantidade * item.PesoUnidade} kg
                           </span>
                         </div>
                       ))

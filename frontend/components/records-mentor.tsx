@@ -18,6 +18,7 @@ interface ContributionData {
   alimentos?: {
     NomeAlimento: string;
     Pontuacao?: number | string;
+    Quantidade?: number;
   }[];
   PontuacaoAlimento: number;
   PesoUnidade: number;
@@ -71,7 +72,7 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
                     <p className="text-sm text-gray-600">Quantidade</p>
                     <p className="font-semibold">
                       {Intl.NumberFormat("pt-BR").format(data.Quantidade)}
-                      {data.TipoDoacao === "Financeira" ? "reais" : "Kg"}
+                      {data.TipoDoacao === "Financeira" ? " reais" : " kg"}
                     </p>
                   </div>
 
@@ -83,7 +84,7 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
                           (Number.isFinite(data.Meta)
                             ? new Intl.NumberFormat("pt-BR").format(data.Meta)
                             : "-")}
-                        {data.TipoDoacao === "Financeira" ? "reais" : "Kg"}
+                        {data.TipoDoacao === "Financeira" ? " reais" : " kg"}
                       </p>
                     </div>
                   )}
@@ -115,7 +116,6 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
                         <p className="text-sm text-gray-600"> Pontuação item</p>
                         {data.alimentos.map((a, i) => (
                           <li key={i} className="font-semibold">
-                            {" "}
                             {a.Pontuacao}
                           </li>
                         ))}
