@@ -223,7 +223,7 @@ export default function FoodDonations({
     setAlimentos((prev) =>
       prev.map((row) => (row.id === id ? { ...row, [campo]: v } : row))
     );
-    setIdAlimento(id);
+    // setIdAlimento(id);
   };
 
   return (
