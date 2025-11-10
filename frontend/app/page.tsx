@@ -253,6 +253,7 @@ export default function PublicDashboard() {
                 </CardContent>
               </Card>
             </div>
+
             {/* Quick Actions */}
             <Card className="border-none shadow-none bg-transparent">
               <CardContent className="px-0">

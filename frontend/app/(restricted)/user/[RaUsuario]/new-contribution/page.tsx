@@ -321,7 +321,7 @@ export default function Donations() {
               </div>
 
               <div className="mt-4 flex flex-none items-center gap-3 justify-end">
-                <div className="bg-[#DCA4A9] border text-sm rounded-lg py-2 px-16 whitespace-nowrap w-[300px] overflow-hidden text-ellipsis">
+                <div className="bg-[#DCA4A9] border text-sm rounded-lg py-2 px-16 whitespace-nowrap w-[300px] overflow-hidden">
                   Pontuação:{" "}
                   <span>{fmt(totaisFromChild?.pontos ?? 0)}</span>
                 </div>

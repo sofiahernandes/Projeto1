@@ -254,7 +254,7 @@ export default function RenderContributionCard({
         contributions.map((c) => (
           <div
             key={c.uuid}
-            className="p-3 rounded-xl bg-[#f4f3f1]/80 hover:bg-[#cc3983]/15 border border-gray-200 shadow-md  hover:shadow-2xl transition-shadow duration-300 cursor-pointer"
+            className="p-3 rounded-xl hover:bg-secondary/5 hover:text-secondary border border-gray-200 shadow-md transition-shadow duration-300 cursor-pointer"
             onClick={() => onSelect?.(c)}
           >
             <p className="font-semibold text-lg ">{c.Fonte}</p>
