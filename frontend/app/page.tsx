@@ -14,9 +14,7 @@ import { useEffect, useState } from "react";
 import { Contribution } from "@/components/contribution-table-admin/columns";
 
 export default function PublicDashboard() {
-  const [biggestMoneyDonations, setBiggestMoneyDonations] = useState<
-    Contribution[]
-  >([]);
+  const [biggestMoneyDonations, setBiggestMoneyDonations] = useState<Contribution[]>([]);
   const [biggestFoodDonations, setBiggestFoodDonations] = useState<
     Contribution[]
   >([]);

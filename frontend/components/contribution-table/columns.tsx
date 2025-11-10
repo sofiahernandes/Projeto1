@@ -29,7 +29,10 @@ export type Contribution = {
   DataContribuicao: string;
   NomeAlimento?: string;
   PontuacaoAlimento: number;
+  NomeTime: string;
   PesoUnidade: number;
+  PesoTotal?: number,
+  PontuacaoTotal?: number,
   uuid: string;
 };
 

@@ -186,15 +186,16 @@ export default function RenderContributionTableAdmin({
                 PesoUnidade: pesoUnidade,
                 uuid: uuidv4(),
 
-              alimentos: Array.isArray(r.contribuicoes_alimento)
-  ? r.contribuicoes_alimento
-      .filter((a: any) => a.alimento?.NomeAlimento?.trim() !== "")
-      .map((a: any) => ({
-        NomeAlimento: String(a.alimento?.NomeAlimento ?? ""),
-        Pontuacao: a.alimento?.Pontuacao ?? "",
-      }))
-      
-  : [],
+                alimentos: Array.isArray(r.contribuicoes_alimento)
+                  ? r.contribuicoes_alimento
+                      .filter(
+                        (a: any) => a.alimento?.NomeAlimento?.trim() !== ""
+                      )
+                      .map((a: any) => ({
+                        NomeAlimento: String(a.alimento?.NomeAlimento ?? ""),
+                        Pontuacao: a.alimento?.Pontuacao ?? "",
+                      }))
+                  : [],
               } satisfies ContributionAdmin;
             })
           : [];

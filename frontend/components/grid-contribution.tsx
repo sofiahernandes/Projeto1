@@ -20,6 +20,24 @@ interface RenderContributionProps {
   onSelect?: (contribution: Contribution) => void;
   refreshKey?: number;
 }
+
+type ItemAlimento = {
+  Quantidade: number;
+  PesoUnidade: number;
+  PontuacaoAlimento: number;
+  NomeAlimento: string;
+};
+
+type ContributionAdmin = Contribution & {
+  Itens?: ItemAlimento[];
+  PesoTotal?: number;
+  PontuacaoTotal?: number;
+  alimentos?: {
+    NomeAlimento: string;
+    Pontuacao?: number | string;
+  }[];
+};
+
 const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export default function RenderContributionCard({
@@ -27,7 +45,7 @@ export default function RenderContributionCard({
   onSelect,
   refreshKey = 0,
 }: RenderContributionProps) {
-  const [contributions, setContributions] = useState<Contribution[]>([]);
+  const [contributions, setContributions] = useState<ContributionAdmin[]>([]);
   const params = useParams();
   const raFromParams = params?.RaUsuario ? Number(params.RaUsuario) : undefined;
   const RaUsuario =
@@ -63,6 +81,48 @@ export default function RenderContributionCard({
 
         const data: Contribution[] = Array.isArray(raw)
           ? raw.map((r: any) => {
+              const quantidade = Number(
+                String(r.Quantidade).replace(/\./g, "").replace(",", ".")
+              );
+
+              const pesoUnidade =
+                r.PesoUnidade != null
+                  ? Number(
+                      String(r.PesoUnidade).replace(/\./g, "").replace(",", ".")
+                    )
+                  : 0;
+
+              const itens: ItemAlimento[] = Array.isArray(
+                r.contribuicoes_alimento
+              )
+                ? r.contribuicoes_alimento.map(
+                    (it: any): ItemAlimento => ({
+                      Quantidade: quantidade,
+                      PesoUnidade: pesoUnidade,
+                      PontuacaoAlimento: Number(it?.alimento?.Pontuacao ?? 0),
+                      NomeAlimento: String(it?.alimento?.NomeAlimento ?? ""),
+                    })
+                  )
+                : [];
+
+              const pesoTotal =
+                Number.isFinite(quantidade) && Number.isFinite(pesoUnidade)
+                  ? quantidade * pesoUnidade
+                  : undefined;
+
+              const pontTotal = itens.reduce<number>((sum, it) => {
+                const parc = it.Quantidade * it.PontuacaoAlimento;
+                return sum + (Number.isFinite(parc) ? parc : 0);
+              }, 0);
+
+              console.log("Calculado:", {
+                quantidade,
+                pesoUnidade,
+                pesoTotal,
+                pontTotal,
+                itens,
+              });
+
               const IdContribuicao = Number(
                 r.IdContribuicao ??
                   r.IdContribuicaoFinanceira ??
@@ -73,8 +133,11 @@ export default function RenderContributionCard({
                 r?.comprovante?.IdComprovante ?? r?.IdComprovante ?? null;
 
               const rawImg =
+                r?.Comprovante ??
                 r?.comprovante?.Imagem ??
+                r?.Comprovante?.Imagem ??
                 r?.Imagem ??
+                r?.comprovantes?.[0]?.Imagem ??
                 r?.UrlComprovante ??
                 null;
 
@@ -82,7 +145,7 @@ export default function RenderContributionCard({
                 | { IdComprovante: number; Imagem: string }
                 | undefined;
 
-              if (idComp && rawImg && String(rawImg).trim() !== "") {
+              if (rawImg && String(rawImg).trim() !== "") {
                 const s = String(rawImg).trim();
                 const isAbsolute = /^https?:\/\//i.test(s);
                 const base = (
@@ -93,22 +156,14 @@ export default function RenderContributionCard({
                   : `${base}/uploads/${s.replace(/^\/+/, "")}`;
 
                 comprovante = {
-                  IdComprovante: Number(idComp),
+                  IdComprovante: idComp != null ? Number(idComp) : 0,
                   Imagem: finalUrl,
                 };
               }
-
               return {
                 RaUsuario: Number(r.RaUsuario),
                 TipoDoacao: String(r.TipoDoacao ?? ""),
-                Quantidade:
-                  r.Quantidade != null
-                    ? Number(
-                        String(r.Quantidade)
-                          .replace(/\./g, "")
-                          .replace(",", ".")
-                      )
-                    : 0,
+                Quantidade: quantidade,
                 Meta:
                   r.Meta != null
                     ? Number(
@@ -126,23 +181,28 @@ export default function RenderContributionCard({
                 IdContribuicao,
                 DataContribuicao: String(r.DataContribuicao ?? ""),
                 NomeAlimento: r.NomeAlimento ?? undefined,
+                NomeTime: r.NomeTime ?? undefined,
+                Itens: itens,
+                PesoTotal: pesoTotal,
+                PontuacaoTotal: itens.length ? pontTotal : undefined,
                 PontuacaoAlimento: r.PontuacaoAlimento ?? undefined,
-                PesoUnidade: r.PesoUnidade ?? undefined,
+                PesoUnidade: pesoUnidade,
                 uuid: uuidv4(),
+
+                alimentos: Array.isArray(r.contribuicoes_alimento)
+                  ? r.contribuicoes_alimento
+                      .filter(
+                        (a: any) => a.alimento?.NomeAlimento?.trim() !== ""
+                      )
+                      .map((a: any) => ({
+                        NomeAlimento: a.alimento?.NomeAlimento ?? "",
+                        Pontuacao: a.alimento?.Pontuacao ?? "",
+                      }))
+                  : [],
               };
             })
           : [];
-        console.log(
-          raw,
-          data.find((d) => d.comprovante)
-        );
-        console.log(
-          "Comprovantes mapeados:",
-          data.map((d) => ({
-            id: d.IdContribuicao,
-            href: d.comprovante?.Imagem,
-          }))
-        );
+        console.log(raw);
         setContributions(data);
       } catch (err: any) {
         if (err?.name === "AbortError") {

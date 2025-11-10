@@ -15,12 +15,10 @@ interface ContributionData {
   };
   IdContribuicao: number;
   DataContribuicao: string;
-
   alimentos?: {
     NomeAlimento: string;
     Pontuacao?: number | string;
   }[];
-
   PontuacaoAlimento: number;
   PesoUnidade: number;
   uuid: string;
@@ -73,6 +71,7 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
                     <p className="text-sm text-gray-600">Quantidade</p>
                     <p className="font-semibold">
                       {Intl.NumberFormat("pt-BR").format(data.Quantidade)}
+                      {data.TipoDoacao === "Financeira" ? "reais" : "Kg"}
                     </p>
                   </div>
 
@@ -81,9 +80,10 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
                       <p className="text-sm text-gray-600">Meta</p>
                       <p className="font-semibold">
                         {typeof data.Meta === "number" &&
-                        Number.isFinite(data.Meta)
-                          ? new Intl.NumberFormat("pt-BR").format(data.Meta)
-                          : "-"}
+                          (Number.isFinite(data.Meta)
+                            ? new Intl.NumberFormat("pt-BR").format(data.Meta)
+                            : "-")}
+                        {data.TipoDoacao === "Financeira" ? "reais" : "Kg"}
                       </p>
                     </div>
                   )}
@@ -100,16 +100,25 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
                   data.alimentos.length > 0 ? (
                     <ul className="flex justify-between">
                       <div>
-                      <p className="text-sm text-gray-600"> Alimentos arrecadados</p>
-                      {data.alimentos.map((a, i) => (
-                        <li key={i} className="font-semibold"> {a.NomeAlimento}</li>
-                      ))}
+                        <p className="text-sm text-gray-600">
+                          {" "}
+                          Alimentos arrecadados
+                        </p>
+                        {data.alimentos.map((a, i) => (
+                          <li key={i} className="font-semibold">
+                            {" "}
+                            {a.NomeAlimento}
+                          </li>
+                        ))}
                       </div>
-                      <div> 
+                      <div>
                         <p className="text-sm text-gray-600"> Pontuação item</p>
                         {data.alimentos.map((a, i) => (
-                        <li key={i} className="font-semibold"> {a.Pontuacao}</li>
-                      ))}
+                          <li key={i} className="font-semibold">
+                            {" "}
+                            {a.Pontuacao}
+                          </li>
+                        ))}
                       </div>
                     </ul>
                   ) : data.TipoDoacao === "Alimenticia" ? (

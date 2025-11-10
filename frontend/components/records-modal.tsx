@@ -81,6 +81,7 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
                         Number.isFinite(data.Meta)
                           ? new Intl.NumberFormat("pt-BR").format(data.Meta)
                           : "-"}
+                        {data.TipoDoacao === "Financeira" ? "reais" : "Kg"}
                       </p>
                     </div>
                   )}
@@ -88,7 +89,11 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
                   {data.Gastos !== null && (
                     <div>
                       <p className="text-sm text-gray-600">Gastos</p>
-                      <p className="font-semibold"> {formatBRL(data.Gastos)}</p>
+                      <p className="font-semibold">
+                        {" "}
+                        {formatBRL(data.Gastos)}
+                        {data.TipoDoacao === "Financeira" ? "reais" : "Kg"}
+                      </p>
                     </div>
                   )}
 

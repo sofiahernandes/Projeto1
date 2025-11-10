@@ -24,6 +24,24 @@ interface RenderContributionProps {
   onSelect?: (contribution: Contribution) => void;
   refreshKey?: number;
 }
+
+type ItemAlimento = {
+  Quantidade: number;
+  PesoUnidade: number;
+  PontuacaoAlimento: number;
+  NomeAlimento: string;
+};
+
+type ContributionAdmin = Contribution & {
+  Itens?: ItemAlimento[];
+  PesoTotal?: number;
+  PontuacaoTotal?: number;
+  alimentos?: {
+    NomeAlimento: string;
+    Pontuacao?: number | string;
+  }[];
+};
+
 export default function RenderContributionTable({
   raUsuario,
   onSelect,
@@ -69,6 +87,48 @@ export default function RenderContributionTable({
 
         const data: Contribution[] = Array.isArray(raw)
           ? raw.map((r: any) => {
+              const quantidade = Number(
+                String(r.Quantidade).replace(/\./g, "").replace(",", ".")
+              );
+
+              const pesoUnidade =
+                r.PesoUnidade != null
+                  ? Number(
+                      String(r.PesoUnidade).replace(/\./g, "").replace(",", ".")
+                    )
+                  : 0;
+
+              const itens: ItemAlimento[] = Array.isArray(
+                r.contribuicoes_alimento
+              )
+                ? r.contribuicoes_alimento.map(
+                    (it: any): ItemAlimento => ({
+                      Quantidade: quantidade,
+                      PesoUnidade: pesoUnidade,
+                      PontuacaoAlimento: Number(it?.alimento?.Pontuacao ?? 0),
+                      NomeAlimento: String(it?.alimento?.NomeAlimento ?? ""),
+                    })
+                  )
+                : [];
+
+              const pesoTotal =
+                Number.isFinite(quantidade) && Number.isFinite(pesoUnidade)
+                  ? quantidade * pesoUnidade
+                  : undefined;
+
+              const pontTotal = itens.reduce<number>((sum, it) => {
+                const parc = it.Quantidade * it.PontuacaoAlimento;
+                return sum + (Number.isFinite(parc) ? parc : 0);
+              }, 0);
+
+              console.log("Calculado:", {
+                quantidade,
+                pesoUnidade,
+                pesoTotal,
+                pontTotal,
+                itens,
+              });
+
               const IdContribuicao = Number(
                 r.IdContribuicao ??
                   r.IdContribuicaoFinanceira ??
@@ -79,8 +139,11 @@ export default function RenderContributionTable({
                 r?.comprovante?.IdComprovante ?? r?.IdComprovante ?? null;
 
               const rawImg =
+                r?.Comprovante ??
                 r?.comprovante?.Imagem ??
+                r?.Comprovante?.Imagem ??
                 r?.Imagem ??
+                r?.comprovantes?.[0]?.Imagem ??
                 r?.UrlComprovante ??
                 null;
 
@@ -88,7 +151,7 @@ export default function RenderContributionTable({
                 | { IdComprovante: number; Imagem: string }
                 | undefined;
 
-              if (idComp && rawImg && String(rawImg).trim() !== "") {
+              if (rawImg && String(rawImg).trim() !== "") {
                 const s = String(rawImg).trim();
                 const isAbsolute = /^https?:\/\//i.test(s);
                 const base = (
@@ -99,7 +162,7 @@ export default function RenderContributionTable({
                   : `${base}/uploads/${s.replace(/^\/+/, "")}`;
 
                 comprovante = {
-                  IdComprovante: Number(idComp),
+                  IdComprovante: idComp != null ? Number(idComp) : 0,
                   Imagem: finalUrl,
                 };
               }
@@ -107,14 +170,7 @@ export default function RenderContributionTable({
               return {
                 RaUsuario: Number(r.RaUsuario),
                 TipoDoacao: String(r.TipoDoacao ?? ""),
-                Quantidade:
-                  r.Quantidade != null
-                    ? Number(
-                        String(r.Quantidade)
-                          .replace(/\./g, "")
-                          .replace(",", ".")
-                      )
-                    : 0,
+                Quantidade: quantidade,
                 Meta:
                   r.Meta != null
                     ? Number(
@@ -132,23 +188,27 @@ export default function RenderContributionTable({
                 IdContribuicao,
                 DataContribuicao: String(r.DataContribuicao ?? ""),
                 NomeAlimento: r.NomeAlimento ?? undefined,
+                NomeTime: r.NomeTime ?? undefined,
+                Itens: itens,
+                PesoTotal: pesoTotal,
+                PontuacaoTotal: itens.length ? pontTotal : undefined,
                 PontuacaoAlimento: r.PontuacaoAlimento ?? undefined,
-                PesoUnidade: r.PesoUnidade ?? undefined,
+                PesoUnidade: pesoUnidade,
                 uuid: uuidv4(),
-              };
+
+                alimentos: Array.isArray(r.contribuicoes_alimento)
+                  ? r.contribuicoes_alimento
+                      .filter(
+                        (a: any) => a.alimento?.NomeAlimento?.trim() !== ""
+                      )
+                      .map((a: any) => ({
+                        NomeAlimento: String(a.alimento?.NomeAlimento ?? ""),
+                        Pontuacao: a.alimento?.Pontuacao ?? "",
+                      }))
+                  : [],
+              } satisfies ContributionAdmin;
             })
           : [];
-        console.log(
-          raw,
-          data.find((d) => d.comprovante)
-        );
-        console.log(
-          "Comprovantes mapeados:",
-          data.map((d) => ({
-            id: d.IdContribuicao,
-            href: d.comprovante?.Imagem,
-          }))
-        );
         setContributions(data);
       } catch (err: any) {
         if (err?.name === "AbortError") {
@@ -198,7 +258,7 @@ export default function RenderContributionTable({
 
   return (
     <div className="p-2.5">
-      <DataTable<Contribution, unknown>
+      <DataTable<ContributionAdmin, unknown>
         columns={columns}
         data={contributions}
       />
