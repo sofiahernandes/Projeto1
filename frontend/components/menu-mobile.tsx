@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import homeDefault from "@/assets/icons/home.png";
@@ -17,14 +17,6 @@ import historyDefault from "@/assets/icons/history.png";
 import historyActive from "@/assets/icons/history-active.png";
 import historyPressed from "@/assets/icons/history-pressed.png";
 
-interface Properties {
-  RaUsuario: number;
-}
-
-export default function MenuMobile({ RaUsuario }: Properties) {
-import { usePathname, useRouter, useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-
 export default function MenuMobile() {
   const pathname = usePathname();
   const router = useRouter();
@@ -38,10 +30,10 @@ export default function MenuMobile() {
   const isActive = (href: string) => pathname?.startsWith(href);
 
   useEffect(() => {
-    if (params?.RaUsuario){
-      setRaUsuario(Number(params?.RaUsuario))
+    if (params?.RaUsuario) {
+      setRaUsuario(Number(params.RaUsuario));
     }
-  }, [RaUsuario, pathname]);
+  }, [params]);
 
   const onCreateClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
     if (isActive(createHref)) {
@@ -53,7 +45,7 @@ export default function MenuMobile() {
   // ---------- Estilos base ----------
   const basePill =
     "relative flex items-center justify-center h-10 w-16 rounded-[10px] transition-all duration-300 ease-out";
-  const neutralPill = "bg-transparent x'hover:bg-primary/20";
+  const neutralPill = "bg-transparent hover:bg-primary/20";
   const activePill = "bg-[#3B5D3D] text-white border border-[#3B5D3D]";
 
   // ---------- Ícones ----------
@@ -88,7 +80,6 @@ export default function MenuMobile() {
     };
   }, []);
 
-  // ---------- Escolher ícone ----------
   const getIconSrc = (
     set: { default: any; active: any; pressed?: any },
     isTabActive: boolean,
@@ -99,7 +90,6 @@ export default function MenuMobile() {
     return set.default;
   };
 
-  // ---------- JSX ----------
   return (
     <nav
       role="navigation"

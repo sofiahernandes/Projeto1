@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import "@/styles/globals.css";
 
@@ -12,17 +12,23 @@ import FoodDonations from "@/components/food-donations";
 type Tipo = "Financeira" | "Alimenticia";
 
 export default function Donations() {
-  const params = useParams() as { RaUsuario?: string };
-  const raUsuario = Number(params?.RaUsuario ?? 0);
-
+  const params = useParams();
+  const [raUsuario, setRaUsuario] = useState<number>(0);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [raUsuario, setRaUsuario] = useState<number>(RaUsuario);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"finance" | "food">("finance");
   const [alimentosFromChild, setAlimentosFromChild] = useState<any[]>([]);
   const [totaisFromChild, setTotaisFromChild] = useState<{ pontos: number }>({
     pontos: 0,
   });
+  const [idAlimento, setIdAlimento] = useState<number>(0);
+  
+
+  useEffect(() => {
+    if (params?.RaUsuario) {
+      setRaUsuario(Number(params.RaUsuario));
+    }
+  }, [params]);
 
   interface FinanceiraState {
     tipoDoacao: Tipo;
@@ -36,9 +42,9 @@ export default function Donations() {
   const [financeira, setFinanceira] = useState<FinanceiraState>({
     tipoDoacao: "Financeira",
     fonte: "",
-    meta: undefined,
-    gastos: undefined,
-    quantidade: undefined,
+    meta: 0,
+    gastos: 0,
+    quantidade: 0,
     comprovante: null,
   });
 
@@ -49,15 +55,17 @@ export default function Donations() {
     gastos?: number;
     quantidade?: number;
     pesoUnidade?: number;
+    comprovante: File | null;
   }
 
   const [alimenticia, setAlimenticia] = useState<AlimenticiaState>({
     tipoDoacao: "Alimenticia",
     fonte: "",
-    meta: undefined,
-    quantidade: undefined,
-    gastos: undefined,
+    meta: 0,
+    quantidade: 0,
+    gastos: 0,
     pesoUnidade: 0,
+    comprovante: null,
   });
 
   const fmt = (value: number) => value.toLocaleString("pt-BR");
@@ -65,8 +73,8 @@ export default function Donations() {
   const backend_url =
     process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
   const apiUrl = `${backend_url}/api/createContribution`;
-  const pontosCalculados =
-    (alimenticia.quantidade || 0) * (alimenticia.pesoUnidade || 0);
+
+  // ===== HANDLERS =====
 
   async function handleFinancialSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -96,34 +104,14 @@ export default function Donations() {
         throw new Error(err.error || "Erro ao enviar a contribuição");
       }
 
-      const data = await res.json();
-      const idContribuicao = data.data?.IdContribuicaoFinanceira;
-
-      if (financeira.comprovante && idContribuicao) {
-        const formData = new FormData();
-        formData.append("file", financeira.comprovante);
-
-        const resComprovante = await fetch(
-          `${backend_url}/api/comprovante/${idContribuicao}`,
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
-
-        if (!resComprovante.ok) {
-          console.warn("Erro ao enviar comprovante");
-        }
-      }
-
-      alert(data.message || "Contribuição financeira enviada com sucesso!");
+      alert("Contribuição financeira enviada com sucesso!");
 
       setFinanceira({
         tipoDoacao: "Financeira",
         fonte: "",
-        meta: undefined,
-        gastos: undefined,
-        quantidade: undefined,
+        meta: 0,
+        gastos: 0,
+        quantidade: 0,
         comprovante: null,
       });
     } catch (err: any) {
@@ -163,28 +151,18 @@ export default function Donations() {
       if (!res.ok)
         throw new Error(`Erro ao enviar (${res.status}): ${await res.text()}`);
 
-      alert(`Contribuição ${tipo.toLowerCase()} enviada com sucesso!`);
+      alert("Contribuição alimentícia enviada com sucesso!");
 
-      if (tipo === "Financeira") {
-        setFinanceira({
-          tipoDoacao: "Financeira",
-          fonte: "",
-          meta: 0,
-          gastos: 0,
-          quantidade: 0,
-          comprovante: "",
-        });
-      } else {
-        setAlimenticia({
-          tipoDoacao: "Alimenticia",
-          fonte: "",
-          meta: 0,
-          quantidade: 0,
-          pesoUnidade: 0,
-          comprovante: "",
-        });
-        setAlimentosFromChild([]);
-      }
+      setAlimenticia({
+        tipoDoacao: "Alimenticia",
+        fonte: "",
+        meta: 0,
+        quantidade: 0,
+        pesoUnidade: 0,
+        gastos: 0,
+        comprovante: null,
+      });
+      setAlimentosFromChild([]);
     } catch (err: any) {
       console.error("❌ Erro ao enviar:", err);
       alert(err?.message || "Erro ao enviar contribuição");
@@ -247,6 +225,7 @@ export default function Donations() {
 
         <main className="flex justify-center items-stretch min-h-screen w-full px-9 mt-10">
           <div className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-x-1">
+            {/* FORM FINANCEIRO */}
             <form
               onSubmit={handleFinancialSubmit}
               className={`${
@@ -256,36 +235,25 @@ export default function Donations() {
               <h2 className="text-2xl font-semibold mb-4">Financeiras</h2>
 
               <DonationsForm
-                raUsuario={raUsuario}
-                setRaUsuario={setRaUsuario}
-                tipoDoacao={financeira.tipoDoacao}
-                setTipoDoacao={() => {}}
-                fonte={financeira.fonte}
-                setFonte={(v) =>
-                  setFinanceira({ ...financeira, fonte: v as string })
-                }
-                meta={financeira.meta}
-                setMeta={(v) =>
-                  setFinanceira({ ...financeira, meta: Number(v) })
-                }
-                gastos={financeira.gastos}
-                setGastos={(v) =>
-                  setFinanceira({ ...financeira, gastos: Number(v) })
-                }
-                quantidade={financeira.quantidade}
-                setQuantidade={(v) =>
-                  setFinanceira({ ...financeira, quantidade: Number(v) })
-                }
-                comprovante={financeira.comprovante}
-                setComprovante={(v) =>
-                  setFinanceira({ ...financeira, comprovante: v as string })
-                }
+                  RaUsuario={raUsuario} // ✅ já garantido como número
+                  setRaUsuario={setRaUsuario}
+                  tipoDoacao={financeira.tipoDoacao}
+                  setTipoDoacao={() => {}}
+                  fonte={financeira.fonte}
+                  setFonte={(v) => setFinanceira({ ...financeira, fonte: v })}
+                  meta={financeira.meta ?? 0}
+                  setMeta={(v) => setFinanceira({ ...financeira, meta: Number(v) || 0 })}
+                  gastos={financeira.gastos ?? 0}
+                  setGastos={(v) => setFinanceira({ ...financeira, gastos: Number(v) || 0 })}
+                  quantidade={financeira.quantidade ?? 0}
+                  setQuantidade={(v) => setFinanceira({ ...financeira, quantidade: Number(v) || 0 })}
+                  comprovante={financeira.comprovante}
+                  setComprovante={(v) => setFinanceira({ ...financeira, comprovante: v as File })}
               />
 
               <div className="mt-4 flex items-center gap-3 justify-end">
                 <button
                   type="submit"
-                  onClick={() => setTipoDoacao("Financeira")}
                   disabled={loading}
                   className="w-fit px-4 py-2 rounded-[8px] bg-primary hover:bg-primary/70 text-white hover:opacity-90 disabled:opacity-50"
                 >
@@ -296,7 +264,7 @@ export default function Donations() {
 
             {/* FORM ALIMENTÍCIO */}
             <form
-              onSubmit={(e) => handleSubmit(e, "Alimenticia")}
+              onSubmit={handleFoodSubmit}
               className={`${
                 activeTab === "food" ? "block" : "hidden"
               } md:flex md:flex-col bg-secondary/20 border border-gray-100 p-6 rounded-xl shadow-md w-full h-[600px] overflow-hidden`}
@@ -305,19 +273,19 @@ export default function Donations() {
 
               <div className="min-h-0 flex-1 overflow-y-auto">
                 <FoodDonations
-                  raUsuario={raUsuario}
+                  raUsuario={raUsuario ?? 0}
                   setRaUsuario={() => {}}
                   tipoDoacao={alimenticia.tipoDoacao}
                   setTipoDoacao={() => {}}
-                  pesoUnidade={alimenticia.pesoUnidade}
+                  pesoUnidade={alimenticia.pesoUnidade ?? 0}
                   setPesoUnidade={(v) =>
                     setAlimenticia({ ...alimenticia, pesoUnidade: Number(v) })
                   }
-                  quantidade={alimenticia.quantidade}
+                  quantidade={alimenticia.quantidade ?? 0}
                   setQuantidade={(v) =>
                     setAlimenticia({ ...alimenticia, quantidade: Number(v) })
                   }
-                  meta={alimenticia.meta}
+                  meta={financeira.meta ?? 0}
                   setMeta={(v) =>
                     setAlimenticia({ ...alimenticia, meta: Number(v) })
                   }
@@ -325,12 +293,10 @@ export default function Donations() {
                   setFonte={(v) =>
                     setAlimenticia({ ...alimenticia, fonte: v as string })
                   }
-                  comprovante={alimenticia.comprovante}
-                  setComprovante={(v) =>
-                    setAlimenticia({ ...alimenticia, comprovante: v as string })
-                  }
+                  comprovante={null}
+                  setComprovante={() => {}}
                   onTotaisChange={setTotaisFromChild}
-                  idAlimento={idAlimento ?? 0}
+                  idAlimento={idAlimento}
                   setIdAlimento={setIdAlimento}
                   onAlimentosChange={setAlimentosFromChild}
                 />
@@ -343,7 +309,6 @@ export default function Donations() {
 
                 <button
                   type="submit"
-                  onClick={() => setTipoDoacao("Alimenticia")}
                   disabled={loading}
                   className="w-fit px-4 py-2 rounded-[8px] bg-primary hover:bg-primary/70 text-white hover:opacity-90 disabled:opacity-50"
                 >
