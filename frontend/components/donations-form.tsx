@@ -12,7 +12,9 @@ interface Properties {
   raUsuario: number;
   setRaUsuario: React.Dispatch<React.SetStateAction<number>>;
   tipoDoacao: "Financeira" | "Alimenticia";
-  setTipoDoacao: React.Dispatch<React.SetStateAction<"Financeira" | "Alimenticia">>;
+  setTipoDoacao: React.Dispatch<
+    React.SetStateAction<"Financeira" | "Alimenticia">
+  >;
   quantidade: number;
   setQuantidade: React.Dispatch<React.SetStateAction<number>>;
   fonte: string;
@@ -21,8 +23,8 @@ interface Properties {
   setMeta: React.Dispatch<React.SetStateAction<number>>;
   gastos: number;
   setGastos: React.Dispatch<React.SetStateAction<number>>;
-  comprovante: string;
-  setComprovante: React.Dispatch<React.SetStateAction<string>>;
+  comprovante: File | null;
+  setComprovante: React.Dispatch<React.SetStateAction<File | null>>;
 }
 
 export default function DonationsForm({
@@ -30,21 +32,21 @@ export default function DonationsForm({
   setRaUsuario,
   tipoDoacao,
   setTipoDoacao,
-  Quantidade,
+  quantidade,
   setQuantidade,
   fonte,
   setFonte,
-  Meta,
+  meta,
   setMeta,
-  Gastos,
+  gastos,
   setGastos,
-  Comprovante,
+  comprovante,
   setComprovante,
 }: Properties) {
   const [loading, setLoading] = useState(false);
+  const [picking, setPicking] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [picking, setPicking] = useState(false);
   const timerRef = useRef<number | null>(null);
 
   const [metaInput, setMetaInput] = useState<string>("");
@@ -54,32 +56,32 @@ export default function DonationsForm({
   const normalize = (s: string) => s.replace(",", ".").trim();
   const toNumberOrNaN = (s: string) => Number(normalize(s));
 
+  // Sincroniza valores numéricos com inputs de texto
   useEffect(() => {
     setMetaInput(meta ? String(meta) : "");
     setGastosInput(gastos ? String(gastos) : "");
     setQuantidadeInput(quantidade ? String(quantidade) : "");
   }, [meta, gastos, quantidade]);
 
-useEffect(() => {
-  const style = document.createElement("style");
-  style.innerHTML = `
-    @keyframes pop { 
-      0% { transform: scale(1); } 
-      40% { transform: scale(1.12); } 
-      100% { transform: scale(1); } 
-    }
-    .animate-pop { animation: pop 150ms ease-out; }
-    @media (prefers-reduced-motion: reduce) {
-      .animate-pop { animation: none !important; }
-    }
-  `;
-  document.head.appendChild(style);
-
-  // ✅ retorno do efeito deve ser apenas a função de limpeza
-  return () => {
-    document.head.removeChild(style);
-  };
-}, []);
+  // Animação de botão
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @keyframes pop { 
+        0% { transform: scale(1); } 
+        40% { transform: scale(1.12); } 
+        100% { transform: scale(1); } 
+      }
+      .animate-pop { animation: pop 150ms ease-out; }
+      @media (prefers-reduced-motion: reduce) {
+        .animate-pop { animation: none !important; }
+      }
+    `;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
   const stopGif = () => {
     setPicking(false);
@@ -97,6 +99,7 @@ useEffect(() => {
     fileInputRef.current?.click();
   };
 
+  // Limpa timer ao desmontar
   useEffect(() => {
     return () => {
       if (timerRef.current) {
@@ -166,7 +169,7 @@ useEffect(() => {
     setLoading(true);
     try {
       const form = new FormData();
-      if (comprovanteFile) form.append("Comprovante", comprovanteFile);
+      if (comprovante) form.append("Comprovante", comprovante);
       form.append("RaUsuario", String(raUsuario));
       form.append("Quantidade", String(qNum));
       form.append("Meta", metaInput ? String(metaNum) : "");
@@ -182,13 +185,12 @@ useEffect(() => {
       if (!res.ok) throw new Error(await res.text());
       alert("Contribuição registrada com sucesso!");
 
+      // Resetar campos
       setFonte("");
       setQuantidade(0);
       setMeta(0);
       setGastos(0);
-      setComprovante("");
-      setComprovanteFile(null);
-
+      setComprovante(null);
       setQuantidadeInput("");
       setMetaInput("");
       setGastosInput("");
@@ -201,7 +203,7 @@ useEffect(() => {
   };
 
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
       <div className="rounded-xl">
         <label className="block mb-1">Nome do Evento / Doador</label>
         <input
@@ -227,12 +229,8 @@ useEffect(() => {
           type="number"
           step="0.01"
           placeholder="Ex: 100"
-          value={Gastos === 0 || Gastos === undefined ? "" : Gastos}
-          onChange={(e) =>
-            setGastos(
-              e.currentTarget.value === "" ? 0 : Number(e.currentTarget.value)
-            )
-          }
+          value={gastosInput}
+          onChange={(e) => setGastosInput(e.currentTarget.value)}
           className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
 
@@ -241,16 +239,12 @@ useEffect(() => {
           type="number"
           step="0.01"
           placeholder="Ex: 140"
-          value={Quantidade === 0 || Quantidade === undefined ? "" : Quantidade}
-          onChange={(e) =>
-            setQuantidade(
-              e.currentTarget.value === "" ? 0 : Number(e.currentTarget.value)
-            )
-          }
+          value={quantidadeInput}
+          onChange={(e) => setQuantidadeInput(e.currentTarget.value)}
           className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
 
-        <label className="block mb-1 mt-8">Comprovante (PNG/JPEG)</label>
+        <label className="block mb-1 mt-8">Comprovante (PNG/JPEG/PDF)</label>
         <input
           ref={fileInputRef}
           type="file"
@@ -285,12 +279,20 @@ useEffect(() => {
           </button>
 
           <span className="ml-3 text-sm text-gray-700">
-            {Comprovante
-              ? `Selecionado: ${Comprovante.name}`
+            {comprovante
+              ? `Selecionado: ${comprovante.name}`
               : "Nenhum arquivo escolhido"}
           </span>
         </div>
       </div>
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+      >
+        {loading ? "Enviando..." : "Enviar"}
+      </button>
     </form>
   );
 }

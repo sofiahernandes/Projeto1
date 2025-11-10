@@ -22,7 +22,6 @@ export default function Donations() {
     pontos: 0,
   });
   const [idAlimento, setIdAlimento] = useState<number>(0);
-  
 
   useEffect(() => {
     if (params?.RaUsuario) {
@@ -227,10 +226,13 @@ export default function Donations() {
           <div className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-x-1">
             {/* FORM FINANCEIRO */}
             <form
-              onSubmit={handleFinancialSubmit}
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleFinancialSubmit();
+              }}
               className={`${
                 activeTab === "finance" ? "block" : "hidden"
-              } md:block bg-[#F2D1D4] border  border-gray-100 p-6 rounded-xl shadow-md w-full h-[600px]`}
+              } md:block bg-[#F2D1D4] border border-gray-100 p-6 rounded-xl shadow-md w-full h-[600px]`}
             >
               <h2 className="text-2xl font-semibold mb-4">Financeiras</h2>
 
@@ -243,19 +245,19 @@ export default function Donations() {
                 setFonte={(v) =>
                   setFinanceira({ ...financeira, fonte: v as string })
                 }
-                Meta={financeira.meta}
+                meta={financeira.meta ?? 0}
                 setMeta={(v) =>
                   setFinanceira({ ...financeira, meta: Number(v) })
                 }
-                Gastos={financeira.gastos}
+                gastos={financeira.gastos ?? 0}
                 setGastos={(v) =>
                   setFinanceira({ ...financeira, gastos: Number(v) })
                 }
-                Quantidade={financeira.quantidade}
+                quantidade={financeira.quantidade ?? 0}
                 setQuantidade={(v) =>
                   setFinanceira({ ...financeira, quantidade: Number(v) })
                 }
-                Comprovante={financeira.comprovante}
+                comprovante={financeira.comprovante}
                 setComprovante={(v) =>
                   setFinanceira({
                     ...financeira,
@@ -266,19 +268,21 @@ export default function Donations() {
 
               <div className="mt-2 flex justify-end">
                 <button
-                  type="button"
-                  onClick={handleFinancialSubmit}
+                  type="submit"
                   disabled={loading}
                   className="w-fit px-4 py-2 rounded-[8px] bg-[#426e55] hover:bg-opacity/10 text-white hover:opacity-90 disabled:opacity-50"
                 >
                   {loading ? "Enviando..." : "Cadastrar Financeira"}
                 </button>
               </div>
-            </div>
+            </form>
 
             {/* FORM ALIMENTÍCIO */}
             <form
-              onSubmit={handleFoodSubmit}
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleFoodSubmit();
+              }}
               className={`${
                 activeTab === "food" ? "block" : "hidden"
               } md:flex md:flex-col bg-[#F2D1D4] border border-gray-100 p-6 rounded-xl shadow-md w-full h-[600px] overflow-y-scroll`}
@@ -319,20 +323,18 @@ export default function Donations() {
               <div className="mt-4 flex flex-none items-center gap-3 justify-end">
                 <div className="bg-[#DCA4A9] border text-sm rounded-lg py-2 px-16 whitespace-nowrap w-[300px] overflow-hidden text-ellipsis">
                   Pontuação:{" "}
-                  <span>
-                    {fmt(totaisFromChild?.pontos ?? pontosCalculados)}
-                  </span>
+                  <span>{fmt(totaisFromChild?.pontos ?? 0)}</span>
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-fit px-4 py-2 rounded-lg  bg-[#426e55] text-white hover:[#195b41] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-fit px-4 py-2 rounded-lg bg-[#426e55] text-white hover:bg-[#195b41] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? "Enviando..." : "Cadastrar Alimentícia"}
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </main>
       </div>

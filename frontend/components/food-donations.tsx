@@ -45,8 +45,8 @@ interface Properties {
     }[]
   ) => void;
   onTotaisChange?: (totais: { pontos: number }) => void;
-  IdAlimento?: number;
-  setIdAlimento?: React.Dispatch<React.SetStateAction<number | undefined>>;
+  idAlimento: number;
+  setIdAlimento: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function FoodDonations({
@@ -64,7 +64,7 @@ export default function FoodDonations({
   setMeta,
   onAlimentosChange,
   onTotaisChange,
-  IdAlimento,
+  idAlimento,
   setIdAlimento,
   Comprovante,
   setComprovante,
@@ -165,8 +165,8 @@ export default function FoodDonations({
     "Feijão Preto": 5,
     "Açúcar Refinado": 1,
     "Leite em Pó": 3,
-    Fubá: 1.25,
-    Macarrão: 1.25,
+    "Fubá": 1.25,
+    "Macarrão": 1.25,
     "Óleo de Soja": 8,
   };
 
@@ -194,24 +194,6 @@ export default function FoodDonations({
   }, [alimentos]);
 
   useEffect(() => {
-    const somaQtd = alimentos.reduce(
-      (acc, a) => acc + parseNumber(a.quantidade),
-      0
-    );
-    const somaPeso = alimentos.reduce(
-      (acc, a) => acc + parseNumber(a.pesoUnidade),
-      0
-    );
-    const countPeso = alimentos.filter(
-      (a) => parseNumber(a.pesoUnidade) > 0
-    ).length;
-    const mediaPeso = countPeso > 0 ? somaPeso / countPeso : 0;
-
-    setQuantidade(somaQtd);
-    setPesoUnidade(mediaPeso);
-  }, [alimentos]);
-
-  useEffect(() => {
     if (!onAlimentosChange) return;
     const alimentosComQuantidade = alimentos.filter(
       (a) => parseNumber(a.quantidade) > 0
@@ -225,24 +207,27 @@ export default function FoodDonations({
       })
     );
 
-    onAlimentosChange(converted);
+  onAlimentosChange(converted);
   }, [alimentos]);
   useEffect(() => {
     if (!onTotaisChange) return;
     onTotaisChange(totais);
   }, [totais]);
 
-  const handleAlimentoChange = (
-    id: number,
-    campo: "quantidade" | "pesoUnidade",
-    valor: string
-  ) => {
-    const v = valor.replace(/\s+/g, "");
-    if (campo === "quantidade" && v.includes(".")) return;
-    setAlimentos((prev) =>
-      prev.map((row) => (row.id === id ? { ...row, [campo]: v } : row))
-    );
-  };
+const handleAlimentoChange = (
+  id: number,
+  campo: "quantidade" | "pesoUnidade",
+  valor: string
+) => {
+  const v = valor.replace(/\s+/g, "");
+  if (campo === "quantidade" && v.includes(".")) return;
+
+  setAlimentos((prev) =>
+    prev.map((row) => (row.id === id ? { ...row, [campo]: v } : row))
+  );
+  setIdAlimento(id);
+};
+  
 
   return (
     <div className="flex flex-col gap-2 w-full">
