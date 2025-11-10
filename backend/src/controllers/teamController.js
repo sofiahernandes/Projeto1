@@ -5,7 +5,7 @@ const teamsController = {
   allTeams: async (_, res) => {
     try {
       const times = await prisma.time.findMany({
-        orderby: {
+        orderBy: {
           time: "desc",
         },
       });

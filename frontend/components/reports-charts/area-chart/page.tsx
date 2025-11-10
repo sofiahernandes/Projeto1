@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { TrendingUp } from "lucide-react"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
-
+import { useEffect, useState } from "react";
+import { TrendingUp } from "lucide-react";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import {
   Card,
   CardContent,
@@ -10,85 +10,178 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
+import { Contribution } from "@/components/contribution-table-admin/columns";
+import { v4 as uuidv4 } from "uuid";
 
-export const description = "A simple area chart"
-
-const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-]
+export const description =
+  "Gráfico de arrecadações financeiras ao longo do tempo";
 
 const chartConfig = {
   desktop: {
-    label: "Desktop",
+    label: "Financeira",
     color: "var(--chart-1)",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export function FinanContribuitionsChart() {
+  const [contributions, setContributions] = useState<Contribution[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+    async function fetchContributions() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await fetch(`${backend_url}/api/contributions`, {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (!res.ok) throw new Error("Erro ao buscar contribuições");
+
+        const raw = await res.json();
+
+        const data: Contribution[] = Array.isArray(raw)
+          ? raw.map((r: any) => ({
+              IdContribuicao:
+                r.IdContribuicao ??
+                r.IdContribuicaoFinanceira ??
+                r.IdContribuicaoAlimenticia,
+              RaUsuario: Number(r.RaUsuario),
+              TipoDoacao: String(r.TipoDoacao ?? ""),
+              Quantidade:
+                r.Quantidade != null
+                  ? Number(
+                      String(r.Quantidade).replace(/\./g, "").replace(",", ".")
+                    )
+                  : 0,
+              DataContribuicao: String(r.DataContribuicao ?? ""),
+              NomeTime: r.NomeTime ?? undefined,
+              PontuacaoAlimento: r.PontuacaoAlimento ?? undefined,
+              PesoUnidade: r.PesoUnidade ?? undefined,
+              uuid: uuidv4(),
+            }))
+          : [];
+
+        setContributions(data);
+      } catch (err: any) {
+        if (err?.name !== "AbortError") {
+          setError(err?.message ?? "Erro inesperado");
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchContributions();
+    return () => controller.abort();
+  }, []);
+
+  const chartData =
+    contributions.length > 0
+      ? Object.values(
+          contributions.reduce((acc: any, c: Contribution) => {
+            if (c.TipoDoacao !== "Financeira") return acc;
+            const date = new Date(c.DataContribuicao);
+            if (isNaN(date.getTime())) return acc;
+
+            const month = date.toLocaleString("pt-BR", {
+              month: "short",
+              year: "numeric",
+            });
+
+            if (!acc[month]) acc[month] = { month, desktop: 0 };
+            acc[month].desktop += c.Quantidade;
+            return acc;
+          }, {} as Record<string, { month: string; desktop: number }>)
+        )
+      : [];
+
+  if (loading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Arrecadação financeira</CardTitle>
+        </CardHeader>
+        <CardContent className="flex items-center justify-center h-64">
+          <p className="text-muted-foreground">Carregando...</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Arrecadação financeira</CardTitle>
+        </CardHeader>
+        <CardContent className="flex items-center justify-center h-64">
+          <p className="text-destructive">Erro: {error}</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (chartData.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Arrecadação financeira</CardTitle>
+          <CardDescription>Nenhum dado disponível</CardDescription>
+        </CardHeader>
+        <CardContent className="flex items-center justify-center h-64">
+          <p className="text-muted-foreground">Sem arrecadações registradas</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Area Chart</CardTitle>
+        <CardTitle>Arrecadação financeira</CardTitle>
         <CardDescription>
-          Showing total visitors for the last 6 months
+          Período de arrecadações financeiras durante o semestre
         </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <AreaChart
-            accessibilityLayer
-            data={chartData}
-            margin={{
-              left: 12,
-              right: 12,
-            }}
-          >
+          <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"
               tickLine={false}
+              tickMargin={10}
               axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value) =>
+                value.charAt(0).toUpperCase() + value.slice(1)
+              }
             />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
+              content={<ChartTooltipContent hideLabel />}
             />
-            <Area
-              dataKey="desktop"
-              type="natural"
-              fill="var(--color-desktop)"
-              fillOpacity={0.4}
-              stroke="var(--color-desktop)"
-            />
-          </AreaChart>
+            <Bar dataKey="desktop" fill="var(--color-primary)" radius={8} />
+          </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 leading-none font-medium">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="text-muted-foreground flex items-center gap-2 leading-none">
-              January - June 2024
-            </div>
-          </div>
+      <CardFooter className="flex-col items-start gap-2 text-sm">
+        <div className="text-muted-foreground leading-none">
+          Agosto 2025 - Atualmente
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }

@@ -6,7 +6,7 @@ import RecordsMentor from "@/components/records-mentor";
 import RenderContributionCard from "@/components/grid-contribution-admin";
 import Loading from "@/components/loading";
 
-import { MajorContributionsChart } from "@/components/reports-charts/tooltip-chart/page";
+import { BiggestContributionsChart } from "@/components/reports-charts/tooltip-chart/page";
 import { FoodDonationsChart } from "@/components/reports-charts/pie-chart-label/page";
 import { FinanContribuitionsChart } from "@/components/reports-charts/area-chart/page";
 import { TeamsRankingChart } from "@/components/reports-charts/bar-label-costum/page";
@@ -114,7 +114,7 @@ export default function PublicReports() {
         </div>
 
         <div className="w-full h-full flex flex-col gap-6">
-          <MajorContributionsChart />
+          <BiggestContributionsChart />
           <FoodDonationsChart />
           <FinanContribuitionsChart />
           <TeamsRankingChart />

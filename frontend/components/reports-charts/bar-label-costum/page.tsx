@@ -1,6 +1,6 @@
 "use client";
-import React from "react";
-//import { TrendingUp } from "lucide-react"
+
+import React, { useEffect, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -25,36 +25,186 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-];
+interface Contribuicao {
+  IdContribuicaoAlimenticia?: number;
+  IdContribuicaoFinanceira?: number;
+  DataContribuicao?: Date;
+  RaUsuario: number;
+}
+
+interface Team {
+  IdTime?: number;
+  NomeTime: string;
+  IdMentor: number;
+  RaUsuario: number | null;
+  RaAluno2: number;
+  RaAluno3: number;
+  RaAluno4: number;
+  RaAluno5: number;
+  RaAluno6: number;
+  RaAluno7: number;
+  RaAluno8: number;
+  RaAluno9?: number;
+  RaAluno10?: number;
+  contribuicoes?: Contribuicao[];
+}
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "var(--chart-2)",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "var(--chart-2)",
+  pontos: {
+    label: "Contribuições",
+    color: "hsl(var(--chart-1))",
   },
   label: {
-    color: "var(--background)",
+    color: "hsl(var(--background))",
   },
 } satisfies ChartConfig;
 
 export function TeamsRankingChart() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [teams, setTeams] = useState<Team[]>([]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
+    let active = true;
+
+    async function fetchTeamContrib() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await fetch(`${backend_url}/api/contributions`, {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+
+        if (!res.ok) throw new Error("Erro ao buscar contribuições");
+
+        const contribRaw = await res.json();
+        if (!active) return;
+
+        const contribPorTime = new Map<number, Contribuicao[]>();
+
+        if (Array.isArray(contribRaw)) {
+          contribRaw.forEach((contrib: any) => {
+            const RaUsuario = Number(contrib.RaUsuario);
+            if (!contribPorTime.has(RaUsuario)) {
+              contribPorTime.set(RaUsuario, []);
+            }
+            contribPorTime.get(RaUsuario)?.push({
+              IdContribuicaoAlimenticia: contrib.IdContribuicaoAlimenticia,
+              IdContribuicaoFinanceira: contrib.IdContribuicaoFinanceira,
+              DataContribuicao: contrib.DataContribuicao,
+              RaUsuario: contrib.RaUsuario,
+            });
+          });
+        }
+
+        const data: Team[] = Array.isArray(contribRaw)
+          ? contribRaw.map((r: any) => {
+              const RaUsuario = Number(r.RaUsuario);
+              return {
+                IdTime: r.IdTime,
+                NomeTime: String(r.NomeTime ?? ""),
+                IdMentor: r.IdMentor ?? undefined,
+                RaUsuario: RaUsuario,
+                RaAluno2: Number(r.RaAluno2),
+                RaAluno3: Number(r.RaAluno3),
+                RaAluno4: Number(r.RaAluno4),
+                RaAluno5: Number(r.RaAluno5),
+                RaAluno6: Number(r.RaAluno6),
+                RaAluno7: Number(r.RaAluno7),
+                RaAluno8: Number(r.RaAluno8),
+                RaAluno9: Number(r.RaAluno9 || null),
+                RaAluno10: Number(r.RaAluno10 || null),
+                contribuicoes: contribPorTime.get(RaUsuario) || [],
+              };
+            })
+          : [];
+
+        console.log("Teams carregados:", data);
+        setTeams(data);
+      } catch (err: any) {
+        if (err?.name === "AbortError") return;
+        setError(err?.message ?? "Erro inesperado");
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+
+    fetchTeamContrib();
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, []);
+
+  const chartData = teams
+    .map((team) => {
+      const totalContribuicoes = team.contribuicoes?.length || 0;
+      const alimenticias =
+        team.contribuicoes?.filter((c) => c.IdContribuicaoAlimenticia)
+          ?.length || 0;
+      const financeiras =
+        team.contribuicoes?.filter((c) => c.IdContribuicaoFinanceira)?.length ||
+        0;
+
+      return {
+        nome: team.NomeTime,
+        pontos: totalContribuicoes,
+        alimenticias,
+        financeiras,
+      };
+    })
+    .sort((a, b) => b.pontos - a.pontos)
+    .slice(0, 5);
+
+  if (loading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Ranking de Times</CardTitle>
+        </CardHeader>
+        <CardContent className="flex items-center justify-center h-64">
+          <p className="text-muted-foreground">Carregando...</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Ranking de Times</CardTitle>
+        </CardHeader>
+        <CardContent className="flex items-center justify-center h-64">
+          <p className="text-destructive">Erro: {error}</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (chartData.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Ranking de Times</CardTitle>
+        </CardHeader>
+        <CardContent className="flex items-center justify-center h-64">
+          <p className="text-muted-foreground">Nenhum time encontrado</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Ranking de Times</CardTitle>
         <CardDescription>
-          Times com mais contribuições na edição atua
+          Top {chartData.length} times com mais contribuições na edição atual
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -63,13 +213,11 @@ export function TeamsRankingChart() {
             accessibilityLayer
             data={chartData}
             layout="vertical"
-            margin={{
-              right: 16,
-            }}
+            margin={{ right: 16 }}
           >
             <CartesianGrid horizontal={false} />
             <YAxis
-              dataKey="month"
+              dataKey="nome"
               type="category"
               tickLine={false}
               tickMargin={10}
@@ -77,29 +225,24 @@ export function TeamsRankingChart() {
               tickFormatter={(value) => value.slice(0, 3)}
               hide
             />
-            <XAxis dataKey="desktop" type="number" hide />
+            <XAxis dataKey="pontos" type="number" hide />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
             />
-            <Bar
-              dataKey="desktop"
-              // layout="vertical"
-              fill="var(--color-desktop)"
-              radius={4}
-            >
+            <Bar dataKey="pontos" fill="var(--color-primary)" radius={4}>
               <LabelList
-                dataKey="month"
+                dataKey="nome"
                 position="insideLeft"
                 offset={8}
-                className="fill-(--color-label)"
+                className="fill-(--color-white)"
                 fontSize={12}
               />
               <LabelList
-                dataKey="desktop"
+                dataKey="contribuições"
                 position="right"
                 offset={8}
-                className="fill-foreground"
+                className="fill-(--color-secondary)"
                 fontSize={12}
               />
             </Bar>
@@ -108,7 +251,7 @@ export function TeamsRankingChart() {
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="text-muted-foreground leading-none">
-          Showing total visitors for the last 6 months
+          Mostrando os times com maior número de contribuições cadastradas
         </div>
       </CardFooter>
     </Card>

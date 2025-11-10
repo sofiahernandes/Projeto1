@@ -123,7 +123,7 @@ export default function AdminProfile() {
                   onChange={(e) => setNewEmailMentor(e.target.value)}
                   value={newEmailMentor || ""}
                   placeholder="NovoAdministrador@gmail.com"
-                  className="w-[85%] h-full  w-full focus:outline-none block min-h-9 border rounded-md border-gray-400 px-2 mb-3 text-black placeholder-gray-400 pt-1 text-base"
+                  className="md:w-[85%] h-full  w-full focus:outline-none block min-h-9 border rounded-md border-gray-400 px-2 mb-3 text-black placeholder-gray-400 pt-1 text-base"
                 />
                 <p> Senha do novo administrador: </p>
                 <input
@@ -131,7 +131,7 @@ export default function AdminProfile() {
                   onChange={(e) => setSenhaMentor(e.target.value)}
                   value={senhaMentor || ""}
                   placeholder="Senha do novo administrador"
-                  className="w-[85%] h-full  w-full focus:outline-none block min-h-9 border rounded-md border-gray-400 px-2 mb-3 text-black placeholder-gray-400 pt-1 text-base "
+                  className="md:w-[85%] h-full  w-full focus:outline-none block min-h-9 border rounded-md border-gray-400 px-2 mb-3 text-black placeholder-gray-400 pt-1 text-base "
                 />
                 <button
                   type="submit"
