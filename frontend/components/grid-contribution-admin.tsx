@@ -41,7 +41,7 @@ export default function RenderContributionCardAdmin({
   refreshKey = 0,
   isPublicReport = false,
 }: RenderContributionProps) {
-  const [contributions, setContributions] = useState<Contribution[]>([]);
+  const [contributions, setContributions] = useState<ContributionAdmin[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -63,7 +63,7 @@ export default function RenderContributionCardAdmin({
         const raw = await res.json();
         if (!active) return;
 
-        const data: Contribution[] = Array.isArray(raw)
+        const data: ContributionAdmin[] = Array.isArray(raw)
           ? raw.map((r: any) => {
               const quantidade = Number(
                 String(r.Quantidade).replace(/\./g, "").replace(",", ".")

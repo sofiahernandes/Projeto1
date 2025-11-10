@@ -17,7 +17,7 @@ import Loading from "./loading";
 
 interface RenderContributionProps {
   raUsuario?: number;
-  onSelect?: (contribution: Contribution) => void;
+  onSelect?: (contribution: ContributionAdmin) => void;
   refreshKey?: number;
 }
 
@@ -79,7 +79,7 @@ export default function RenderContributionCard({
         const raw = await res.json();
         if (!active) return;
 
-        const data: Contribution[] = Array.isArray(raw)
+        const data: ContributionAdmin[] = Array.isArray(raw)
           ? raw.map((r: any) => {
               const quantidade = Number(
                 String(r.Quantidade).replace(/\./g, "").replace(",", ".")
