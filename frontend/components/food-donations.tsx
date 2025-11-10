@@ -1,17 +1,9 @@
 "use client";
 
 import Image, { StaticImageData } from "next/image";
-import React, { useEffect, useMemo, useState, useRef } from "react";
-
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import uploadStatic from "@/assets/icons/upload-static.png";
 import uploadGif from "@/assets/icons/upload-anim.gif";
-
-type AlimentoRow = {
-  id: number;
-  nome: string;
-  quantidade: number;
-  pesoUnidade: number;
-};
 
 type Img = StaticImageData | string;
 
@@ -22,214 +14,191 @@ interface Properties {
   setTipoDoacao: React.Dispatch<
     React.SetStateAction<"Financeira" | "Alimenticia">
   >;
-  Quantidade?: number;
+  quantidade?: number;
   setQuantidade: React.Dispatch<React.SetStateAction<number | undefined>>;
-  PesoUnidade?: number;
+  pesoUnidade?: number;
   setPesoUnidade: React.Dispatch<React.SetStateAction<number | undefined>>;
-  Comprovante: File | null | string;
+  comprovante: File | null | string;
   setComprovante: React.Dispatch<React.SetStateAction<File | null | string>>;
   fonte: string;
   setFonte: React.Dispatch<React.SetStateAction<string>>;
-  Meta?: number;
+  meta?: number;
   setMeta: React.Dispatch<React.SetStateAction<number | undefined>>;
-  onAlimentosChange?: (
-    alimentos: {
-      IdAlimento: number;
-      quantidade: number;
-      pesoUnidade: number;
-    }[]
-  ) => void;
-  onTotaisChange?: (totais: { pontos: number }) => void;
   idAlimento: number;
   setIdAlimento: React.Dispatch<React.SetStateAction<number>>;
+  gastos?: number;
+  setGastos: React.Dispatch<React.SetStateAction<number>>;
+  onTotaisChange?: (totais: {
+    pontos: number;
+    kgTotal: number;
+    gastos: number;
+  }) => void;
+  onAlimentoChange?: (alimentoAtual: {
+    id: number;
+    quantidade: number;
+    pesoUnidade: number;
+  }) => void;
 }
 
 export default function FoodDonations({
-  raUsuario,
-  setRaUsuario,
-  tipoDoacao,
-  setTipoDoacao,
-  Quantidade,
-  setQuantidade,
-  PesoUnidade,
-  setPesoUnidade,
   fonte,
   setFonte,
-  Meta,
+  meta,
   setMeta,
-  onAlimentosChange,
-  onTotaisChange,
+  gastos,
+  setGastos,
+  quantidade,
+  setQuantidade,
+  pesoUnidade,
+  setPesoUnidade,
   idAlimento,
   setIdAlimento,
-  Comprovante,
+  comprovante,
   setComprovante,
+  onTotaisChange,
+  onAlimentoChange,
 }: Properties) {
-  const [comprovanteFile, setComprovanteFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [picking, setPicking] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const timerRef = useRef<number | null>(null);
 
+  // ==========================
+  // LISTA FIXA DE ALIMENTOS
+  // ==========================
+  const ALIMENTOS = [
+    { id: 0, nome: "Arroz Polido" },
+    { id: 1, nome: "Feijão Preto" },
+    { id: 2, nome: "Macarrão" },
+    { id: 3, nome: "Fubá" },
+    { id: 4, nome: "Leite em Pó" },
+    { id: 5, nome: "Açúcar Refinado" },
+    { id: 6, nome: "Óleo de Soja" },
+    { id: 7, nome: "Outros" },
+  ];
+
+  // ==========================
+  // PONTOS POR KG
+  // ==========================
+  const PONTOS_POR_KG: Record<string, number> = {
+    "Arroz Polido": 5,
+    "Feijão Preto": 5,
+    "Açúcar Refinado": 4,
+    "Leite em Pó": 37.5,
+    Fubá: 5,
+    Macarrão: 5,
+    "Óleo de Soja": 7,
+    Outros: 0,
+  };
+
+  // ==========================
+  // VALORES INICIAIS SEGUROS
+  // ==========================
   useEffect(() => {
-    const style = document.createElement("style");
-    style.innerHTML = `
-          @keyframes pop {
-            0% { transform: scale(1); }
-            40% { transform: scale(1.12); }
-            100% { transform: scale(1); }
-          }
-          .animate-pop { animation: pop 150ms ease-out; }
-          @media (prefers-reduced-motion: reduce) {
-            .animate-pop { animation: none !important; }
-          }
-        `;
-    document.head.appendChild(style);
-    return () => {
-      document.head.removeChild(style);
-    };
+    if (!Number.isInteger(idAlimento)) setIdAlimento(0);
+    if (!Number.isInteger(quantidade ?? 0)) setQuantidade(0);
+    if (!Number.isInteger(pesoUnidade ?? 0)) setPesoUnidade(0);
+    if (!Number.isFinite(gastos)) setGastos(0);
   }, []);
 
+  useEffect(() => {
+    if (onAlimentoChange) {
+      onAlimentoChange({
+        id: idAlimento,
+        quantidade: quantidade ?? 0,
+        pesoUnidade: pesoUnidade ?? 0,
+      });
+    }
+  }, [idAlimento, quantidade, pesoUnidade]);
+
+  // ==========================
+  // CÁLCULO DE TOTAIS
+  // ==========================
+  const totais = useMemo(() => {
+    const nome = ALIMENTOS.find((a) => a.id === idAlimento)?.nome ?? "";
+    const q = Math.floor(quantidade ?? 0);
+    const p = Math.floor(pesoUnidade ?? 0);
+    const kgTotal = q * p;
+    const pontos = kgTotal * (PONTOS_POR_KG[nome] ?? 0);
+    return { kgTotal, pontos };
+  }, [idAlimento, quantidade, pesoUnidade]);
+
+  // ==========================
+  // ATUALIZA O PAI
+  // ==========================
+  useEffect(() => {
+    onTotaisChange?.({
+      pontos: totais.pontos,
+      kgTotal: totais.kgTotal,
+      gastos: gastos ?? 0,
+    });
+  }, [totais, gastos]);
+
+  // ==========================
+  // UPLOAD
+  // ==========================
   const stopGif = () => {
     setPicking(false);
     if (timerRef.current) {
-      window.clearTimeout(timerRef.current);
+      clearTimeout(timerRef.current);
       timerRef.current = null;
     }
   };
 
   const handlePickClick = () => {
     if (loading) return;
-    setPicking(true);
-    if (timerRef.current) window.clearTimeout(timerRef.current);
-    timerRef.current = window.setTimeout(() => {
-      stopGif();
-    }, 1000);
+    if (timerRef.current) clearTimeout(timerRef.current);
     fileInputRef.current?.click();
   };
-
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) {
-        window.clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.currentTarget.files?.[0] ?? null;
 
     if (!file) {
-      setComprovanteFile(null);
-      setComprovante("");
+      setComprovante(null);
       stopGif();
       return;
     }
 
-    const okType = ["image/png", "image/jpeg"].includes(file.type);
-    const okSize = file.size <= 5 * 1024 * 1024;
-    if (!okType) {
+    const validTypes = [
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "application/pdf",
+    ];
+    const isValidType = validTypes.includes(file.type);
+    const isValidSize = file.size <= 5 * 1024 * 1024;
+
+    if (!isValidType) {
+      alert("Formato inválido. Use PNG, JPEG ou PDF.");
       stopGif();
       return;
     }
-    if (!okSize) {
-      alert("Arquivo muito grande (máx. 5MB)");
+
+    if (!isValidSize) {
+      alert("Arquivo muito grande (máx. 5MB).");
       stopGif();
       return;
     }
 
-    setComprovanteFile(file);
-    setComprovante(file.name);
-    stopGif();
+    setPicking(true);
+    setComprovante(file);
+
+    // Permite escolher o mesmo arquivo novamente no futuro
+    e.target.value = "";
+
+    // Para o GIF depois de 1s
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = window.setTimeout(() => stopGif(), 1000);
   };
 
-  const [alimentos, setAlimentos] = useState<AlimentoRow[]>([
-    { id: 1, nome: "Arroz Polido", quantidade: 0, pesoUnidade: 0 },
-    { id: 2, nome: "Feijão Preto", quantidade: 0, pesoUnidade: 0 },
-    { id: 3, nome: "Macarrão", quantidade: 0, pesoUnidade: 0 },
-    { id: 4, nome: "Fubá", quantidade: 0, pesoUnidade: 0 },
-    { id: 5, nome: "Leite em Pó", quantidade: 0, pesoUnidade: 0 },
-    { id: 6, nome: "Açúcar Refinado", quantidade: 0, pesoUnidade: 0 },
-    { id: 7, nome: "Óleo de Soja", quantidade: 0, pesoUnidade: 0 },
-    { id: 8, nome: "Outros", quantidade: 0, pesoUnidade: 0 },
-  ]);
-
-  const PONTOS_POR_KG: Record<string, number> = {
-    "Arroz Polido": 5,
-    "Feijão Preto": 5,
-    "Açúcar Refinado": 4,
-    "Leite em Pó": 37.5,     //400 - 15    800 - 30    200-7,5
-    "Fubá": 5,
-    "Macarrão": 5,
-    "Óleo de Soja": 7,
-  };
-
-  const parseNumber = (str: string | number): number => {
-    if (typeof str === "number") return Number.isFinite(str) ? str : 0;
-    const s = str.trim();
-    if (s === "") return 0;
-    const n = Number(s.replace(",", "."));
-    return Number.isFinite(n) ? n : 0;
-  };
-
-  let quantidadeUnidade = 0;
-  let kgUnidade = 0;
-  // totais gerais
-  const totais = useMemo(() => {
-    let kgTotal = 0;
-    let pontos = 0;
-    for (const { nome, quantidade, pesoUnidade } of alimentos) {
-      quantidadeUnidade = parseNumber(quantidade);
-      kgUnidade = parseNumber(pesoUnidade);
-      const kg = quantidadeUnidade * kgUnidade;
-      kgTotal += kg;
-      const pontosPorKg = PONTOS_POR_KG[nome] ?? 0;
-      pontos += kg * pontosPorKg;
-    }
-    return { kgTotal, pontos };
-  }, [alimentos]);
-
-  useEffect(() => {
-    if (!onAlimentosChange) return;
-    const alimentosComQuantidade = alimentos.filter(
-      (a) => parseNumber(a.quantidade) > 0
-    );
-
-    const converted = alimentosComQuantidade.map(
-      ({ id, quantidade, pesoUnidade }) => ({
-        IdAlimento: id,
-        quantidade: parseNumber(quantidade),
-        pesoUnidade: parseNumber(pesoUnidade),
-      })
-    );
-
-    onAlimentosChange(converted);
-  }, [alimentos]);
-
-  useEffect(() => {
-    if (!onTotaisChange) return;
-    onTotaisChange(totais);
-  }, [totais]);
-
-  const handleAlimentoChange = (
-    id: number,
-    campo: "quantidade" | "pesoUnidade",
-    valor: string
-  ) => {
-    const v = valor.replace(/\s+/g, "");
-    if (campo === "quantidade" && v.includes(".")) return;
-
-    setAlimentos((prev) =>
-      prev.map((row) => (row.id === id ? { ...row, [campo]: v } : row))
-    );
-    setIdAlimento(id);
-  };
-
+  // ==========================
+  // RENDER
+  // ==========================
   return (
-    <div className="flex flex-col gap-2 w-full">
-      <div>Nome do Evento</div>
-
+    <div className="flex flex-col gap-3 w-full">
+      {/* Nome do evento */}
+      <label>Nome do Evento</label>
       <input
         className="w-full bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-black"
         type="text"
@@ -238,116 +207,121 @@ export default function FoodDonations({
         onChange={(e) => setFonte(e.target.value)}
       />
 
-      <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-        <div className="flex flex-col">
-          <label className="block mb-1 text-gray-700">Meta</label>
+      {/* Meta, Gastos, Total em Kg */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+        <div>
+          <label>Meta</label>
           <input
-            type="number"
-            placeholder="Ex: 1200"
-            value={Meta === 0 ? "" : Meta}
-            onChange={(e) =>
-              setMeta(
-                e.currentTarget.value === "" ? 0 : Number(e.currentTarget.value)
-              )
-            }
             className="h-10 w-full bg-white border border-gray-300 rounded-lg px-3"
+            type="number"
+            placeholder="100 Kg"
+            value={meta === 0 ? "" : meta}
+            onChange={(e) => {
+              const v = e.target.value;
+              setMeta(v === "" ? 0 : Math.floor(Number(v)));
+            }}
           />
         </div>
 
-        <div className="flex flex-col">
-          <label className="block mb-1 text-gray-700 sm:text-left">
-            Total em Kg
-          </label>
+        <div>
+          <label>Gastos</label>
+          <input
+            className="h-10 w-full bg-white border border-gray-300 rounded-lg px-3"
+            type="number"
+            step="1"
+            placeholder="Ex:R$100"
+            value={gastos === 0 ? "" : gastos}
+            onChange={(e) => {
+              const v = e.target.value;
+              setGastos(v === "" ? 0 : Math.floor(Number(v)));
+            }}
+          />
+        </div>
+
+        <div>
+          <label>Total em Kg</label>
           <input
             type="text"
             readOnly
             value={totais.kgTotal.toLocaleString("pt-BR")}
             className="h-10 w-full bg-white border border-gray-300 rounded-lg px-3 text-center"
-            aria-readonly="true"
-            tabIndex={-1}
           />
         </div>
       </div>
 
-      <div className="flex gap-4 font-bold">
-        <div className="w-[30%] text-center">Alimento</div>
-        <div className="w-[30%] text-center">Unidades</div>
-        <div className="w-[30%] text-center">Kg/Unidade</div>
+      <div className="flex gap-4 font-bold mt-2">
+        <div className="w-[40%] text-center">Alimento</div>
+        <div className="w-[25%] text-center">Unidades</div>
+        <div className="w-[25%] text-center">Kg/Unidade</div>
       </div>
 
-      <div className="flex-1 overflow-auto pr-1">
-        <div className="flex flex-col space-y-3">
-          {alimentos.map((a) => (
-            <div key={a.id} className="flex gap-4 w-full">
-              <div className="w-[30%] bg-white border border-gray-300 rounded-lg flex items-center justify-center text-center px-3 py-2">
-                {a.nome}
-              </div>
-              <input
-                className="w-[30%] bg-white border border-gray-300 rounded-lg px-3 py-2 text-center"
-                type="number"
-                placeholder="Qtd"
-                value={a.quantidade}
-                onChange={(e) =>
-                  handleAlimentoChange(a.id, "quantidade", e.target.value)
-                }
-                inputMode="decimal"
-              />
-              <input
-                className="w-[30%] bg-white border border-gray-300 rounded-lg px-3 py-2 text-center"
-                type="number"
-                step="0.01"
-                placeholder="Kg"
-                value={a.pesoUnidade}
-                onChange={(e) =>
-                  handleAlimentoChange(a.id, "pesoUnidade", e.target.value)
-                }
-                inputMode="decimal"
-              />
-            </div>
+      <div className="flex gap-4 mt-2">
+        <select
+          className="w-[40%] bg-white border border-gray-300 rounded-lg px-3 py-2"
+          value={idAlimento}
+          onChange={(e) => setIdAlimento(parseInt(e.target.value))}
+        >
+          {ALIMENTOS.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.nome}
+            </option>
           ))}
-        </div>
-
-        <label className="block mb-1 mt-8">Imagem dos Alimentos</label>
+        </select>
 
         <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/png,image/jpeg,image/jpg,application/pdf"
-          onChange={handleFileChange}
-          className="hidden"
-          aria-hidden="true"
-          tabIndex={-1}
+          className="w-[25%] bg-white border border-gray-300 rounded-lg px-3 py-2 text-center"
+          type="number"
+          step="1"
+          placeholder="Qtd"
+          value={quantidade === 0 ? "" : quantidade}
+          onChange={(e) => {
+            const v = e.target.value;
+            setQuantidade(v === "" ? 0 : Math.floor(Number(v)));
+          }}
         />
 
-        <div className="flex items-center">
-          <button
-            type="button"
-            onClick={handlePickClick}
-            onMouseDown={(e) => e.currentTarget.classList.add("animate-pop")}
-            onAnimationEnd={(e) =>
-              e.currentTarget.classList.remove("animate-pop")
-            }
-            className="inline-flex items-center justify-center h-14 w-18 rounded-lg bg-white transition"
-            disabled={loading}
-            aria-label="Selecionar comprovante"
-          >
-            <Image
-              src={picking ? (uploadGif as Img) : (uploadStatic as Img)}
-              alt="Selecionar comprovante"
-              width={35}
-              height={35}
-              className="pointer-events-none select-none"
-              draggable={false}
-              priority
-            />
-          </button>
+        <input
+          className="w-[25%] bg-white border border-gray-300 rounded-lg px-3 py-2 text-center"
+          type="number"
+          step="1"
+          placeholder="Kg"
+          value={pesoUnidade === 0 ? "" : pesoUnidade}
+          onChange={(e) => {
+            const v = e.target.value;
+            setPesoUnidade(v === "" ? 0 : Math.floor(Number(v)));
+          }}
+        />
+      </div>
 
-          <span className="ml-3 text-sm text-gray-700">
-            {Comprovante
-              ? `Selecionado: ${Comprovante}`
-              : "Nenhum arquivo escolhido"}
-          </span>
-        </div>
+      <label className="block mt-9">Imagem dos Alimentos (PNG/JPEG)</label>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/png,image/jpeg,image/jpg"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
+      <div className="flex items-center">
+        <button
+          type="button"
+          onClick={handlePickClick}
+          className="inline-flex items-center justify-center h-14 w-18 rounded-lg bg-white transition"
+          disabled={loading}
+        >
+          <Image
+            src={picking ? (uploadGif as Img) : (uploadStatic as Img)}
+            alt="Selecionar comprovante"
+            width={35}
+            height={35}
+            draggable={false}
+          />
+        </button>
+        <span className="ml-3 text-sm text-gray-700">
+          {comprovante instanceof File
+            ? `Selecionado: ${comprovante.name}`
+            : "Nenhum arquivo escolhido"}
+        </span>
       </div>
     </div>
   );

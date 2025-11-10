@@ -72,7 +72,9 @@ export default function Donations() {
   const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
   const apiUrl = `${backend_url}/api/createContribution`;
 
-  // ===== HANDLERS =====
+  // =========================
+  // HANDLERS
+  // =========================
 
   async function handleFinancialSubmit() {
     if (loading) return;
@@ -118,6 +120,14 @@ export default function Donations() {
     }
   }
 
+  function handleAlimentoChange(alimentoAtual: {
+    id: number;
+    quantidade: number;
+    pesoUnidade: number;
+  }) {
+    setAlimentosFromChild([alimentoAtual]); // mantém apenas um alimento por vez
+  }
+
   async function handleFoodSubmit() {
     if (loading) return;
     setLoading(true);
@@ -126,7 +136,7 @@ export default function Donations() {
       if (!raUsuario) throw new Error("RaUsuario inválido.");
 
       const alimentosParaEnviar = alimentosFromChild.filter(
-        (a) => a.quantidade > 0 && a.IdAlimento > 0
+        (a) => a.quantidade > 0 && a.id >= 0
       );
 
       if (alimentosParaEnviar.length === 0) {
@@ -172,6 +182,10 @@ export default function Donations() {
     }
   }
 
+  // =========================
+  // RENDER
+  // =========================
+
   return (
     <div className="container w-full">
       <header className="w-full">
@@ -183,8 +197,8 @@ export default function Donations() {
         </button>
 
         <div className="sticky top-0 left-0 right-0 z-10 md:static bg-white/80 supports-[backdrop-filter]:bg-white/60">
-          <div className="mx-auto max-w-4xl px-14 py-5">
-            <h1 className="text-primary tracking-tight text-center text-[32px]">
+          <div className="mx-auto text-4xl px-14 py-5">
+            <h1 className="text-primary tracking-tight text-center">
               Adicionar Contribuição
             </h1>
           </div>
@@ -207,8 +221,8 @@ export default function Donations() {
                 onClick={() => setActiveTab("food")}
                 className={`rounded-full py-3 text-sm font-medium ${
                   activeTab === "food"
-                    ? "bg-[#A6B895] text-white"
-                    : "text-[#1F2937] hover:bg-gray-100"
+                    ? "bg-primary text-white"
+                    : "text-black"
                 }`}
               >
                 Alimentos
@@ -224,7 +238,6 @@ export default function Donations() {
 
         <main className="flex justify-center items-stretch min-h-screen w-full px-9 mt-10">
           <div className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-x-1">
-            {/* FORM FINANCEIRO */}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -277,7 +290,6 @@ export default function Donations() {
               </div>
             </form>
 
-            {/* FORM ALIMENTÍCIO */}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -285,7 +297,7 @@ export default function Donations() {
               }}
               className={`${
                 activeTab === "food" ? "block" : "hidden"
-              } md:flex md:flex-col bg-secondary/20  border border-gray-100 p-6 rounded-xl shadow-md w-full h-[600px] overflow-y-scroll`}
+              } md:flex md:flex-col bg-secondary/20 border border-gray-100 p-6 rounded-xl shadow-md w-full h-[600px] overflow-y-scroll`}
             >
               <h2 className="text-2xl font-semibold mb-3">Alimentícias</h2>
 
@@ -295,15 +307,15 @@ export default function Donations() {
                   setRaUsuario={setRaUsuario}
                   tipoDoacao={alimenticia.tipoDoacao}
                   setTipoDoacao={() => {}}
-                  PesoUnidade={alimenticia.pesoUnidade}
+                  pesoUnidade={alimenticia.pesoUnidade}
                   setPesoUnidade={(v) =>
                     setAlimenticia({ ...alimenticia, pesoUnidade: Number(v) })
                   }
-                  Quantidade={alimenticia.quantidade}
+                  quantidade={alimenticia.quantidade}
                   setQuantidade={(v) =>
                     setAlimenticia({ ...alimenticia, quantidade: Number(v) })
                   }
-                  Meta={alimenticia.meta}
+                  meta={alimenticia.meta}
                   setMeta={(v) =>
                     setAlimenticia({ ...alimenticia, meta: Number(v) })
                   }
@@ -311,19 +323,27 @@ export default function Donations() {
                   setFonte={(v) =>
                     setAlimenticia({ ...alimenticia, fonte: v as string })
                   }
-                  Comprovante={null}
-                  setComprovante={() => {}}
+                  comprovante={alimenticia.comprovante}
+                  setComprovante={(v) =>
+                    setAlimenticia({
+                      ...alimenticia,
+                      comprovante: v as File | null,
+                    })
+                  }
                   onTotaisChange={setTotaisFromChild}
                   idAlimento={idAlimento}
                   setIdAlimento={setIdAlimento}
-                  onAlimentosChange={setAlimentosFromChild}
+                  onAlimentoChange={handleAlimentoChange}
+                  gastos={alimenticia.gastos ?? 0}
+                  setGastos={(v) =>
+                    setAlimenticia({ ...alimenticia, gastos: Number(v) })
+                  }
                 />
               </div>
 
               <div className="mt-4 flex flex-none items-center gap-3 justify-end">
                 <div className="bg-secondary/50 text-sm rounded-lg py-2 px-16 whitespace-nowrap w-[300px] overflow-hidden text-ellipsis">
-                  Pontuação:{" "}
-                  <span>{fmt(totaisFromChild?.pontos ?? 0)}</span>
+                  Pontuação: <span>{fmt(totaisFromChild?.pontos ?? 0)}</span>
                 </div>
 
                 <button

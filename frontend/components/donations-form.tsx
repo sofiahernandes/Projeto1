@@ -203,7 +203,7 @@ export default function DonationsForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
+    <div className="flex flex-col gap-4 w-full">
       <div className="rounded-xl">
         <label className="block mb-1">Nome do Evento / Doador</label>
         <input
@@ -228,7 +228,7 @@ export default function DonationsForm({
         <input
           type="number"
           step="0.01"
-          placeholder="Ex: 100"
+          placeholder="Ex: R$100"
           value={gastosInput}
           onChange={(e) => setGastosInput(e.currentTarget.value)}
           className="w-full bg-white border border-gray-300 rounded-lg px-3 py-1.5"
@@ -238,7 +238,7 @@ export default function DonationsForm({
         <input
           type="number"
           step="0.01"
-          placeholder="Ex: 140"
+          placeholder="Ex: R$100"
           value={quantidadeInput}
           onChange={(e) => setQuantidadeInput(e.currentTarget.value)}
           className="w-full bg-white border border-gray-300 rounded-lg px-3 py-1.5"
@@ -285,6 +285,6 @@ export default function DonationsForm({
           </span>
         </div>
       </div>
-    </form>
+    </div>
   );
 }
