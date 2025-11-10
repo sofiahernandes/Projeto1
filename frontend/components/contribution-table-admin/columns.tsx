@@ -31,6 +31,8 @@ export type Contribution = {
   PontuacaoAlimento: number;
   NomeTime: string;
   PesoUnidade: number;
+  PesoTotal?: number,
+  PontuacaoTotal?: number,
   uuid: string;
 };
 
@@ -133,15 +135,8 @@ export const makeContributionColumns = (
       );
     },
   },
-  {
-  id: "PesoTotal",
-  accessorFn: (row) => {
-    if (row.TipoDoacao !== "Alimenticia") return null;
-    const q = Number(row.Quantidade);
-    const pu = Number(row.PesoUnidade);
-    const PesoTotal = q * pu;
-    return Number.isFinite(PesoTotal) ? PesoTotal : null;
-  },
+ {
+  accessorKey: "PesoTotal",
   header: ({ column }) => (
     <Button
       variant="prettyHeader"
@@ -151,24 +146,16 @@ export const makeContributionColumns = (
       <ArrowUpDown className="ml-2 h-4 w-4" />
     </Button>
   ),
-  cell: ({ getValue, row }) => {
-    const v = getValue<number | null>();
-    return row.original.TipoDoacao === "Alimenticia" && v != null
-      ? <span className="w-[80px] block truncate">
-        {new Intl.NumberFormat("pt-BR").format(v)} kg</span>
-      : <span> - </span>;
-  },
+  cell: ({ row }) => {
+   const v = row.original.PesoTotal;
+  return row.original.TipoDoacao === "Alimenticia" && typeof v === "number" && v > 0
+    ? <span className="w-[80px] block truncate">{new Intl.NumberFormat("pt-BR").format(v)} kg</span>
+    : <span>-</span>;
 },
 
+},
 {
-  id: "PontuacaoTotal",
-  accessorFn: (row) => {
-    if (row.TipoDoacao !== "Alimenticia") return null;
-    const quant = Number(row.Quantidade);
-    const pont = Number(row.PontuacaoAlimento);
-    const PontuacaoTotal = quant * pont;
-    return Number.isFinite(PontuacaoTotal) ? PontuacaoTotal : null;
-  },
+  accessorKey: "PontuacaoTotal",
   header: ({ column }) => (
     <Button
       variant="prettyHeader"
@@ -178,14 +165,14 @@ export const makeContributionColumns = (
       <ArrowUpDown className="ml-2 h-4 w-4" />
     </Button>
   ),
-  cell: ({ getValue, row }) => {
-    const v = getValue<number | null>();
-    return row.original.TipoDoacao === "Alimenticia" && v != null
-      ? <span className="w-[60px] block truncate">
-        {new Intl.NumberFormat("pt-BR").format(v)}</span>
-      : <span> - </span>;
+  cell: ({ row }) => {
+    const v = (row.original as any).PontuacaoTotal as number | undefined;
+    return row.original.TipoDoacao === "Alimenticia" && Number.isFinite(v)
+      ? <span className="w-[60px] block truncate">{new Intl.NumberFormat("pt-BR").format(v!)}</span>
+      : <span>-</span>;
   },
 },
+
   {
     accessorKey: "Gastos",
     header: ({ column }) => {

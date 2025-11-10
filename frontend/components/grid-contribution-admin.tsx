@@ -18,6 +18,23 @@ interface RenderContributionProps {
   isPublicReport?: boolean;
 }
 
+type ItemAlimento = {
+  Quantidade: number;
+  PesoUnidade: number;
+  PontuacaoAlimento: number;
+  NomeAlimento: string;
+};
+
+type ContributionAdmin = Contribution & {
+  Itens?: ItemAlimento[];
+  PesoTotal?: number;
+  PontuacaoTotal?: number;
+  alimentos?: {
+    NomeAlimento: string;
+    Pontuacao?: number | string;
+  }[];
+};
+
 export default function RenderContributionCardAdmin({
   onSelect,
   refreshKey = 0,
@@ -46,7 +63,49 @@ export default function RenderContributionCardAdmin({
         if (!active) return;
 
         const data: Contribution[] = Array.isArray(raw)
-          ? raw.map((r: any) => {
+            ? raw.map((r: any) => {
+              const quantidade = Number(
+                String(r.Quantidade).replace(/\./g, "").replace(",", ".")
+              );
+
+              const pesoUnidade =
+                r.PesoUnidade != null
+                  ? Number(
+                      String(r.PesoUnidade).replace(/\./g, "").replace(",", ".")
+                    )
+                  : 0;
+
+              const itens: ItemAlimento[] = Array.isArray(
+                r.contribuicoes_alimento
+              )
+                ? r.contribuicoes_alimento.map(
+                    (it: any): ItemAlimento => ({
+                      Quantidade: quantidade,
+                      PesoUnidade: pesoUnidade,
+                      PontuacaoAlimento: Number(it?.alimento?.Pontuacao ?? 0),
+                      NomeAlimento: String(it?.alimento?.NomeAlimento ?? ""),
+                    })
+                  )
+                : [];
+
+              const pesoTotal =
+                Number.isFinite(quantidade) && Number.isFinite(pesoUnidade)
+                  ? quantidade * pesoUnidade
+                  : undefined;
+
+              const pontTotal = itens.reduce<number>((sum, it) => {
+                const parc = it.Quantidade * it.PontuacaoAlimento;
+                return sum + (Number.isFinite(parc) ? parc : 0);
+              }, 0);
+
+              console.log("Calculado:", {
+                quantidade,
+                pesoUnidade,
+                pesoTotal,
+                pontTotal,
+                itens,
+              });
+
               const IdContribuicao = Number(
                 r.IdContribuicao ??
                   r.IdContribuicaoFinanceira ??
@@ -54,9 +113,7 @@ export default function RenderContributionCardAdmin({
               );
 
               const idComp =
-                r?.comprovante?.IdComprovante ?? 
-                r?.IdComprovante ?? 
-                null;
+                r?.comprovante?.IdComprovante ?? r?.IdComprovante ?? null;
 
               const rawImg =
                 r?.Comprovante ??
@@ -86,39 +143,46 @@ export default function RenderContributionCardAdmin({
                   Imagem: finalUrl,
                 };
               }
-
               return {
-                RaUsuario: Number(r.RaUsuario),
-                TipoDoacao: String(r.TipoDoacao ?? ""),
-                Quantidade:
-                  r.Quantidade != null
-                    ? Number(
-                        String(r.Quantidade)
-                          .replace(/\./g, "")
-                          .replace(",", ".")
+                 RaUsuario: Number(r.RaUsuario),
+                                TipoDoacao: String(r.TipoDoacao ?? ""),
+                                Quantidade: quantidade,
+                                Meta:
+                                  r.Meta != null
+                                    ? Number(
+                                        String(r.Meta).replace(/\./g, "").replace(",", ".")
+                                      )
+                                    : undefined,
+                                Gastos:
+                                  r.Gastos != null
+                                    ? Number(
+                                        String(r.Gastos).replace(/\./g, "").replace(",", ".")
+                                      )
+                                    : undefined,
+                                Fonte: r.Fonte ?? "",
+                                comprovante,
+                                IdContribuicao,
+                                DataContribuicao: String(r.DataContribuicao ?? ""),
+                                NomeAlimento: r.NomeAlimento ?? undefined,
+                                NomeTime: r.NomeTime ?? undefined,
+                                Itens: itens,
+                                PesoTotal: pesoTotal,
+                                PontuacaoTotal: itens.length ? pontTotal : undefined,
+                                PontuacaoAlimento: r.PontuacaoAlimento ?? undefined,
+                                PesoUnidade: pesoUnidade,
+                                uuid: uuidv4(),
+                
+
+               alimentos: Array.isArray(r.contribuicoes_alimento)
+                  ? r.contribuicoes_alimento
+                      .filter(
+                        (a: any) => a.alimento?.NomeAlimento?.trim() !== ""
                       )
-                    : 0,
-                Meta:
-                  r.Meta != null
-                    ? Number(
-                        String(r.Meta).replace(/\./g, "").replace(",", ".")
-                      )
-                    : undefined,
-                Gastos:
-                  r.Gastos != null
-                    ? Number(
-                        String(r.Gastos).replace(/\./g, "").replace(",", ".")
-                      )
-                    : undefined,
-                Fonte: r.Fonte ?? "",
-                comprovante,
-                IdContribuicao,
-                DataContribuicao: String(r.DataContribuicao ?? ""),
-                NomeAlimento: r.NomeAlimento ?? undefined,
-                PontuacaoAlimento: r.PontuacaoAlimento ?? undefined,
-                NomeTime: r.NomeTime ?? undefined,
-                PesoUnidade: r.PesoUnidade ?? undefined,
-                uuid: uuidv4(),
+                      .map((a: any) => ({
+                        NomeAlimento: a.alimento?.NomeAlimento ?? "",
+                        Pontuacao: a.alimento?.Pontuacao ?? "",
+                      }))
+                  : [],
               };
             })
           : [];

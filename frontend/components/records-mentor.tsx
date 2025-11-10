@@ -15,7 +15,12 @@ interface ContributionData {
   };
   IdContribuicao: number;
   DataContribuicao: string;
-  NomeAlimento?: string;
+
+  alimentos?: {
+    NomeAlimento: string;
+    Pontuacao?: number | string;
+  }[];
+
   PontuacaoAlimento: number;
   PesoUnidade: number;
   uuid: string;
@@ -33,6 +38,7 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
   setIsOpen,
 }) => {
   if (!data) return null;
+  console.log("Dados recebidos no modal:", data);
 
   const toggleModal = () => {
     setIsOpen(!isOpen);
@@ -45,7 +51,7 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
           <div className="">
             <div>
               <h2 className="text-xl font-semibold">{data.Fonte}</h2>
-             <div>
+              <div>
                 <p className="text-base text-gray-600 mt-3 mb-0">
                   Data da Contribuição -{" "}
                   {new Date(data.DataContribuicao).toLocaleDateString()}{" "}
@@ -89,40 +95,50 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
                     </div>
                   )}
 
-                  {data.NomeAlimento && (
-                    <div className="flex justify-between">
+                  {data.TipoDoacao === "Alimenticia" &&
+                  data.alimentos &&
+                  data.alimentos.length > 0 ? (
+                    <ul className="flex justify-between">
                       <div>
-                        <p className="text-sm text-gray-600"> Alimentos: </p>
-                        <p className="font-semibold ">{data.NomeAlimento} </p>
+                      <p className="text-sm text-gray-600"> Alimentos arrecadados</p>
+                      {data.alimentos.map((a, i) => (
+                        <li key={i} className="font-semibold"> {a.NomeAlimento}</li>
+                      ))}
                       </div>
-
-                      <div>
-                        <p className="text-sm text-gray-600">Peso unitário:</p>
-                        <p className="font-semibold ">
-                          {data.PesoUnidade} kg/g
-                        </p>
+                      <div> 
+                        <p className="text-sm text-gray-600"> Pontuação item</p>
+                        {data.alimentos.map((a, i) => (
+                        <li key={i} className="font-semibold"> {a.Pontuacao}</li>
+                      ))}
                       </div>
-                    </div>
-                  )}
+                    </ul>
+                  ) : data.TipoDoacao === "Alimenticia" ? (
+                    <p>Nenhum alimento registrado.</p>
+                  ) : null}
 
-                  {data.comprovante?.Imagem? (
+
+                  {data.comprovante?.Imagem ? (
                     <div>
-                      <p className="text-sm text-gray-600 mb-2">Comprovante da doação</p>
+                      <p className="text-sm text-gray-600 mb-2">
+                        Comprovante da doação
+                      </p>
                       <a
                         href={data.comprovante.Imagem}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-black-600 underline"
-                      > Abrir comprovante
+                      >
+                        {" "}
+                        Abrir comprovante
                       </a>
                     </div>
                   ) : (
                     <div>
                       <img
-                            src={placeholderComprovante.src}
-                            alt="Sem comprovantes anexados"
-                            className="rounded-md aspect-square max-h-[45px] object-contain border border-gray-200 mb-6"
-                          />
+                        src={placeholderComprovante.src}
+                        alt="Sem comprovantes anexados"
+                        className="rounded-md aspect-square max-h-[45px] object-contain border border-gray-200 mb-6"
+                      />
                     </div>
                   )}
                 </div>
