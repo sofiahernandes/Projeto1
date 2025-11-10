@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/empty";
 import { v4 as uuidv4 } from "uuid";
 import { Contribution } from "./contribution-table-admin/columns";
+import Loading from "./loading";
 
 interface RenderContributionProps {
   onSelect?: (contribution: Contribution) => void;
@@ -227,7 +228,13 @@ export default function RenderContributionCardAdmin({
 
   return (
     <>
-      {isPublicReport ? (
+      {loading && (
+        <div className="w-screen h-full text-center text-gray-600">
+          <Loading />
+        </div>
+      )}
+
+      {!loading && isPublicReport ? (
         <div className="md:mx-4 mb-15 grid grid-cols-1 md:grid-cols-3 gap-4.5 rounded-sm md:p-2.5">
           {contributions.map((c) => (
             <div

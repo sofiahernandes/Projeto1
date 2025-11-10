@@ -13,36 +13,12 @@ import { overallMetrics } from "@/lib/overall-metrics";
 import { useEffect, useState } from "react";
 import { Contribution } from "@/components/contribution-table-admin/columns";
 
-interface ContribuicaoFinanceira {
-  IdContribuicaoFinanceira: number;
-  DataContribuicao: string | null;
-  Quantidade: number;
-  TipoDoacao: string;
-  Gastos: number;
-  Meta?: number | null;
-  Fonte?: string | null;
-  Comprovante?: string | null;
-  RaUsuario?: number | null;
-}
-
-interface ContribuicaoAlimenticia {
-  IdContribuicaoAlimenticia: number;
-  DataContribuicao: string | null;
-  Quantidade: number;
-  PesoUnidade: number;
-  Gastos: number;
-  Meta?: number | null;
-  Fonte?: string | null;
-  Comprovante?: string | null;
-  RaUsuario?: number | null;
-}
-
 export default function PublicDashboard() {
   const [biggestMoneyDonations, setBiggestMoneyDonations] = useState<
-    ContribuicaoFinanceira[]
+    Contribution[]
   >([]);
   const [biggestFoodDonations, setBiggestFoodDonations] = useState<
-    ContribuicaoAlimenticia[]
+    Contribution[]
   >([]);
   const [contributions, setContributions] = useState<Contribution[]>([]);
   const [loading, setLoading] = useState(false);
@@ -143,6 +119,27 @@ export default function PublicDashboard() {
           : [];
         console.log(raw);
         setContributions(data);
+
+        contributions.map((contribution) => {
+          if (contribution.TipoDoacao === "Financeira") {
+            setBiggestMoneyDonations((prev) => {
+              const updated = [...prev, contribution];
+              return updated
+                .sort((a, b) => b.Quantidade - a.Quantidade)
+                .slice(0, 10);
+            });
+          } else if (contribution.TipoDoacao === "Alimenticia") {
+            setBiggestFoodDonations((prev) => {
+              const updated = [...prev, contribution];
+              return updated
+                .sort(
+                  (a, b) =>
+                    b.Quantidade * b.PesoUnidade - a.Quantidade * a.PesoUnidade
+                )
+                .slice(0, 10);
+            });
+          }
+        });
       } catch (err: any) {
         if (err?.name === "AbortError") {
           return;
@@ -206,7 +203,7 @@ export default function PublicDashboard() {
                   </h2>
                   <div>
                     {biggestMoneyDonations.length > 0 ? (
-                      biggestMoneyDonations.slice(0,6).map((item, index) => (
+                      biggestMoneyDonations.slice(0, 6).map((item, index) => (
                         <div
                           key={index}
                           className="flex items-center justify-between p-2 rounded-lg hover:bg-secondary/20 cursor-pointer transition-colors"
@@ -234,7 +231,7 @@ export default function PublicDashboard() {
                   </h2>
                   <div>
                     {biggestFoodDonations.length > 0 ? (
-                      biggestFoodDonations.slice(0,6).map((item, index) => (
+                      biggestFoodDonations.slice(0, 6).map((item, index) => (
                         <div
                           key={index}
                           className="flex items-center justify-between p-2 rounded-lg hover:bg-secondary/20 cursor-pointer transition-colors"

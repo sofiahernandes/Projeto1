@@ -32,7 +32,7 @@
 | calculo II | [/entregas/entrega-1/calculo-2/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/calculo-2) | [/entregas/entrega-2/calculo-2/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-2/calculo-2) |    
 | banco de dados | [/entregas/entrega-1/banco-de-dados/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/banco-de-dados) | [/entregas/entrega-2/banco-de-dados/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-2/banco-de-dados) |  
 | gestao empresarial | [/entregas/entrega-1/gestao-empresarial/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/gestao-empresarial) | [/entregas/entrega-2/gestao-empresarial/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-2/gestao-empresarial) |  
-| projeto interdisciplinar | [/entregas/entrega-1/proj-interdisciplinar/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/proj-interdisciplinar) | [Projeto de Extensão](https://github.com/2025-2-MCC2/Projeto1/blob/main/entregas/PROJETO%20DE%20EXTEN%C3%87%C3%83O.md) |   
+| projeto interdisciplinar | [/entregas/entrega-1/proj-interdisciplinar/](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-1/proj-interdisciplinar) | [Projeto de Extensão](https://github.com/2025-2-MCC2/Projeto1/tree/main/entregas/entrega-2/proj-interdisciplinar) |   
 <br/>
 
 # Descrição
@@ -64,12 +64,15 @@ Procuramos desenvolver uma interface que traga a identidade visual do Projeto Li
 ## 🗂 Estrutura de Pastas
 ```
 |-->backend
+    |-->prisma
     |-->src
        |-->controllers
-       |-->examples
+       |-->configs
+       |-->middlewares
+       |-->services
+       |-->uploads
        |app.js
        |db.js
-       |db.test.js
        |routes.js
        |server.js
 |-->frontend

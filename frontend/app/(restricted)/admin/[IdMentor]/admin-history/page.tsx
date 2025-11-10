@@ -1,14 +1,12 @@
 "use client";
 
-import React, { SetStateAction, useEffect } from "react";
-import BackHome from "@/components/back-home";
+import React, { SetStateAction } from "react";
 import RecordsMentor from "@/components/records-mentor";
 import SwitchViewButton from "@/components/toggle-button";
 import MenuDesktopAdmin from "@/components/menu-desktop-admin";
 import MenuMobileAdmin from "@/components/menu-mobile-admin";
 import RenderContributionTableAdmin from "@/components/table-contribution-admin";
 import RenderContributionCardAdmin from "@/components/grid-contribution-admin";
-import { useParams } from "next/navigation";
 
 {
   /** 

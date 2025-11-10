@@ -116,7 +116,6 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
                     <p>Nenhum alimento registrado.</p>
                   ) : null}
 
-
                   {data.comprovante?.Imagem ? (
                     <div>
                       <p className="text-sm text-gray-600 mb-2">

@@ -12,9 +12,21 @@ const Footer = () => {
     { id: 4, text: "Sobre Nós", url: "/about-us" },
   ];
   const socialLinks = [
-    { id: 1, type: "Instagram", url: "https://www.instagram.com/liderancasempaticas" },
-    { id: 2, type: "Linkedin", url: "https://www.linkedin.com/company/projeto-lideran%C3%A7as-emp%C3%A1ticas/?viewAsMember=true" },
-    { id: 3, type: "Youtube", url: "https://www.youtube.com/@Lideran%C3%A7asEmp%C3%A1ticas" },
+    {
+      id: 1,
+      type: "Instagram",
+      url: "https://www.instagram.com/liderancasempaticas",
+    },
+    {
+      id: 2,
+      type: "Linkedin",
+      url: "https://www.linkedin.com/company/projeto-lideran%C3%A7as-emp%C3%A1ticas/?viewAsMember=true",
+    },
+    {
+      id: 3,
+      type: "Youtube",
+      url: "https://www.youtube.com/@Lideran%C3%A7asEmp%C3%A1ticas",
+    },
   ];
 
   return (
@@ -59,17 +71,43 @@ const Footer = () => {
                     className="hover:opacity-50 transition-opacity"
                     aria-label={link.type}
                   >
-                    {link.type == "Instagram" ? <Instagram /> : (link.type == "Linkedin" ? <Linkedin /> : <Youtube />)}
+                    {link.type == "Instagram" ? (
+                      <Instagram />
+                    ) : link.type == "Linkedin" ? (
+                      <Linkedin />
+                    ) : (
+                      <Youtube />
+                    )}
                   </Link>
                 ))}
               </div>
 
               <div className="w-full md:w-auto flex flex-col gap-1">
                 <p className="font-bold">Conheça as criadoras do Arkana</p>
-                <Link className="hover:opacity-50" href="https://github.com/AnaliceCoimbra/"><p>Analice Coimbra Carneiro</p></Link>
-                <Link className="hover:opacity-50" href="https://github.com/alicelobwp"><p>Mariah Alice Pimentel Lôbo Pereira</p></Link>
-                <Link className="hover:opacity-50" href="https://github.com/sofiahernandes"><p>Sofia Botechia Hernandes</p></Link>
-                <Link className="hover:opacity-50" href="https://github.com/viick04"><p>Victória Duarte Vieira Azevedo</p></Link>
+                <Link
+                  className="hover:opacity-50"
+                  href="https://github.com/AnaliceCoimbra/"
+                >
+                  <p>Analice Coimbra Carneiro</p>
+                </Link>
+                <Link
+                  className="hover:opacity-50"
+                  href="https://github.com/alicelobwp"
+                >
+                  <p>Mariah Alice Pimentel Lôbo Pereira</p>
+                </Link>
+                <Link
+                  className="hover:opacity-50"
+                  href="https://github.com/sofiahernandes"
+                >
+                  <p>Sofia Botechia Hernandes</p>
+                </Link>
+                <Link
+                  className="hover:opacity-50"
+                  href="https://github.com/viick04"
+                >
+                  <p>Victória Duarte Vieira Azevedo</p>
+                </Link>
               </div>
             </div>
           </div>

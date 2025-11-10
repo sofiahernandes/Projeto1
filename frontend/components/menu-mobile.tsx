@@ -17,7 +17,6 @@ import historyDefault from "@/assets/icons/history.png";
 import historyActive from "@/assets/icons/history-active.png";
 import historyPressed from "@/assets/icons/history-pressed.png";
 
-
 export default function MenuMobile() {
   const pathname = usePathname();
   const router = useRouter();
@@ -31,8 +30,8 @@ export default function MenuMobile() {
   const isActive = (href: string) => pathname?.startsWith(href);
 
   useEffect(() => {
-    if (params?.RaUsuario){
-      setRaUsuario(Number(params?.RaUsuario))
+    if (params?.RaUsuario) {
+      setRaUsuario(Number(params?.RaUsuario));
     }
   }, [RaUsuario, pathname]);
 
@@ -130,9 +129,9 @@ export default function MenuMobile() {
           <Link
             href={homeHref}
             aria-label="Início"
-            className={`${basePill} ${isActive(homeHref) ? activePill : neutralPill} ${
-              pressed.home ? "animate-pop" : ""
-            }`}
+            className={`${basePill} ${
+              isActive(homeHref) ? activePill : neutralPill
+            } ${pressed.home ? "animate-pop" : ""}`}
             onMouseDown={() => triggerPress("home")}
             onTouchStart={() => triggerPress("home")}
           >

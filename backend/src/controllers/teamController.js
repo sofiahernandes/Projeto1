@@ -1,7 +1,7 @@
 import { prisma } from "../../prisma/lib/prisma.js";
 
 const teamsController = {
-  //GET http://localhost:3001/api/teams
+  //GET /api/teams
   allTeams: async (_, res) => {
     try {
       const times = await prisma.time.findMany({
@@ -17,7 +17,7 @@ const teamsController = {
     }
   },
 
-  //GET http://localhost:3001/api/team/:IdTime
+  //GET /api/team/:IdTime
   teamByID: async (req, res) => {
     const { IdTime } = req.params;
     try {
@@ -32,7 +32,7 @@ const teamsController = {
       res.status(500).json({ error: "Time não encontrado" });
     }
   },
-  //GET http://localhost:3001/api/team/:RaUsuario
+  //GET /api/team/:RaUsuario
   teamByUserRA: async (req, res) => {
     const { RaUsuario } = req.params;
 
@@ -69,15 +69,13 @@ const teamsController = {
       };
 
       res.json(team);
-
-      // res.json(timeUsuario.time);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Erro ao buscar o time do usuário" });
     }
   },
 
-  //POST http://localhost:3001/api/createTeam
+  //POST /api/createTeam
   createTeam: async (req, res) => {
     const {
       IdMentor,
@@ -139,7 +137,7 @@ const teamsController = {
     }
   },
 
-  //DELETE http://localhost:3001/api/deleteTeam/:IdTime
+  //DELETE /api/deleteTeam/:IdTime
   deleteTeam: async (req, res) => {
     const { IdTime } = req.params;
     try {

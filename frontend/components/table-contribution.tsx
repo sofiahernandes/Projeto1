@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/empty";
 
 interface RenderContributionProps {
-  raUsuario?: number,
+  raUsuario?: number;
   onSelect?: (contribution: Contribution) => void;
   refreshKey?: number;
 }
@@ -33,7 +33,7 @@ export default function RenderContributionTable({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const params = useParams();
-    const raFromParams = params?.RaUsuario ? Number(params.RaUsuario) : undefined;
+  const raFromParams = params?.RaUsuario ? Number(params.RaUsuario) : undefined;
 
   const RaUsuario =
     typeof raUsuario === "number" && Number.isFinite(raUsuario)
@@ -175,6 +175,7 @@ export default function RenderContributionTable({
       </div>
     );
   }
+
   if (!contributions.length) {
     return (
       <div className="col-start-2 border rounded-xl border-gray-200 shadow-xl w-auto max-w-100 mx-auto">

@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import { HandHeart } from "lucide-react";
 import {
   Empty,
-  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
@@ -14,9 +13,10 @@ import {
 import formatBRL from "./formatBRL";
 import { v4 as uuidv4 } from "uuid";
 import { Contribution } from "./contribution-table/columns";
+import Loading from "./loading";
 
 interface RenderContributionProps {
-  raUsuario?: number,
+  raUsuario?: number;
   onSelect?: (contribution: Contribution) => void;
   refreshKey?: number;
 }
@@ -183,27 +183,35 @@ export default function RenderContributionCard({
 
   return (
     <div className="mx-4 mb-15 grid grid-cols-1 md:grid-cols-3 gap-4.5 rounded-sm p-2.5">
-      {contributions.map((c) => (
-        <div
-          key={c.uuid}
-          className="p-3 rounded-xl bg-[#f4f3f1]/80 hover:bg-[#cc3983]/15 border border-gray-200 shadow-md  hover:shadow-2xl transition-shadow duration-300 cursor-pointer"
-          onClick={() => onSelect?.(c)}
-        >
-          <p className="font-semibold text-lg ">{c.Fonte}</p>
-          <p className="text-base text-gray-950">
-            Data: {new Date(c.DataContribuicao).toLocaleDateString("pt-BR")}
-          </p>
-          <p className="text-base text-gray-800">
-            Tipo de Doação: {c.TipoDoacao}
-          </p>
-          <p className="text-base text-gray-800">
-            Quantidade: {Intl.NumberFormat("pt-BR").format(c.Quantidade)}
-          </p>
-          <p className="text-base text-gray-800">
-            Gastos: {formatBRL(c.Gastos)}
-          </p>
+      {loading && (
+        <div className="w-screen h-full text-center text-gray-600">
+          <Loading />
         </div>
-      ))}
+      )}
+
+      {!loading &&
+        !error &&
+        contributions.map((c) => (
+          <div
+            key={c.uuid}
+            className="p-3 rounded-xl bg-[#f4f3f1]/80 hover:bg-[#cc3983]/15 border border-gray-200 shadow-md  hover:shadow-2xl transition-shadow duration-300 cursor-pointer"
+            onClick={() => onSelect?.(c)}
+          >
+            <p className="font-semibold text-lg ">{c.Fonte}</p>
+            <p className="text-base text-gray-950">
+              Data: {new Date(c.DataContribuicao).toLocaleDateString("pt-BR")}
+            </p>
+            <p className="text-base text-gray-800">
+              Tipo de Doação: {c.TipoDoacao}
+            </p>
+            <p className="text-base text-gray-800">
+              Quantidade: {Intl.NumberFormat("pt-BR").format(c.Quantidade)}
+            </p>
+            <p className="text-base text-gray-800">
+              Gastos: {formatBRL(c.Gastos)}
+            </p>
+          </div>
+        ))}
     </div>
   );
 }

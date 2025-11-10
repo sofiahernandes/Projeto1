@@ -9,7 +9,7 @@ const sanitizeMentor = (u) => ({
   SenhaMentor: u.SenhaMentor,
 });
 const mentorController = {
-  //GET http://localhost:3001/api/mentors
+  //GET /api/mentors
   allMentors: async (_, res) => {
     const { IdMentor, EmailMentor, IsAdmin, SenhaMentor } = req.params;
     try {
@@ -29,7 +29,7 @@ const mentorController = {
     }
   },
 
-  //GET http://localhost:3001/api/mentor/id/:IdMentor
+  //GET /api/mentor/id/:IdMentor
   mentorById: async (req, res) => {
     const { IdMentor } = req.params;
     try {
@@ -87,7 +87,7 @@ const mentorController = {
     }
   },
 
-  //POST http://localhost:3001/api/createMentor/:RaUsuario
+  //POST /api/createMentor/:RaUsuario
   createMentor: async (req, res) => {
     const { EmailMentor, RaUsuario } = req.body;
 
@@ -116,6 +116,7 @@ const mentorController = {
           IsAdmin: false,
         },
       });
+
       //busca o time onde o usuario está alocado pelo time
       const timeUsuario = await prisma.time_Usuario.findFirst({
         where: { RaUsuario: Number(RaUsuario) },
@@ -140,7 +141,7 @@ const mentorController = {
     }
   },
 
-  //LOGIN http://localhost:3001/api/register/login
+  //LOGIN /api/register/login
   loginMentor: async (req, res) => {
     const { EmailMentor, SenhaMentor } = req.body;
     if (!EmailMentor || !SenhaMentor) {
@@ -167,7 +168,7 @@ const mentorController = {
           .status(404)
           .json({ error: "Time não encontrado para este mentor" });
       }
-      //res.json({ RaAlunoCriador: mentor.SenhaMentor, IdTime: time.IdTime });
+
       const { token } = createToken({ EmailMentor: mentor.EmailMentor });
       res.json({ token, mentor: sanitizeMentor(mentor) });
     } catch (err) {
@@ -178,7 +179,7 @@ const mentorController = {
     }
   },
 
-  //POST http://localhost:3001/api/createAdmin
+  //POST /api/createAdmin
   createAdmin: async (req, res) => {
     const { EmailMentor, SenhaMentor } = req.body;
 
@@ -203,7 +204,7 @@ const mentorController = {
     }
   },
 
-  //LOGIN http://localhost:3001/api/register/login
+  //LOGIN /api/register/login
   loginAdmin: async (req, res) => {
     const { EmailMentor, SenhaMentor } = req.body;
 
@@ -232,7 +233,7 @@ const mentorController = {
         .json({ error: "Erro ao fazer login.", details: err.message });
     }
   },
-  //DELETE http://localhost:3001/api/deleteMentor/:EmailMentor
+  //DELETE /api/deleteMentor/:EmailMentor
   deleteMentor: async (req, res) => {
     const { EmailMentor } = req.params;
 

@@ -6,10 +6,8 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SetStateAction } from "react";
@@ -21,7 +19,10 @@ interface Properties {
 const DropdownTurmas = ({ turma, setTurma }: Properties) => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="border border-[#b4b4b4] hover:bg-primary/40 text-black hover:text-black!" asChild>
+      <DropdownMenuTrigger
+        className="border border-[#b4b4b4] hover:bg-primary/40 text-black hover:text-black!"
+        asChild
+      >
         <Button variant="outline">{turma || "Selecionar Turma"}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 border border-[#b4b4b4]">

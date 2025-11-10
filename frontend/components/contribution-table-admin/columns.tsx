@@ -44,7 +44,7 @@ export type ContributionActions = {
 export const makeContributionColumns = (
   actions: ContributionActions = {}
 ): ColumnDef<Contribution>[] => [
- {
+  {
     accessorKey: "NomeTime",
     header: ({ column }) => {
       return (
@@ -59,7 +59,8 @@ export const makeContributionColumns = (
     },
     cell: ({ row }) => (
       <span className="font-medium w-[220px] block truncate">
-        {row.original.NomeTime ?? "-"}</span>
+        {row.original.NomeTime ?? "-"}
+      </span>
     ),
   },
   {
@@ -77,7 +78,8 @@ export const makeContributionColumns = (
     },
     cell: ({ row }) => (
       <span className="w-[220px] block truncate">
-        {row.original.Fonte ?? "-"}</span>
+        {row.original.Fonte ?? "-"}
+      </span>
     ),
   },
   {
@@ -213,7 +215,7 @@ export const makeContributionColumns = (
     },
   },
   {
- id: "comprovante",
+    id: "comprovante",
     header: "Comprovante",
     cell: ({ row }) => {
       const url = row.original.comprovante?.Imagem;

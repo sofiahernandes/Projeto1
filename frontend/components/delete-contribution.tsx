@@ -1,8 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { fetchData } from "@/hooks/fetch-user-profile";
+import React from "react";
 
 import {
   AlertDialog,

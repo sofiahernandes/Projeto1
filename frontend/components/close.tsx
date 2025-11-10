@@ -1,15 +1,17 @@
-import React from 'react'
+import React from "react";
 
 interface Props {
-  onClick: () => void
-  isActive: boolean
-  className?: string
+  onClick: () => void;
+  isActive: boolean;
+  className?: string;
 }
 
 const CloseButton: React.FC<Props> = ({ isActive, onClick, className }) => {
   return (
     <button
-      className={`absolute top-2 right-2 sm:top-6 sm:right-6 transition-colors hover:text-current-primary ${className ?? ''}`}
+      className={`absolute top-2 right-2 sm:top-6 sm:right-6 transition-colors hover:text-current-primary ${
+        className ?? ""
+      }`}
       onClick={onClick}
       aria-label="Fechar modal"
       aria-hidden={!isActive}
@@ -17,7 +19,7 @@ const CloseButton: React.FC<Props> = ({ isActive, onClick, className }) => {
     >
       X
     </button>
-  )
-}
+  );
+};
 
-export default CloseButton
+export default CloseButton;

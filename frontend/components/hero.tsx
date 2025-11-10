@@ -18,10 +18,14 @@ const Hero = () => {
             + ARKANA
           </p>
         </div>
-        <Link href="#public-graph"><p className="text-3xl z-300 text-white pb-10 animate-bounce">↓</p></Link>
+        <Link href="#public-graph">
+          <p className="text-3xl z-300 text-white pb-10 animate-bounce">↓</p>
+        </Link>
       </div>
 
-      <div className="absolute w-full h-full top-0 right-0 opacity-55"><Image src={heroBackground} alt="Background Hero" fill /></div>
+      <div className="absolute w-full h-full top-0 right-0 opacity-55">
+        <Image src={heroBackground} alt="Background Hero" fill />
+      </div>
     </section>
   );
 };

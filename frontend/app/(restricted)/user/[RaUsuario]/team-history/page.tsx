@@ -75,7 +75,7 @@ export default function TeamHistory() {
               onDeleted={() => {
                 setIsOpen(false);
                 setSelectedContribution(null);
-                setRefreshKey((k) => k + 1); 
+                setRefreshKey((k) => k + 1);
               }}
             />
           )}

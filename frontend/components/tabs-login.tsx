@@ -90,7 +90,7 @@ export default function TabsLogin() {
         return;
       }
 
-       const { mentor } = await res.json(); 
+      const { mentor } = await res.json();
       setIdMentor(mentor.IdMentor);
       router.push(`/mentor/${mentor.IdMentor}/mentor-history`);
     } catch (error) {
@@ -133,7 +133,7 @@ export default function TabsLogin() {
         return;
       }
 
-      const { admin } = await res.json(); 
+      const { admin } = await res.json();
       setIdMentor(admin.IdMentor);
       router.push(`/admin/${admin.IdMentor}/admin-history`);
     } catch (error) {

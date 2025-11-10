@@ -1,4 +1,3 @@
-// tabela de contribuições, aparece quando clica no botão de toggle view
 "use client";
 
 import {
@@ -25,7 +24,6 @@ import * as React from "react";
 import { Button } from "../ui/button";
 import { Input } from "@/components/ui/input";
 import type { Contribution } from "@/components/contribution-table/columns";
-
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -55,7 +53,6 @@ export function DataTable<TData, TValue>({
     state: {
       sorting,
       columnFilters,
-
     },
   });
 
@@ -132,7 +129,7 @@ export function DataTable<TData, TValue>({
         >
           Página anterior
         </Button>
-        
+
         <Button
           variant="prettyButton"
           size="sm"
