@@ -1,21 +1,16 @@
 "use client";
 
 import Image, { StaticImageData } from "next/image";
-import React, {
-  useEffect,
-  useMemo,
-  useState,
-  useRef,
-} from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 
 import uploadStatic from "@/assets/icons/upload-static.png";
 import uploadGif from "@/assets/icons/upload-anim.gif";
 
 type AlimentoRow = {
   id: number;
-  Nome: string;
-  quantidade: string;
-  pesoUnidade: string;
+  nome: string;
+  quantidade: number;
+  pesoUnidade: number;
 };
 
 type Img = StaticImageData | string;
@@ -150,14 +145,14 @@ export default function FoodDonations({
   };
 
   const [alimentos, setAlimentos] = useState<AlimentoRow[]>([
-    { id: 1, Nome: "Arroz Polido", quantidade: "", pesoUnidade: "" },
-    { id: 2, Nome: "Feijão Preto", quantidade: "", pesoUnidade: "" },
-    { id: 3, Nome: "Macarrão", quantidade: "", pesoUnidade: "" },
-    { id: 4, Nome: "Fubá", quantidade: "", pesoUnidade: "" },
-    { id: 5, Nome: "Leite em Pó", quantidade: "", pesoUnidade: "" },
-    { id: 6, Nome: "Açúcar Refinado", quantidade: "", pesoUnidade: "" },
-    { id: 7, Nome: "Óleo de Soja", quantidade: "", pesoUnidade: "" },
-    { id: 8, Nome: "Outros", quantidade: "", pesoUnidade: "" },
+    { id: 1, nome: "Arroz Polido", quantidade: 0, pesoUnidade: 0 },
+    { id: 2, nome: "Feijão Preto", quantidade: 0, pesoUnidade: 0 },
+    { id: 3, nome: "Macarrão", quantidade: 0, pesoUnidade: 0 },
+    { id: 4, nome: "Fubá", quantidade: 0, pesoUnidade: 0 },
+    { id: 5, nome: "Leite em Pó", quantidade: 0, pesoUnidade: 0 },
+    { id: 6, nome: "Açúcar Refinado", quantidade: 0, pesoUnidade: 0 },
+    { id: 7, nome: "Óleo de Soja", quantidade: 0, pesoUnidade: 0 },
+    { id: 8, nome: "Outros", quantidade: 0, pesoUnidade: 0 },
   ]);
 
   const PONTOS_POR_KG: Record<string, number> = {
@@ -178,17 +173,19 @@ export default function FoodDonations({
     return Number.isFinite(n) ? n : 0;
   };
 
-
+  let quantidadeUnidade = 0;
+  let kgUnidade = 0;
+  // totais gerais
   const totais = useMemo(() => {
     let kgTotal = 0;
     let pontos = 0;
-    for (const { Nome, quantidade, pesoUnidade } of alimentos) {
-      const q = parseNumber(quantidade);
-      const kgU = parseNumber(pesoUnidade);
-      const kg = q * kgU;
+    for (const { nome, quantidade, pesoUnidade } of alimentos) {
+      quantidadeUnidade = parseNumber(quantidade);
+      kgUnidade = parseNumber(pesoUnidade);
+      const kg = quantidadeUnidade * kgUnidade;
       kgTotal += kg;
-      const ptsKg = PONTOS_POR_KG[Nome] ?? 0;
-      pontos += kg * ptsKg;
+      const pontosPorKg = PONTOS_POR_KG[nome] ?? 0;
+      pontos += kg * pontosPorKg;
     }
     return { kgTotal, pontos };
   }, [alimentos]);
@@ -207,26 +204,27 @@ export default function FoodDonations({
       })
     );
 
-  onAlimentosChange(converted);
+    onAlimentosChange(converted);
   }, [alimentos]);
+
   useEffect(() => {
     if (!onTotaisChange) return;
     onTotaisChange(totais);
   }, [totais]);
 
-const handleAlimentoChange = (
-  id: number,
-  campo: "quantidade" | "pesoUnidade",
-  valor: string
-) => {
-  const v = valor.replace(/\s+/g, "");
-  if (campo === "quantidade" && v.includes(".")) return;
+  const handleAlimentoChange = (
+    id: number,
+    campo: "quantidade" | "pesoUnidade",
+    valor: string
+  ) => {
+    const v = valor.replace(/\s+/g, "");
+    if (campo === "quantidade" && v.includes(".")) return;
 
-  setAlimentos((prev) =>
-    prev.map((row) => (row.id === id ? { ...row, [campo]: v } : row))
-  );
-};
-  
+    setAlimentos((prev) =>
+      prev.map((row) => (row.id === id ? { ...row, [campo]: v } : row))
+    );
+    setIdAlimento(id);
+  };
 
   return (
     <div className="flex flex-col gap-2 w-full">
@@ -282,7 +280,7 @@ const handleAlimentoChange = (
           {alimentos.map((a) => (
             <div key={a.id} className="flex gap-4 w-full">
               <div className="w-[30%] bg-white border border-gray-300 rounded-lg flex items-center justify-center text-center px-3 py-2">
-                {a.Nome}
+                {a.nome}
               </div>
               <input
                 className="w-[30%] bg-white border border-gray-300 rounded-lg px-3 py-2 text-center"

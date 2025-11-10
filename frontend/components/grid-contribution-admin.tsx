@@ -64,7 +64,7 @@ export default function RenderContributionCardAdmin({
         if (!active) return;
 
         const data: Contribution[] = Array.isArray(raw)
-            ? raw.map((r: any) => {
+          ? raw.map((r: any) => {
               const quantidade = Number(
                 String(r.Quantidade).replace(/\./g, "").replace(",", ".")
               );
@@ -145,36 +145,35 @@ export default function RenderContributionCardAdmin({
                 };
               }
               return {
-                 RaUsuario: Number(r.RaUsuario),
-                                TipoDoacao: String(r.TipoDoacao ?? ""),
-                                Quantidade: quantidade,
-                                Meta:
-                                  r.Meta != null
-                                    ? Number(
-                                        String(r.Meta).replace(/\./g, "").replace(",", ".")
-                                      )
-                                    : undefined,
-                                Gastos:
-                                  r.Gastos != null
-                                    ? Number(
-                                        String(r.Gastos).replace(/\./g, "").replace(",", ".")
-                                      )
-                                    : undefined,
-                                Fonte: r.Fonte ?? "",
-                                comprovante,
-                                IdContribuicao,
-                                DataContribuicao: String(r.DataContribuicao ?? ""),
-                                NomeAlimento: r.NomeAlimento ?? undefined,
-                                NomeTime: r.NomeTime ?? undefined,
-                                Itens: itens,
-                                PesoTotal: pesoTotal,
-                                PontuacaoTotal: itens.length ? pontTotal : undefined,
-                                PontuacaoAlimento: r.PontuacaoAlimento ?? undefined,
-                                PesoUnidade: pesoUnidade,
-                                uuid: uuidv4(),
-                
+                RaUsuario: Number(r.RaUsuario),
+                TipoDoacao: String(r.TipoDoacao ?? ""),
+                Quantidade: quantidade,
+                Meta:
+                  r.Meta != null
+                    ? Number(
+                        String(r.Meta).replace(/\./g, "").replace(",", ".")
+                      )
+                    : undefined,
+                Gastos:
+                  r.Gastos != null
+                    ? Number(
+                        String(r.Gastos).replace(/\./g, "").replace(",", ".")
+                      )
+                    : undefined,
+                Fonte: r.Fonte ?? "",
+                comprovante,
+                IdContribuicao,
+                DataContribuicao: String(r.DataContribuicao ?? ""),
+                NomeAlimento: r.NomeAlimento ?? undefined,
+                NomeTime: r.NomeTime ?? undefined,
+                Itens: itens,
+                PesoTotal: pesoTotal,
+                PontuacaoTotal: itens.length ? pontTotal : undefined,
+                PontuacaoAlimento: r.PontuacaoAlimento ?? undefined,
+                PesoUnidade: pesoUnidade,
+                uuid: uuidv4(),
 
-               alimentos: Array.isArray(r.contribuicoes_alimento)
+                alimentos: Array.isArray(r.contribuicoes_alimento)
                   ? r.contribuicoes_alimento
                       .filter(
                         (a: any) => a.alimento?.NomeAlimento?.trim() !== ""
@@ -266,7 +265,7 @@ export default function RenderContributionCardAdmin({
           {contributions.map((c) => (
             <div
               key={c.uuid}
-              className="p-3 rounded-xl hover:bg-[#cc3983]/15 border border-gray-200 shadow-md  hover:shadow-2xl transition-shadow duration-300 cursor-pointer"
+              className="p-3 rounded-xl hover:bg-secondary/5 hover:text-secondary border border-gray-200 shadow-md transition-shadow duration-300 cursor-pointer"
               onClick={() => onSelect?.(c)}
             >
               <p className="font-semibold text-lg ">{c.NomeTime}</p>

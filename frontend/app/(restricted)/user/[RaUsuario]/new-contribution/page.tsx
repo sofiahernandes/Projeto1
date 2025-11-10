@@ -311,7 +311,7 @@ export default function Donations() {
                   setFonte={(v) =>
                     setAlimenticia({ ...alimenticia, fonte: v as string })
                   }
-                  comprovante={null}
+                  Comprovante={null}
                   setComprovante={() => {}}
                   onTotaisChange={setTotaisFromChild}
                   idAlimento={idAlimento}
