@@ -211,7 +211,7 @@ export default function DonationsForm({
           placeholder="Ex: Instituto Alma"
           value={fonte}
           onChange={(e) => setFonte(e.currentTarget.value)}
-          className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5"
+          className="w-full bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
 
         <label className="block mb-1 mt-3">Meta</label>
@@ -221,7 +221,7 @@ export default function DonationsForm({
           placeholder="Ex: R$100"
           value={metaInput}
           onChange={(e) => setMetaInput(e.currentTarget.value)}
-          className="w-[80%] bg-white border border-gray-300 rounded px-3 py-1.5"
+          className="w-full bg-white border border-gray-300 rounded px-3 py-1.5"
         />
 
         <label className="block mb-1 mt-3">Gastos</label>
@@ -231,7 +231,7 @@ export default function DonationsForm({
           placeholder="Ex: 100"
           value={gastosInput}
           onChange={(e) => setGastosInput(e.currentTarget.value)}
-          className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5"
+          className="w-full bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
 
         <label className="block mb-1 mt-3">Valor R$</label>
@@ -241,7 +241,7 @@ export default function DonationsForm({
           placeholder="Ex: 140"
           value={quantidadeInput}
           onChange={(e) => setQuantidadeInput(e.currentTarget.value)}
-          className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5"
+          className="w-full bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
 
         <label className="block mb-1 mt-8">Comprovante (PNG/JPEG/PDF)</label>
