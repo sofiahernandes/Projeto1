@@ -2,6 +2,7 @@ import { prisma } from "../../prisma/lib/prisma.js";
 import { v4 as uuidv4 } from "uuid";
 
 const contributionController = {
+  //GET /api/contributions
   allContributions: async (_, res) => {
     try {
       const financeContribs = await prisma.contribuicao_Financeira.findMany({
@@ -92,6 +93,7 @@ const contributionController = {
     }
   },
 
+  //GET /api/contributions/:RaUsuario
   getContributionsByRa: async (req, res) => {
     try {
       const { RaUsuario } = req.params;
@@ -150,6 +152,7 @@ const contributionController = {
     }
   },
 
+  //GET /api/contributions/edition/:editionNumber
   getContributionsByEdition: async (req, res) => {
     try {
       const { editionNumber } = req.params;
@@ -214,6 +217,7 @@ const contributionController = {
     }
   },
 
+  //POST /api/createContribution
   createContribution: async (req, res) => {
     const {
       RaUsuario,
@@ -395,6 +399,7 @@ const contributionController = {
     }
   },
 
+  //DELETE /api/:TipoDoacao/:IdContribuicao
   deleteContribution: async (req, res) => {
     const { TipoDoacao, IdContribuicao } = req.params;
 

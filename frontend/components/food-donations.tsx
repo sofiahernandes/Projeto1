@@ -1,11 +1,11 @@
 "use client";
+
 import Image, { StaticImageData } from "next/image";
 import React, {
   useEffect,
   useMemo,
   useState,
   useRef,
-  useCallback,
 } from "react";
 
 import uploadStatic from "@/assets/icons/upload-static.png";
@@ -19,6 +19,7 @@ type AlimentoRow = {
 };
 
 type Img = StaticImageData | string;
+
 interface Properties {
   raUsuario: number;
   setRaUsuario: React.Dispatch<React.SetStateAction<number>>;
@@ -176,12 +177,6 @@ export default function FoodDonations({
     const n = Number(s.replace(",", "."));
     return Number.isFinite(n) ? n : 0;
   };
-
-  const fmt2 = (n: number) =>
-    n.toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
 
   // totais gerais
   const totais = useMemo(() => {

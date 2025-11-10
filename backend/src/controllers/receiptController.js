@@ -1,13 +1,11 @@
-import { cloudinary, upload } from "../configs/uploadconfig.js";
+import { cloudinary } from "../configs/uploadconfig.js";
 import { prisma } from "../../prisma/lib/prisma.js";
 import {
-  getPublicIdFromUrl,
   deleteImageFromUrl,
 } from "../configs/cloudinaryHelper.js";
 
 const receiptController = {
-
-  // POST http://localhost:3001/api/comprovante/:IdContribuicaoFinanciera - (adiciona imagem pela contribuição financeira )
+  // POST /api/comprovante/:IdContribuicaoFinanciera (adiciona imagem pela contribuição financeira)
   addReceiptAtContribution: async (req, res) => {
     try {
       const { IdContribuicaoFinanceira } = req.params;
@@ -83,7 +81,7 @@ const receiptController = {
     }
   },
 
-  // GET http://localhost:3001/api/comprovante/usuario/:raUsuario
+  // GET /api/comprovante/usuario/:raUsuario
   receiptByRA: async (req, res) => {
     try {
       const { RaUsuario } = req.params;
@@ -115,7 +113,7 @@ const receiptController = {
     }
   },
 
-  // GET http://localhost:3001/api/comprovante/:IdComprovante
+  // GET /api/comprovante/:IdComprovante
   receiptById: async (req, res) => {
     try {
       const { IdComprovante } = req.params;
@@ -179,7 +177,7 @@ const receiptController = {
     }
   },
 
-  // DELETE http://localhost:3001/api/comprovante/:IdComprovante( deleta comprovante e tira da tabela de contribuição financeira)
+  // DELETE /api/comprovante/:IdComprovante (deleta comprovante e tira da tabela de contribuição financeira)
   deleteReceiptById: async (req, res) => {
     try {
       const { IdComprovante } = req.params;
