@@ -64,12 +64,15 @@ Procuramos desenvolver uma interface que traga a identidade visual do Projeto Li
 ## 🗂 Estrutura de Pastas
 ```
 |-->backend
+    |-->prisma
     |-->src
        |-->controllers
-       |-->examples
+       |-->configs
+       |-->middlewares
+       |-->services
+       |-->uploads
        |app.js
        |db.js
-       |db.test.js
        |routes.js
        |server.js
 |-->frontend
