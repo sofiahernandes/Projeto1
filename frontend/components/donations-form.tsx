@@ -12,19 +12,17 @@ interface Properties {
   raUsuario: number;
   setRaUsuario: React.Dispatch<React.SetStateAction<number>>;
   tipoDoacao: "Financeira" | "Alimenticia";
-  setTipoDoacao: React.Dispatch<
-    React.SetStateAction<"Financeira" | "Alimenticia">
-  >;
-  Quantidade?: number;
-  setQuantidade: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setTipoDoacao: React.Dispatch<React.SetStateAction<"Financeira" | "Alimenticia">>;
+  quantidade: number;
+  setQuantidade: React.Dispatch<React.SetStateAction<number>>;
   fonte: string;
   setFonte: React.Dispatch<React.SetStateAction<string>>;
-  Meta?: number;
-  setMeta: React.Dispatch<React.SetStateAction<number | undefined>>;
-  Gastos?: number;
-  setGastos: React.Dispatch<React.SetStateAction<number | undefined>>;
-  Comprovante: File | null;
-  setComprovante: React.Dispatch<React.SetStateAction<File | null>>;
+  meta: number;
+  setMeta: React.Dispatch<React.SetStateAction<number>>;
+  gastos: number;
+  setGastos: React.Dispatch<React.SetStateAction<number>>;
+  comprovante: string;
+  setComprovante: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function DonationsForm({
@@ -44,24 +42,44 @@ export default function DonationsForm({
   setComprovante,
 }: Properties) {
   const [loading, setLoading] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [picking, setPicking] = useState(false);
   const timerRef = useRef<number | null>(null);
 
+  const [metaInput, setMetaInput] = useState<string>("");
+  const [gastosInput, setGastosInput] = useState<string>("");
+  const [quantidadeInput, setQuantidadeInput] = useState<string>("");
+
+  const normalize = (s: string) => s.replace(",", ".").trim();
+  const toNumberOrNaN = (s: string) => Number(normalize(s));
+
   useEffect(() => {
-    const style = document.createElement("style");
-    style.innerHTML = `
-      @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.12); } 100% { transform: scale(1); } }
-      .animate-pop { animation: pop 150ms ease-out; }
-      @media (prefers-reduced-motion: reduce) {
-        .animate-pop { animation: none !important; }
-      }
-    `;
-    document.head.appendChild(style);
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
+    setMetaInput(meta ? String(meta) : "");
+    setGastosInput(gastos ? String(gastos) : "");
+    setQuantidadeInput(quantidade ? String(quantidade) : "");
+  }, [meta, gastos, quantidade]);
+
+useEffect(() => {
+  const style = document.createElement("style");
+  style.innerHTML = `
+    @keyframes pop { 
+      0% { transform: scale(1); } 
+      40% { transform: scale(1.12); } 
+      100% { transform: scale(1); } 
+    }
+    .animate-pop { animation: pop 150ms ease-out; }
+    @media (prefers-reduced-motion: reduce) {
+      .animate-pop { animation: none !important; }
+    }
+  `;
+  document.head.appendChild(style);
+
+  // ✅ retorno do efeito deve ser apenas a função de limpeza
+  return () => {
+    document.head.removeChild(style);
+  };
+}, []);
 
   const stopGif = () => {
     setPicking(false);
@@ -75,7 +93,7 @@ export default function DonationsForm({
     if (loading) return;
     setPicking(true);
     if (timerRef.current) window.clearTimeout(timerRef.current);
-    timerRef.current = window.setTimeout(stopGif, 1000);
+    timerRef.current = window.setTimeout(() => stopGif(), 1000);
     fileInputRef.current?.click();
   };
 
@@ -120,6 +138,68 @@ export default function DonationsForm({
     stopGif();
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!fonte.trim()) return alert("Informe o nome do evento/doador");
+
+    const qNum = toNumberOrNaN(quantidadeInput);
+    if (!quantidadeInput || Number.isNaN(qNum)) {
+      return alert("Informe um valor/quantidade válido");
+    }
+
+    const metaNum = metaInput ? toNumberOrNaN(metaInput) : NaN;
+    const gastosNum = gastosInput ? toNumberOrNaN(gastosInput) : NaN;
+
+    if (metaInput && Number.isNaN(metaNum)) return alert("Meta inválida");
+    if (gastosInput && Number.isNaN(gastosNum)) return alert("Gastos inválidos");
+
+    if (!Number.isNaN(metaNum) && !Number.isNaN(gastosNum) && metaNum < gastosNum) {
+      const ok = confirm("Gastos maiores que a meta. Deseja continuar?");
+      if (!ok) return;
+    }
+
+    setQuantidade(qNum);
+    setMeta(Number.isNaN(metaNum) ? 0 : metaNum);
+    setGastos(Number.isNaN(gastosNum) ? 0 : gastosNum);
+
+    setLoading(true);
+    try {
+      const form = new FormData();
+      if (comprovanteFile) form.append("Comprovante", comprovanteFile);
+      form.append("RaUsuario", String(raUsuario));
+      form.append("Quantidade", String(qNum));
+      form.append("Meta", metaInput ? String(metaNum) : "");
+      form.append("Gastos", gastosInput ? String(gastosNum) : "");
+      form.append("Fonte", fonte);
+      form.append("TipoDoacao", tipoDoacao);
+
+      const res = await fetch("/api/createContribution", {
+        method: "POST",
+        body: form,
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+      alert("Contribuição registrada com sucesso!");
+
+      setFonte("");
+      setQuantidade(0);
+      setMeta(0);
+      setGastos(0);
+      setComprovante("");
+      setComprovanteFile(null);
+
+      setQuantidadeInput("");
+      setMetaInput("");
+      setGastosInput("");
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || "Erro de conexão");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4 w-full">
       <div className="rounded-xl">
@@ -134,16 +214,12 @@ export default function DonationsForm({
 
         <label className="block mb-1 mt-3">Meta</label>
         <input
-          type="number"
-          step="0.01"
-          placeholder="Ex: 1000"
-          value={Meta === 0 || Meta === undefined ? "" : Meta}
-          onChange={(e) =>
-            setMeta(
-              e.currentTarget.value === "" ? 0 : Number(e.currentTarget.value)
-            )
-          }
-          className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5"
+          type="text"
+          inputMode="decimal"
+          placeholder="Ex: R$100"
+          value={metaInput}
+          onChange={(e) => setMetaInput(e.currentTarget.value)}
+          className="w-[80%] bg-white border border-gray-300 rounded px-3 py-1.5"
         />
 
         <label className="block mb-1 mt-3">Gastos</label>
@@ -174,10 +250,7 @@ export default function DonationsForm({
           className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
 
-        <label className="block mb-1 mt-8">
-          Comprovante (PNG/JPEG/JPG/PDF)
-        </label>
-
+        <label className="block mb-1 mt-8">Comprovante (PNG/JPEG)</label>
         <input
           ref={fileInputRef}
           type="file"
@@ -218,6 +291,6 @@ export default function DonationsForm({
           </span>
         </div>
       </div>
-    </div>
+    </form>
   );
 }
