@@ -74,9 +74,15 @@ const contributionController = {
           RaUsuario: c.RaUsuario || null,
           Comprovante: c.Comprovante || null,
           NomeTime: c.usuario?.time_usuarios?.[0]?.time?.NomeTime || "Sem time",
-          Alimentos:
-            c.contribuicoes_alimento?.map((a) => a.alimento?.NomeAlimento) ||
-            [],
+
+          contribuicoes_alimento:
+            c.contribuicoes_alimento?.map((a) => ({
+              IdAlimento: a.IdAlimento,
+              alimento: {
+                NomeAlimento: a.alimento?.NomeAlimento,
+                Pontuacao: a.alimento?.Pontuacao,
+              },
+            })) || [],
         })),
       ];
 

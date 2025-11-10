@@ -24,11 +24,28 @@ interface RenderContributionProps {
   refreshKey?: number;
 }
 
+type ItemAlimento = {
+  Quantidade: number;
+  PesoUnidade: number;
+  PontuacaoAlimento: number;
+  NomeAlimento: string;
+};
+
+type ContributionAdmin = Contribution & {
+  Itens?: ItemAlimento[];
+  PesoTotal?: number;
+  PontuacaoTotal?: number;
+  alimentos?: {
+    NomeAlimento: string;
+    Pontuacao?: number | string;
+  }[];
+};
+
 export default function RenderContributionTableAdmin({
   onSelect,
   refreshKey = 0,
 }: RenderContributionProps) {
-  const [contributions, setContributions] = useState<Contribution[]>([]);
+  const [contributions, setContributions] = useState<ContributionAdmin[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -58,8 +75,50 @@ export default function RenderContributionTableAdmin({
         const raw = await res.json();
         if (!active) return;
 
-        const data: Contribution[] = Array.isArray(raw)
+        const data: ContributionAdmin[] = Array.isArray(raw)
           ? raw.map((r: any) => {
+              const quantidade = Number(
+                String(r.Quantidade).replace(/\./g, "").replace(",", ".")
+              );
+
+              const pesoUnidade =
+                r.PesoUnidade != null
+                  ? Number(
+                      String(r.PesoUnidade).replace(/\./g, "").replace(",", ".")
+                    )
+                  : 0;
+
+              const itens: ItemAlimento[] = Array.isArray(
+                r.contribuicoes_alimento
+              )
+                ? r.contribuicoes_alimento.map(
+                    (it: any): ItemAlimento => ({
+                      Quantidade: quantidade,
+                      PesoUnidade: pesoUnidade,
+                      PontuacaoAlimento: Number(it?.alimento?.Pontuacao ?? 0),
+                      NomeAlimento: String(it?.alimento?.NomeAlimento ?? ""),
+                    })
+                  )
+                : [];
+
+              const pesoTotal =
+                Number.isFinite(quantidade) && Number.isFinite(pesoUnidade)
+                  ? quantidade * pesoUnidade
+                  : undefined;
+
+              const pontTotal = itens.reduce<number>((sum, it) => {
+                const parc = it.Quantidade * it.PontuacaoAlimento;
+                return sum + (Number.isFinite(parc) ? parc : 0);
+              }, 0);
+
+              console.log("Calculado:", {
+                quantidade,
+                pesoUnidade,
+                pesoTotal,
+                pontTotal,
+                itens,
+              });
+
               const IdContribuicao = Number(
                 r.IdContribuicao ??
                   r.IdContribuicaoFinanceira ??
@@ -101,14 +160,7 @@ export default function RenderContributionTableAdmin({
               return {
                 RaUsuario: Number(r.RaUsuario),
                 TipoDoacao: String(r.TipoDoacao ?? ""),
-                Quantidade:
-                  r.Quantidade != null
-                    ? Number(
-                        String(r.Quantidade)
-                          .replace(/\./g, "")
-                          .replace(",", ".")
-                      )
-                    : 0,
+                Quantidade: quantidade,
                 Meta:
                   r.Meta != null
                     ? Number(
@@ -127,13 +179,25 @@ export default function RenderContributionTableAdmin({
                 DataContribuicao: String(r.DataContribuicao ?? ""),
                 NomeAlimento: r.NomeAlimento ?? undefined,
                 NomeTime: r.NomeTime ?? undefined,
+                Itens: itens,
+                PesoTotal: pesoTotal,
+                PontuacaoTotal: itens.length ? pontTotal : undefined,
                 PontuacaoAlimento: r.PontuacaoAlimento ?? undefined,
-                PesoUnidade: r.PesoUnidade ?? undefined,
+                PesoUnidade: pesoUnidade,
                 uuid: uuidv4(),
-              };
+
+              alimentos: Array.isArray(r.contribuicoes_alimento)
+  ? r.contribuicoes_alimento
+      .filter((a: any) => a.alimento?.NomeAlimento?.trim() !== "")
+      .map((a: any) => ({
+        NomeAlimento: String(a.alimento?.NomeAlimento ?? ""),
+        Pontuacao: a.alimento?.Pontuacao ?? "",
+      }))
+      
+  : [],
+              } satisfies ContributionAdmin;
             })
           : [];
-        console.log(raw);
         setContributions(data);
       } catch (err: any) {
         if (err?.name === "AbortError") {
@@ -183,7 +247,7 @@ export default function RenderContributionTableAdmin({
 
   return (
     <div className="p-2.5">
-      <DataTable<Contribution, unknown>
+      <DataTable<ContributionAdmin, unknown>
         columns={columns}
         data={contributions}
       />

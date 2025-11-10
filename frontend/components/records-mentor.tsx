@@ -15,7 +15,12 @@ interface ContributionData {
   };
   IdContribuicao: number;
   DataContribuicao: string;
-  NomeAlimento?: string;
+
+  alimentos?: {
+    NomeAlimento: string;
+    Pontuacao?: number | string;
+  }[];
+
   PontuacaoAlimento: number;
   PesoUnidade: number;
   uuid: string;
@@ -33,6 +38,7 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
   setIsOpen,
 }) => {
   if (!data) return null;
+  console.log("Dados recebidos no modal:", data);
 
   const toggleModal = () => {
     setIsOpen(!isOpen);
@@ -89,21 +95,26 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
                     </div>
                   )}
 
-                  {data.NomeAlimento && (
-                    <div className="flex justify-between">
+                  {data.TipoDoacao === "Alimenticia" &&
+                  data.alimentos &&
+                  data.alimentos.length > 0 ? (
+                    <ul className="flex justify-between">
                       <div>
-                        <p className="text-sm text-gray-600"> Alimentos: </p>
-                        <p className="font-semibold ">{data.NomeAlimento} </p>
+                      <p className="text-sm text-gray-600"> Alimentos arrecadados</p>
+                      {data.alimentos.map((a, i) => (
+                        <li key={i} className="font-semibold"> {a.NomeAlimento}</li>
+                      ))}
                       </div>
-
-                      <div>
-                        <p className="text-sm text-gray-600">Peso unitário:</p>
-                        <p className="font-semibold ">
-                          {data.PesoUnidade} kg/g
-                        </p>
+                      <div> 
+                        <p className="text-sm text-gray-600"> Pontuação item</p>
+                        {data.alimentos.map((a, i) => (
+                        <li key={i} className="font-semibold"> {a.Pontuacao}</li>
+                      ))}
                       </div>
-                    </div>
-                  )}
+                    </ul>
+                  ) : data.TipoDoacao === "Alimenticia" ? (
+                    <p>Nenhum alimento registrado.</p>
+                  ) : null}
 
                   {data.comprovante?.Imagem ? (
                     <div>
