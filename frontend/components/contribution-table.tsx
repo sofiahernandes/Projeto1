@@ -1,7 +1,6 @@
 "use client";
-{/* Para fazer um teste depois*/}
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -14,14 +13,17 @@ import {
 } from "@/components/ui/table";
 
 interface Contribution {
+  IdContribuicao: number;
   RaUsuario: number;
   TipoDoacao: string;
   Quantidade: number;
   Meta?: number;
   Gastos?: number;
   Fonte?: string;
-  Comprovante?: string;
-  IdContribuicao: number;
+  comprovante?: {
+    IdComprovante: number;
+    Imagem: string;
+  };
   DataContribuicao: string;
 }
 
@@ -49,6 +51,7 @@ export default function RenderContribution() {
             <TableCell className="text-right">
               {new Date(c.DataContribuicao).toLocaleDateString()}
             </TableCell>
+            <TableCell>{c.comprovante?.Imagem}</TableCell>
           </TableRow>
         ))}
       </TableBody>

@@ -30,18 +30,17 @@ export default function DonationsForm({
   setRaUsuario,
   tipoDoacao,
   setTipoDoacao,
-  quantidade,
+  Quantidade,
   setQuantidade,
   fonte,
   setFonte,
-  meta,
+  Meta,
   setMeta,
-  gastos,
+  Gastos,
   setGastos,
-  comprovante,
+  Comprovante,
   setComprovante,
 }: Properties) {
-  const [comprovanteFile, setComprovanteFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -111,28 +110,31 @@ useEffect(() => {
     const file = e.currentTarget.files?.[0] ?? null;
 
     if (!file) {
-      setComprovanteFile(null);
-      setComprovante("");
+      setComprovante(null);
       stopGif();
       return;
     }
 
-    const okType = ["image/png", "image/jpeg", "image/jpg"].includes(file.type);
+    const okType = [
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "application/pdf",
+    ].includes(file.type);
     const okSize = file.size <= 5 * 1024 * 1024;
 
     if (!okType) {
-      alert("Apenas PNG/JPEG");
+      alert("Formato inválido. Use PNG, JPEG ou PDF.");
       stopGif();
       return;
     }
     if (!okSize) {
-      alert("Arquivo muito grande (máx. 5MB)");
+      alert("Arquivo muito grande (máx. 5MB).");
       stopGif();
       return;
     }
 
-    setComprovanteFile(file);
-    setComprovante(file.name);
+    setComprovante(file);
     stopGif();
   };
 
@@ -199,16 +201,15 @@ useEffect(() => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full max-w-xl">
-      <div className="rounded-xl p-4">
-        <label className="block mb-1">Nome do Evento / doador</label>
+    <div className="flex flex-col gap-4 w-full">
+      <div className="rounded-xl">
+        <label className="block mb-1">Nome do Evento / Doador</label>
         <input
           type="text"
           placeholder="Ex: Instituto Alma"
           value={fonte}
           onChange={(e) => setFonte(e.currentTarget.value)}
-          className="w-[80%] bg-white border border-gray-300 rounded px-3 py-1.5"
-          required
+          className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
 
         <label className="block mb-1 mt-3">Meta</label>
@@ -223,30 +224,37 @@ useEffect(() => {
 
         <label className="block mb-1 mt-3">Gastos</label>
         <input
-          type="text"
-          inputMode="decimal"
-          placeholder="Ex: R$100"
-          value={gastosInput}
-          onChange={(e) => setGastosInput(e.currentTarget.value)}
-          className="w-[80%] bg-white border border-gray-300 rounded px-3 py-1.5"
+          type="number"
+          step="0.01"
+          placeholder="Ex: 100"
+          value={Gastos === 0 || Gastos === undefined ? "" : Gastos}
+          onChange={(e) =>
+            setGastos(
+              e.currentTarget.value === "" ? 0 : Number(e.currentTarget.value)
+            )
+          }
+          className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
 
         <label className="block mb-1 mt-3">Valor R$</label>
         <input
-          type="text"
-          inputMode="decimal"
-          placeholder="Ex: R$140"
-          value={quantidadeInput}
-          onChange={(e) => setQuantidadeInput(e.currentTarget.value)}
-          className="w-[80%] bg-white border border-gray-300 rounded px-3 py-1.5"
-          required
+          type="number"
+          step="0.01"
+          placeholder="Ex: 140"
+          value={Quantidade === 0 || Quantidade === undefined ? "" : Quantidade}
+          onChange={(e) =>
+            setQuantidade(
+              e.currentTarget.value === "" ? 0 : Number(e.currentTarget.value)
+            )
+          }
+          className="w-[80%] bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
 
         <label className="block mb-1 mt-8">Comprovante (PNG/JPEG)</label>
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/png,image/jpeg"
+          accept="image/png,image/jpeg,image/jpg,application/pdf"
           onChange={handleFileChange}
           className="hidden"
           aria-hidden="true"
@@ -258,7 +266,9 @@ useEffect(() => {
             type="button"
             onClick={handlePickClick}
             onMouseDown={(e) => e.currentTarget.classList.add("animate-pop")}
-            onAnimationEnd={(e) => e.currentTarget.classList.remove("animate-pop")}
+            onAnimationEnd={(e) =>
+              e.currentTarget.classList.remove("animate-pop")
+            }
             className="inline-flex items-center justify-center h-14 w-18 rounded-lg bg-white transition"
             disabled={loading}
             aria-label="Selecionar comprovante"
@@ -275,7 +285,9 @@ useEffect(() => {
           </button>
 
           <span className="ml-3 text-sm text-gray-700">
-            {comprovante ? `Selecionado: ${comprovante}` : "Nenhum arquivo escolhido"}
+            {Comprovante
+              ? `Selecionado: ${Comprovante.name}`
+              : "Nenhum arquivo escolhido"}
           </span>
         </div>
       </div>

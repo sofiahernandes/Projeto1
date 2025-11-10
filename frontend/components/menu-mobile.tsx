@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { usePathname, useRouter, useParams } from "next/navigation";
 
 import homeDefault from "@/assets/icons/home.png";
 import homeActive from "@/assets/icons/home-active.png";
@@ -127,9 +128,9 @@ export default function MenuMobile() {
           <Link
             href={homeHref}
             aria-label="Início"
-            className={`${basePill} ${isActive(homeHref) ? activePill : neutralPill} ${
-              pressed.home ? "animate-pop" : ""
-            }`}
+            className={`${basePill} ${
+              isActive(homeHref) ? activePill : neutralPill
+            } ${pressed.home ? "animate-pop" : ""}`}
             onMouseDown={() => triggerPress("home")}
             onTouchStart={() => triggerPress("home")}
           >

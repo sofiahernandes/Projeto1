@@ -7,7 +7,6 @@ export const getPublicIdFromUrl = (url) => {
     const uploadIndex = urlParts.indexOf("upload");
     
     if (uploadIndex === -1) {
-      console.warn("⚠️ URL não parece ser do Cloudinary:", url);
       return null;
     }
 
@@ -17,14 +16,12 @@ export const getPublicIdFromUrl = (url) => {
       pathParts = pathParts.slice(1);
     }
 
-    // Junta o caminho
     const publicIdWithExtension = pathParts.join("/");
     
     const publicId = publicIdWithExtension.replace(/\.[^/.]+$/, "");
     
     return publicId;
   } catch (error) {
-    console.error("❌ Erro ao extrair public_id:", error);
     return null;
   }
 };

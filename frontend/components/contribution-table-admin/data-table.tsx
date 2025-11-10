@@ -1,4 +1,3 @@
-// tabela de contribuições, aparece quando clica no botão de toggle view
 "use client";
 
 import {
@@ -25,7 +24,6 @@ import * as React from "react";
 import { Button } from "../ui/button";
 import { Input } from "@/components/ui/input";
 import type { Contribution } from "@/components/contribution-table/columns";
-
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -55,7 +53,6 @@ export function DataTable<TData, TValue>({
     state: {
       sorting,
       columnFilters,
-
     },
   });
 
@@ -64,7 +61,9 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center py-4">
         <Input
           placeholder="Procurar nome de um grupo..."
-          value={(table.getColumn("NomeTime")?.getFilterValue() as string) ?? ""}
+          value={
+            (table.getColumn("NomeTime")?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
             table.getColumn("NomeTime")?.setFilterValue(event.target.value)
           }
@@ -132,7 +131,7 @@ export function DataTable<TData, TValue>({
         >
           Página anterior
         </Button>
-        
+
         <Button
           variant="prettyButton"
           size="sm"

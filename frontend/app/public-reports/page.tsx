@@ -1,26 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
 import BackHome from "@/components/back-home";
-import { DataTable } from "@/components/contribution-table-admin/data-table";
-import {
-  makeContributionColumns,
-  Contribution,
-} from "@/components/contribution-table-admin/columns";
-import { toast } from "sonner"; // optional if you use toast notifications
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
+import RecordsMentor from "@/components/records-mentor";
+import RenderContributionCard from "@/components/grid-contribution-admin";
+import Loading from "@/components/loading";
+
 import { MajorContributionsChart } from "@/components/reports-charts/tooltip-chart/page";
 import { FoodDonationsChart } from "@/components/reports-charts/pie-chart-label/page";
 import { FinanContribuitionsChart } from "@/components/reports-charts/area-chart/page";
 import { TeamsRankingChart } from "@/components/reports-charts/bar-label-costum/page";
-import { HandHeart } from "lucide-react";
 
 // Generate editions automatically
 function generateEditions(startEdition = 7, startYear = 2025) {
@@ -56,67 +45,13 @@ export default function PublicReports() {
     return currentEdition;
   });
 
-  const [contributions, setContributions] = useState<Contribution[]>([]);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [selectedContribution, setSelectedContribution] =
+    React.useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const editions = generateEditions();
-
-  // Fetch contributions filtered by edition
-  useEffect(() => {
-    async function fetchContributions() {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/contributions/edition/${edition}`
-        );
-        if (!res.ok) throw new Error("Erro ao buscar contribuições");
-        const data = await res.json();
-        setContributions(data);
-      } catch (err: any) {
-        console.error(err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchContributions();
-  }, [edition]);
-
-  const columns = makeContributionColumns({
-    onCopied: (id) => toast.success(`ID ${id} copiado!`),
-    onView: (c) => {
-      // open a modal or navigate to a detail view (optional)
-      console.log("Visualizar contribuição:", c);
-    },
-  });
-
-  if (!contributions.length) {
-    return (
-      <>
-        <div className="absolute left-0 top-0 m-4">
-          <BackHome />
-        </div>
-        <div className="col-start-2 border rounded-xl border-gray-200 shadow-xl w-auto max-w-[90%] md:max-w-100 mx-auto">
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <HandHeart size={44} strokeWidth={1.2} />
-              </EmptyMedia>
-              <EmptyTitle>Nenhuma contribuição por enquanto!</EmptyTitle>
-              <EmptyDescription>
-                Ainda não foi arrecadada nenhuma doação. Quando os alunos
-                adicionarem contribuições ao Arkana, aparecerão aqui!
-              </EmptyDescription>
-            </EmptyHeader>
-            <EmptyContent />
-          </Empty>
-        </div>
-      </>
-    );
-  }
 
   return (
     <div className="min-h-screen w-screen bg-background p-6">
@@ -124,45 +59,66 @@ export default function PublicReports() {
         <BackHome />
       </div>
 
-      <div className="max-w-6xl mx-auto mt-5">
-        {/* Edition Selector */}
-        <div className="flex justify-center mb-6">
-          <select
-            value={edition}
-            onChange={(e) => setEdition(Number(e.target.value))}
-            className="border border-gray-300 rounded-lg px-4 py-2 bg-white text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-secondary"
-          >
-            {editions.map((ed) => (
-              <option key={ed.value} value={ed.value}>
-                {ed.label}
-              </option>
-            ))}
-          </select>
+      <div className="mx-auto mt-5 grid grid-cols-1 md:grid-cols-3">
+        <div className="w-full h-full md:col-span-2">
+          {/* Edition Selector */}
+          {/*
+          <div className="flex justify-center mb-6">
+            <select
+              title="Filtrar por edição"
+              value={edition}
+              onChange={(e) => setEdition(Number(e.target.value))}
+              className="border border-gray-300 rounded-lg px-4 py-2 bg-white text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-secondary"
+            >
+              {editions.map((ed) => (
+                <option key={ed.value} value={ed.value}>
+                  {ed.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          */}
+
+          {/* Table / Loading / Error */}
+          {loading && (
+            <div className="w-screen h-full text-center text-gray-600">
+              <Loading />
+            </div>
+          )}
+
+          {!loading && !error && (
+            <div className="w-full overflow-y-hidden overflow-x-hidden flex flex-col">
+              <div className="*:w-full flex justify-center pt-4 transition-all duration-300 ease-in-out">
+                <main className="w-full ">
+                  {selectedContribution && (
+                    <RecordsMentor
+                      data={selectedContribution}
+                      isOpen={isOpen}
+                      setIsOpen={setIsOpen}
+                    />
+                  )}
+
+                  <div className="mt-2">
+                    <RenderContributionCard
+                      isPublicReport
+                      onSelect={(contribution: any) => {
+                        setSelectedContribution(contribution);
+                        setIsOpen(true);
+                      }}
+                    />
+                  </div>
+                </main>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Table / Loading / Error */}
-        {loading && (
-          <p className="text-center text-gray-600">
-            Carregando contribuições...
-          </p>
-        )}
-
-        {error && (
-          <p className="text-center text-red-500">Ocorreu um erro: {error}</p>
-        )}
-
-        {!loading && !error && (
-          <DataTable
-            columns={columns}
-            data={contributions}
-            onRowClick={(c) => console.log("Clicked row:", c)}
-          />
-        )}
-
-        <MajorContributionsChart/>
-        <FoodDonationsChart/>
-        <FinanContribuitionsChart/>
-        <TeamsRankingChart/>
+        <div className="w-full h-full flex flex-col gap-6">
+          <MajorContributionsChart />
+          <FoodDonationsChart />
+          <FinanContribuitionsChart />
+          <TeamsRankingChart />
+        </div>
       </div>
     </div>
   );

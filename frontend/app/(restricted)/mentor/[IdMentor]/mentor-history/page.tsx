@@ -13,7 +13,6 @@ interface TeamData {
   NomeTime: string;
   RaUsuario: number | null;
 }
-
 const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export default function MentorVision() {
@@ -24,54 +23,51 @@ export default function MentorVision() {
   const [isOpen, setIsOpen] = useState(false);
   const [buttonSelected, setButtonSelected] = useState(false);
   const [selectedContribution, setSelectedContribution] = useState<any>(null);
-  const [timesData, setTimesData] = useState<TeamData[]>([]);
-  const [selectedTeam, setSelectedTeam] = useState<TeamData | null>(null);
+  const [loadingTeam, setLoadingTeam] = useState(false);
+  const [errorTeam, setErrorTeam] = useState<string | null>(null);
+  const [loadingUser, setLoadingUser] = useState(false);
+  const [errorUser, setErrorUser] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!IdMentor) return;
+    if (!IdMentor) {
+      console.warn("invalido", params);
+      return;
+    }
 
     const controller = new AbortController();
     let active = true;
 
     async function fetchMentorTeam() {
       try {
+        setLoadingTeam(true);
+        setErrorTeam(null);
+
         const res = await fetch(`${backend_url}/api/mentor/${IdMentor}/team`, {
           cache: "no-store",
           signal: controller.signal,
         });
 
-        if (!res.ok) return;
+        if (!res.ok) {
+          const msg = await res.text().catch(() => "");
+          throw new Error(`Falha ao buscar time (${res.status}) ${msg}`);
+        }
+        const mentorData = await res.json();
+        const oneTeam: TeamData | null = Array.isArray(mentorData)
+          ? mentorData[0] ?? null
+          : (mentorData as TeamData | null);
 
-        const times: TeamData[] = await res.json();
         if (!active) return;
 
-        setTimesData(times);
-
-        if (times.length > 0) {
-          const firstTeam = times[0];
-          setSelectedTeam(firstTeam);
-          setTeam(firstTeam);
-
-          if (firstTeam.RaUsuario) {
-            const userRes = await fetch(
-              `${backend_url}/api/user/${firstTeam.RaUsuario}`,
-              {
-                cache: "no-store",
-                signal: controller.signal,
-              }
-            );
-
-            if (userRes.ok) {
-              const userData = await userRes.json();
-              if (active) setUser(userData);
-            }
-          }
-        }
+        console.log("Time do mentor recebido:", oneTeam);
+        setTeam(oneTeam);
       } catch (err: any) {
         if (err?.name === "AbortError") return;
+        console.error("Erro ao buscar time do mentor:", err);
+        setErrorTeam(err?.message ?? "Erro ao buscar time do mentor");
+      } finally {
+        if (active) setLoadingTeam(false);
       }
     }
-
     fetchMentorTeam();
 
     return () => {
@@ -79,6 +75,54 @@ export default function MentorVision() {
       controller.abort();
     };
   }, [IdMentor]);
+
+  useEffect(() => {
+    const ra = team?.RaUsuario;
+    if (!backend_url) return;
+    if (!ra || !Number.isFinite(ra)) {
+      setUser(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    let active = true;
+
+    async function fetchUser() {
+      try {
+        setLoadingUser(true);
+        setErrorUser(null);
+
+        const res = await fetch(`${backend_url}/api/user/${raUsuario}`, {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (!res.ok) throw new Error(`Falha ao buscar usuário (${res.status})`);
+        const userData = await res.json();
+        if (!active) return;
+
+        console.log("Usuário líder recebido:", userData);
+
+        setUser(userData);
+      } catch (err: any) {
+        if (err?.name === "AbortError") return;
+        console.error("Erro ao buscar usuário:", err);
+        setErrorUser(err?.message ?? "Erro ao buscar usuário");
+      } finally {
+        if (active) setLoadingUser(false);
+      }
+    }
+
+    fetchUser();
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [team?.RaUsuario]);
+
+  const raUsuario =
+    team?.RaUsuario && Number.isFinite(team.RaUsuario)
+      ? team.RaUsuario
+      : undefined;
 
   return (
     <div className="min-h-dvh w-full overflow-y-hidden overflow-x-hidden flex flex-col bg-[#f4f3f1]/60">
@@ -104,11 +148,17 @@ export default function MentorVision() {
           )}
           <div className="flex flex-col gap-2 mx-3 text-center">
             <h3 className="text-2xl uppercase font-semibold text-primary">
-              {team?.NomeTime || "Nome do time aparecerá aqui"}
+              {loadingTeam
+                ? "Carregando time…"
+                : team?.NomeTime || "Nenhum time encontrado"}
             </h3>
+
             <h4 className="mb-3 text-xl text-primary text-center">
-              Turma {user?.TurmaUsuario || "X"} | Yº Edição
+              {loadingUser
+                ? "Carregando turma…"
+                : `Turma ${user?.TurmaUsuario || "—"}`}
             </h4>
+
             <div className="self-end">
               <SwitchViewButton
                 buttonSelected={buttonSelected}
@@ -121,6 +171,7 @@ export default function MentorVision() {
           <div className="mt-2">
             {buttonSelected ? (
               <RenderContributionTable
+                raUsuario={team?.RaUsuario ?? undefined}
                 onSelect={(contribution: any) => {
                   setSelectedContribution(contribution);
                   setIsOpen(true);
@@ -128,6 +179,7 @@ export default function MentorVision() {
               />
             ) : (
               <RenderContributionCard
+                raUsuario={team?.RaUsuario ?? undefined}
                 onSelect={(contribution: any) => {
                   setSelectedContribution(contribution);
                   setIsOpen(true);

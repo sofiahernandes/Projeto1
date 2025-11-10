@@ -1,12 +1,14 @@
 import { prisma } from "../../prisma/lib/prisma.js";
+import { v4 as uuidv4 } from "uuid";
 
 const contributionController = {
+  //GET /api/contributions
   allContributions: async (_, res) => {
     try {
       const financeContribs = await prisma.contribuicao_Financeira.findMany({
         orderBy: { DataContribuicao: "desc" },
         include: {
-          comprovante: { select: { Imagem: true } },
+          comprovante: { select: { IdComprovante: true, Imagem: true } },
           usuario: {
             include: {
               time_usuarios: {
@@ -26,6 +28,7 @@ const contributionController = {
       const foodContribs = await prisma.contribuicao_Alimenticia.findMany({
         orderBy: { DataContribuicao: "desc" },
         include: {
+          comprovante: { select: { IdComprovante: true, Imagem: true } },
           usuario: {
             include: {
               time_usuarios: {
@@ -52,6 +55,7 @@ const contributionController = {
           Gastos: c.Gastos,
           IdContribuicao: c.IdContribuicaoFinanceira,
           TipoDoacao: "Financeira",
+          Meta: c.Meta,
           DataContribuicao: c.DataContribuicao,
           Quantidade: c.Quantidade,
           Fonte: c.Fonte,
@@ -63,6 +67,7 @@ const contributionController = {
           IdContribuicao: c.IdContribuicaoAlimenticia,
           Gastos: c.Gastos,
           TipoDoacao: "Alimenticia",
+          Meta: c.Meta,
           DataContribuicao: c.DataContribuicao,
           Quantidade: c.Quantidade,
           Fonte: c.Fonte,
@@ -88,6 +93,7 @@ const contributionController = {
     }
   },
 
+  //GET /api/contributions/:RaUsuario
   getContributionsByRa: async (req, res) => {
     try {
       const { RaUsuario } = req.params;
@@ -106,6 +112,7 @@ const contributionController = {
         orderBy: { DataContribuicao: "desc" },
         include: {
           usuario: true,
+          comprovante: true,
           contribuicoes_alimento: {
             include: {
               alimento: true,
@@ -134,7 +141,7 @@ const contributionController = {
       allContribs.sort(
         (a, b) => new Date(b.DataContribuicao) - new Date(a.DataContribuicao)
       );
-console.log(allContribs);
+      console.log(allContribs);
       res.json(allContribs);
     } catch (err) {
       console.error("Erro ao buscar contribuições por RA:", err);
@@ -145,6 +152,7 @@ console.log(allContribs);
     }
   },
 
+  //GET /api/contributions/edition/:editionNumber
   getContributionsByEdition: async (req, res) => {
     try {
       const { editionNumber } = req.params;
@@ -209,6 +217,7 @@ console.log(allContribs);
     }
   },
 
+  //POST /api/createContribution
   createContribution: async (req, res) => {
     const {
       RaUsuario,
@@ -217,10 +226,9 @@ console.log(allContribs);
       Meta,
       Gastos,
       Fonte,
-      Valor,
       PesoUnidade,
-      IdAlimento,
       alimentos,
+      uuid,
       Imagem,
     } = req.body;
 
@@ -231,8 +239,6 @@ console.log(allContribs);
     }
 
     try {
-      let contribuicao;
-
       if (TipoDoacao === "Financeira") {
         if (!Quantidade || !Fonte || Gastos === undefined) {
           return res.status(400).json({
@@ -240,22 +246,28 @@ console.log(allContribs);
               "Quantidade, Fonte e Gastos são obrigatórios para doação financeira.",
           });
         }
+
         const resultado = await prisma.$transaction(async (tx) => {
-          const comprovante = await tx.comprovante.create({
-            data: {
-              Imagem: "",
-            },
-          });
+          let comprovanteId = null;
+          if (Imagem) {
+            const comprovante = await tx.comprovante.create({
+              data: {
+                Imagem: Imagem,
+              },
+            });
+            comprovanteId = comprovante.IdComprovante;
+          }
 
           const contribuicao = await tx.contribuicao_Financeira.create({
             data: {
+              uuid: uuidv4(),
               RaUsuario: Number(RaUsuario),
               TipoDoacao,
               Quantidade: Number(Quantidade),
               Meta: Meta ? Number(Meta) : null,
               Gastos: Number(Gastos),
               Fonte,
-              IdComprovante: comprovante.IdComprovante,
+              IdComprovante: comprovanteId,
             },
             include: {
               usuario: {
@@ -271,69 +283,102 @@ console.log(allContribs);
 
           return contribuicao;
         });
+
         return res.status(201).json({
           message: "Contribuição financeira criada com sucesso!",
           data: { ...resultado, TipoDoacao: "Financeira" },
         });
       } else if (TipoDoacao === "Alimenticia") {
-        if (
-          !Quantidade ||
-          !PesoUnidade ||
-          !alimentos ||
-          alimentos.length === 0
-        ) {
+        if (!PesoUnidade || !alimentos || alimentos.length === 0) {
           return res.status(400).json({
             error:
-              "Quantidade, PesoUnidade e alimentos são obrigatórios para doação alimentícia.",
+              "PesoUnidade e alimentos são obrigatórios para doação alimentícia.",
+          });
+        }
+
+        const alimentosValidos = alimentos.filter(
+          (a) => Number(a.quantidade) > 0 && Number(a.IdAlimento) > 0
+        );
+
+        if (alimentosValidos.length === 0) {
+          return res.status(400).json({
+            error:
+              "É necessário adicionar pelo menos um alimento com quantidade.",
+          });
+        }
+
+        const quantidadeTotal = alimentosValidos.reduce(
+          (acc, a) => acc + (Number(a.quantidade) || 0),
+          0
+        );
+
+        const alimentoIds = alimentosValidos.map((a) => Number(a.IdAlimento));
+
+        const invalidIds = alimentoIds.filter((id) => !id || isNaN(id));
+        if (invalidIds.length > 0) {
+          return res.status(400).json({
+            error: "IDs de alimentos inválidos detectados.",
+          });
+        }
+
+        const existingAlimentos = await prisma.alimento.findMany({
+          where: { IdAlimento: { in: alimentoIds } },
+          select: { IdAlimento: true },
+        });
+
+        const existingIds = existingAlimentos.map((a) => a.IdAlimento);
+        const missingIds = alimentoIds.filter(
+          (id) => !existingIds.includes(id)
+        );
+
+        if (missingIds.length > 0) {
+          return res.status(400).json({
+            error: `Alimentos não encontrados no sistema: ${missingIds.join(
+              ", "
+            )}.`,
           });
         }
 
         const resultado = await prisma.$transaction(async (tx) => {
-          const alimento = alimentos.map((alimento) => {
-            return tx.alimento.create({
-              data: {
-                IdAlimento: Number(alimento.IdAlimento),
-              },
-              include: {
-                contribuicoes_alimento: {
-                  select: {
-                    IdContribuicaoAlimento: alimento.IdContribuicaoAlimento,
-                  },
-                  IdAlimento: true,
-                },
-              },
-            });
-          });
-          contribuicao = await tx.contribuicao_Alimenticia.create({
+          const contribuicao = await tx.contribuicao_Alimenticia.create({
             data: {
+              uuid: uuidv4(),
               RaUsuario: Number(RaUsuario),
               TipoDoacao,
-              Quantidade: Number(Quantidade),
+              Quantidade: quantidadeTotal,
               PesoUnidade: Number(PesoUnidade),
               Gastos: Gastos ? Number(Gastos) : 0,
               Meta: Meta ? Number(Meta) : null,
               Fonte: Fonte || null,
-              IdAlimento:
-                alimentos.length === 1 ? Number(alimentos[0].IdAlimento) : null,
-            },
-            include: {
-              usuario: true,
+              IdAlimento: alimentosValidos.length === 1 ? alimentoIds[0] : null,
             },
           });
+
+          await tx.contribuicao_Alimento.createMany({
+            data: alimentosValidos.map((alimento) => ({
+              IdContribuicaoAlimenticia: contribuicao.IdContribuicaoAlimenticia,
+              IdAlimento: Number(alimento.IdAlimento),
+            })),
+          });
+
+          return contribuicao;
         });
 
         const contribuicaoCompleta =
           await prisma.contribuicao_Alimenticia.findUnique({
             where: {
-              IdContribuicaoAlimenticia: contribuicao.IdContribuicaoAlimenticia,
+              IdContribuicaoAlimenticia: resultado.IdContribuicaoAlimenticia,
             },
             include: {
-              usuario: true,
-              contribuicoes_alimento: {
-                include: {
-                  alimento: true,
+              usuario: {
+                select: {
+                  RaUsuario: true,
+                  NomeUsuario: true,
+                  EmailUsuario: true,
                 },
               },
+              alimento: true,
+              contribuicoes_alimento: { include: { alimento: true } },
             },
           });
 
@@ -347,52 +392,46 @@ console.log(allContribs);
         });
       }
     } catch (err) {
-      console.error("Erro ao criar contribuição:", err);
-      res.status(500).json({
+      return res.status(500).json({
         error: "Erro ao criar contribuição.",
         details: err.message,
       });
     }
   },
 
+  //DELETE /api/:TipoDoacao/:IdContribuicao
   deleteContribution: async (req, res) => {
     const { TipoDoacao, IdContribuicao } = req.params;
 
     try {
+      const id = Number(IdContribuicao);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "ID inválido." });
+      }
+
       let contribuicao;
 
       if (TipoDoacao === "Financeira") {
         contribuicao = await prisma.contribuicao_Financeira.delete({
-          where: { IdContribuicaoFinanceira: Number(IdContribuicao) },
+          where: { IdContribuicaoFinanceira: id },
         });
       } else if (TipoDoacao === "Alimenticia") {
-        await prisma.contribuicao_Alimento.deleteMany({
-          where: { IdContribuicaoAlimenticia: Number(IdContribuicao) },
-        });
-
         contribuicao = await prisma.contribuicao_Alimenticia.delete({
-          where: { IdContribuicaoAlimenticia: Number(IdContribuicao) },
+          where: { IdContribuicaoAlimenticia: id },
         });
       } else {
         return res.status(400).json({
-          error: "Tipo de doação inválido.",
+          error: "Tipo de doação inválido. Use 'Financeira' ou 'Alimenticia'.",
         });
       }
 
-      res.json({
+      return res.status(200).json({
         message: "Contribuição deletada com sucesso!",
         data: contribuicao,
       });
     } catch (err) {
       console.error("Erro ao deletar contribuição:", err);
-
-      if (err.code === "P2025") {
-        return res.status(404).json({
-          error: "Contribuição não encontrada.",
-        });
-      }
-
-      res.status(500).json({
+      return res.status(500).json({
         error: "Erro ao deletar contribuição.",
         details: err.message,
       });

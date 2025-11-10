@@ -1,9 +1,10 @@
 "use client";
 
-import React, { SetStateAction, useEffect, useState } from "react";
+import React, { SetStateAction, useEffect } from "react";
 import MenuMobileAdmin from "@/components/menu-mobile-admin";
 import MenuDesktopAdmin from "@/components/menu-desktop-admin";
 import { useParams } from "next/navigation";
+import Arkana from "@/assets/Arkana.png";
 
 export default function AdminProfile() {
   const params = useParams();
@@ -19,7 +20,7 @@ export default function AdminProfile() {
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const response = await fetch(`${BACKEND_URL}/api/mentor/id/${adminId}`);
+        const response = await fetch(`${BACKEND_URL}/api/mentor/${adminId}`);
         if (!response.ok) throw new Error("Erro ao buscar dados do mentor");
         const data = await response.json();
         setAdminLogado(data.EmailMentor);
@@ -141,12 +142,20 @@ export default function AdminProfile() {
               </form>
             </div>
           </div>
-          <div className="bg-primary min-h-70 rounded-xl border border-gray-200 shadow-xl">
-            <p className=" text-white font-extrabold text-4xl">
-              {" "}
-              Arkana +
-              <br /> Lideranças Empáticas{" "}
+          <div
+            className="bg-primary rounded-xl border border-gray-200 shadow-xl p-10
+                flex flex-col items-center justify-center text-center gap-4 overflow-hidden min-h-[280px] md:min-h-[360px]"
+          >
+            <p className="text-white font-extrabold text-3xl md:text-4xl leading-tight break-words">
+              Arkana +<br />
+              Lideranças Empáticas
             </p>
+
+            <img
+              src={Arkana.src}
+              alt="logo lideranças empáticas"
+              className="max-w-full h-auto w-[290px] md:w-[400px] object-contain"
+            />
           </div>
         </section>
       </div>

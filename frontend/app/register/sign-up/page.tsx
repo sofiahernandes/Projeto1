@@ -36,7 +36,10 @@ export default function Cadastro() {
             </section>
 
             <section className="border border-[#b4b4b4] rounded-lg m-1 flex flex-col items-center justify-center md:w-1/2">
-              <SigninTabs setIsLogged={setIsLogged} setRaUsuario={setRaUsuario} />
+              <SigninTabs
+                setIsLogged={setIsLogged}
+                setRaUsuario={setRaUsuario}
+              />
             </section>
           </div>
         </div>

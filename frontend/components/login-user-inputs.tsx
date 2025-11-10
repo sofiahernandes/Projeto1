@@ -1,8 +1,8 @@
 import React from "react";
 
 type Props = {
-  RaUsuario: number;
-  setRaUsuario: React.Dispatch<React.SetStateAction<number | undefined>>;
+  RaUsuario: string;
+  setRaUsuario: React.Dispatch<React.SetStateAction<string>>;
   SenhaUsuario: string;
   setSenhaUsuario: React.Dispatch<React.SetStateAction<string>>;
 };
@@ -23,7 +23,7 @@ const CustomInputs: React.FC<Props> = ({
           placeholder="Usuário"
           value={RaUsuario}
           className="w-[80%] bg-[white] border border-gray-300 rounded-lg text-black placeholder-gray-700 px-3 py-1.5 text-base focus:outline-none"
-          onChange={(e) => setRaUsuario(Number(e.target.value))}
+          onChange={(e) => setRaUsuario(e.target.value)}
         />
 
         <input

@@ -59,16 +59,13 @@ export default function TeamHistory() {
           menuOpen ? "md:pl-[270px]" : "ml-0"
         }`}
       >
-        {/* Menu lateral quando está no desktop/tablet */}
         <MenuDesktop
           menuOpen={menuOpen}
           setMenuOpen={(arg: SetStateAction<boolean>) => setMenuOpen(arg)}
         />
 
-        {/* Menu rodapé quando está no mobile */}
         <MenuMobile />
 
-        {/* main page do historico - todas as contribuições do grupo baseado no RA logado */}
         <main className="w-full max-w-[1300px] p-1.5 md:mt-0 ">
           {selectedContribution && (
             <RecordsModal
@@ -78,7 +75,7 @@ export default function TeamHistory() {
               onDeleted={() => {
                 setIsOpen(false);
                 setSelectedContribution(null);
-                setRefreshKey((k) => k + 1); //p dar refetch depois de deletar a doaçao
+                setRefreshKey((k) => k + 1);
               }}
             />
           )}
@@ -87,7 +84,7 @@ export default function TeamHistory() {
               {team?.NomeTime ? team?.NomeTime : "Nome do time aparecerá aqui"}
             </h3>
             <h4 className="mb-3 text-xl text-primary/80">
-              Turma {user?.TurmaUsuario ? user?.TurmaUsuario : "X"} | Yº Edição
+              Turma {user?.TurmaUsuario ? user?.TurmaUsuario : "X"}
             </h4>
             <div className="self-end">
               <SwitchViewButton

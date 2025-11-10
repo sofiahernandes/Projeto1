@@ -1,14 +1,12 @@
 "use client";
 
-import React, { SetStateAction, useEffect } from "react";
-import BackHome from "@/components/back-home";
+import React, { SetStateAction } from "react";
 import RecordsMentor from "@/components/records-mentor";
 import SwitchViewButton from "@/components/toggle-button";
 import MenuDesktopAdmin from "@/components/menu-desktop-admin";
 import MenuMobileAdmin from "@/components/menu-mobile-admin";
 import RenderContributionTableAdmin from "@/components/table-contribution-admin";
 import RenderContributionCardAdmin from "@/components/grid-contribution-admin";
-import { useParams } from "next/navigation";
 
 {
   /** 
@@ -25,9 +23,6 @@ export default function AdminPageVision() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [selectedContribution, setSelectedContribution] =
     React.useState<any>(null);
-  const params = useParams();
-  const adminId = parseInt(params.IdMentor as string, 10);
-
 
   return (
     <div className="min-h-dvh w-full overflow-y-hidden overflow-x-hidden flex flex-col bg-[#f4f3f1]/60">
@@ -72,8 +67,7 @@ export default function AdminPageVision() {
           )}
           <div className="flex flex-col gap-2 mx-3 text-center">
             <h3 className="text-2xl uppercase font-semibold text-primary ">
-              Histórico de contribuições da Edição Yº do Projeto Lideranças
-              Empáticas {/** definir a edição no codigo */}
+              Histórico de contribuições de todos os grupos
             </h3>
             <div className="self-end">
               <SwitchViewButton

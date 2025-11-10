@@ -12,7 +12,7 @@ export default function TabsLogin() {
   const [IdTime] = React.useState("");
   const [EmailMentor, setEmailMentor] = React.useState("");
   const [SenhaMentor, setSenhaMentor] = React.useState("");
-  const [RaUsuario, setRaUsuario] = React.useState<number>();
+  const [RaUsuario, setRaUsuario] = React.useState("");
   const [SenhaUsuario, setSenhaUsuario] = React.useState("");
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -36,7 +36,7 @@ export default function TabsLogin() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          RaUsuario: Number(RaUsuario),
+          RaUsuario: parseInt(RaUsuario),
           SenhaUsuario,
         }),
       });
@@ -90,7 +90,7 @@ export default function TabsLogin() {
         return;
       }
 
-       const { mentor } = await res.json(); 
+      const { mentor } = await res.json();
       setIdMentor(mentor.IdMentor);
       router.push(`/mentor/${mentor.IdMentor}/mentor-history`);
     } catch (error) {
@@ -133,7 +133,7 @@ export default function TabsLogin() {
         return;
       }
 
-      const { admin } = await res.json(); 
+      const { admin } = await res.json();
       setIdMentor(admin.IdMentor);
       router.push(`/admin/${admin.IdMentor}/admin-history`);
     } catch (error) {
