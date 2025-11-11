@@ -2,33 +2,32 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import Image, { StaticImageData } from "next/image";
-
 import uploadStatic from "@/assets/icons/upload-static.png";
 import uploadGif from "@/assets/icons/upload-anim.gif";
 
 type Img = StaticImageData | string;
 
 interface Properties {
-  raUsuario: number;
+  RaUsuario: number;
   setRaUsuario: React.Dispatch<React.SetStateAction<number>>;
   tipoDoacao: "Financeira" | "Alimenticia";
   setTipoDoacao: React.Dispatch<
     React.SetStateAction<"Financeira" | "Alimenticia">
   >;
   quantidade: number;
-  setQuantidade: React.Dispatch<React.SetStateAction<number>>;
+  setQuantidade: (value: number) => void;
   fonte: string;
-  setFonte: React.Dispatch<React.SetStateAction<string>>;
+  setFonte: (value: string) => void;
   meta: number;
-  setMeta: React.Dispatch<React.SetStateAction<number>>;
+  setMeta: (value: number) => void;
   gastos: number;
-  setGastos: React.Dispatch<React.SetStateAction<number>>;
+  setGastos: (value: number) => void;
   comprovante: File | null;
-  setComprovante: React.Dispatch<React.SetStateAction<File | null>>;
+  setComprovante: (value: File | null) => void;
 }
 
 export default function DonationsForm({
-  raUsuario,
+  RaUsuario,
   setRaUsuario,
   tipoDoacao,
   setTipoDoacao,
@@ -45,10 +44,10 @@ export default function DonationsForm({
 }: Properties) {
   const [loading, setLoading] = useState(false);
   const [picking, setPicking] = useState(false);
-
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const timerRef = useRef<number | null>(null);
 
+  // Estados locais para os inputs
   const [metaInput, setMetaInput] = useState<string>("");
   const [gastosInput, setGastosInput] = useState<string>("");
   const [quantidadeInput, setQuantidadeInput] = useState<string>("");
@@ -79,7 +78,10 @@ export default function DonationsForm({
     `;
     document.head.appendChild(style);
     return () => {
-      document.head.removeChild(style);
+      if (timerRef.current) {
+        window.clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
     };
   }, []);
 
@@ -141,65 +143,22 @@ export default function DonationsForm({
     stopGif();
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleQuantidadeChange = (value: string) => {
+    setQuantidadeInput(value);
+    const num = parseFloat(value.replace(",", "."));
+    setQuantidade(isNaN(num) ? 0 : num);
+  };
 
-    if (!fonte.trim()) return alert("Informe o nome do evento/doador");
+  const handleMetaChange = (value: string) => {
+    setMetaInput(value);
+    const num = parseFloat(value.replace(",", "."));
+    setMeta(isNaN(num) ? 0 : num);
+  };
 
-    const qNum = toNumberOrNaN(quantidadeInput);
-    if (!quantidadeInput || Number.isNaN(qNum)) {
-      return alert("Informe um valor/quantidade válido");
-    }
-
-    const metaNum = metaInput ? toNumberOrNaN(metaInput) : NaN;
-    const gastosNum = gastosInput ? toNumberOrNaN(gastosInput) : NaN;
-
-    if (metaInput && Number.isNaN(metaNum)) return alert("Meta inválida");
-    if (gastosInput && Number.isNaN(gastosNum)) return alert("Gastos inválidos");
-
-    if (!Number.isNaN(metaNum) && !Number.isNaN(gastosNum) && metaNum < gastosNum) {
-      const ok = confirm("Gastos maiores que a meta. Deseja continuar?");
-      if (!ok) return;
-    }
-
-    setQuantidade(qNum);
-    setMeta(Number.isNaN(metaNum) ? 0 : metaNum);
-    setGastos(Number.isNaN(gastosNum) ? 0 : gastosNum);
-
-    setLoading(true);
-    try {
-      const form = new FormData();
-      if (comprovante) form.append("Comprovante", comprovante);
-      form.append("RaUsuario", String(raUsuario));
-      form.append("Quantidade", String(qNum));
-      form.append("Meta", metaInput ? String(metaNum) : "");
-      form.append("Gastos", gastosInput ? String(gastosNum) : "");
-      form.append("Fonte", fonte);
-      form.append("TipoDoacao", tipoDoacao);
-
-      const res = await fetch("/api/createContribution", {
-        method: "POST",
-        body: form,
-      });
-
-      if (!res.ok) throw new Error(await res.text());
-      alert("Contribuição registrada com sucesso!");
-
-      // Resetar campos
-      setFonte("");
-      setQuantidade(0);
-      setMeta(0);
-      setGastos(0);
-      setComprovante(null);
-      setQuantidadeInput("");
-      setMetaInput("");
-      setGastosInput("");
-    } catch (err: any) {
-      console.error(err);
-      alert(err.message || "Erro de conexão");
-    } finally {
-      setLoading(false);
-    }
+  const handleGastosChange = (value: string) => {
+    setGastosInput(value);
+    const num = parseFloat(value.replace(",", "."));
+    setGastos(isNaN(num) ? 0 : num);
   };
 
   return (
@@ -214,23 +173,23 @@ export default function DonationsForm({
           className="w-full bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
 
-        <label className="block mb-1 mt-3">Meta</label>
+        <label className="block mb-1 mt-3">Meta (R$)</label>
         <input
           type="text"
           inputMode="decimal"
           placeholder="Ex: R$100"
           value={metaInput}
-          onChange={(e) => setMetaInput(e.currentTarget.value)}
+          onChange={(e) => handleMetaChange(e.currentTarget.value)}
           className="w-full bg-white border border-gray-300 rounded px-3 py-1.5"
         />
 
-        <label className="block mb-1 mt-3">Gastos</label>
+        <label className="block mb-1 mt-3">Gastos (R$)</label>
         <input
           type="number"
           step="0.01"
           placeholder="Ex: R$100"
           value={gastosInput}
-          onChange={(e) => setGastosInput(e.currentTarget.value)}
+          onChange={(e) => handleGastosChange(e.currentTarget.value)}
           className="w-full bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
 
@@ -240,7 +199,7 @@ export default function DonationsForm({
           step="0.01"
           placeholder="Ex: R$100"
           value={quantidadeInput}
-          onChange={(e) => setQuantidadeInput(e.currentTarget.value)}
+          onChange={(e) => handleQuantidadeChange(e.currentTarget.value)}
           className="w-full bg-white border border-gray-300 rounded-lg px-3 py-1.5"
         />
 

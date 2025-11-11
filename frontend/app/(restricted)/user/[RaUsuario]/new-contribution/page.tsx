@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import "@/styles/globals.css";
 import MenuDesktop from "@/components/menu-desktop";
@@ -8,20 +8,32 @@ import MenuMobile from "@/components/menu-mobile";
 import DonationsForm from "@/components/donations-form";
 import FoodDonations from "@/components/food-donations";
 
-type Tipo = "Financeira" | "Alimenticia";
-
 export default function Donations() {
   const params = useParams();
-  const [raUsuario, setRaUsuario] = useState<number>(0);
+  const [RaUsuario, setRaUsuario] = useState<number | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const [activeTab, setActiveTab] = useState<"finance" | "food">("finance");
-  const [alimentosFromChild, setAlimentosFromChild] = useState<any[]>([]);
-  const [totaisFromChild, setTotaisFromChild] = useState<{ pontos: number }>({
-    pontos: 0,
+
+  const [financialData, setFinancialData] = useState({
+    fonte: "",
+    meta: 0,
+    gastos: 0,
+    quantidade: 0,
+    comprovante: null as File | null,
   });
-  const [idAlimento, setIdAlimento] = useState<number>(0);
+
+  const [foodData, setFoodData] = useState({
+    fonte: "",
+    meta: 0,
+    gastos: 0,
+    quantidade: 0,
+    pesoUnidade: 0,
+    comprovante: null as File | null,
+    idAlimento: 1, 
+  });
+
+  const [totaisPontos, setTotaisPontos] = useState(0);
 
   useEffect(() => {
     if (params?.RaUsuario) {
@@ -29,67 +41,33 @@ export default function Donations() {
     }
   }, [params]);
 
-  interface FinanceiraState {
-    tipoDoacao: Tipo;
-    fonte: string;
-    meta?: number;
-    gastos?: number;
-    quantidade?: number;
-    comprovante: File | null;
-  }
-
-  const [financeira, setFinanceira] = useState<FinanceiraState>({
-    tipoDoacao: "Financeira",
-    fonte: "",
-    meta: 0,
-    gastos: 0,
-    quantidade: 0,
-    comprovante: null,
-  });
-
-  interface AlimenticiaState {
-    tipoDoacao: Tipo;
-    fonte: string;
-    meta?: number;
-    gastos?: number;
-    quantidade?: number;
-    pesoUnidade?: number;
-    comprovante: File | null;
-  }
-
-  const [alimenticia, setAlimenticia] = useState<AlimenticiaState>({
-    tipoDoacao: "Alimenticia",
-    fonte: "",
-    meta: 0,
-    quantidade: 0,
-    gastos: 0,
-    pesoUnidade: 0,
-    comprovante: null,
-  });
-
-  const fmt = (value: number) => value.toLocaleString("pt-BR");
-
   const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
   const apiUrl = `${backend_url}/api/createContribution`;
 
-  // =========================
-  // HANDLERS
-  // =========================
+  const handleFinancialSubmit = async () => {
+    if (loading || !RaUsuario) return;
 
-  async function handleFinancialSubmit() {
-    if (loading) return;
+    if (
+      !financialData.fonte.trim() ||
+      !financialData.quantidade ||
+      financialData.quantidade <= 0
+    ) {
+      alert(
+        "Preencha todos os campos obrigatórios da contribuição financeira."
+      );
+      return;
+    }
+
     setLoading(true);
 
     try {
-      if (!raUsuario) throw new Error("RaUsuario inválido.");
-
       const body = {
-        RaUsuario: raUsuario,
+        RaUsuario: RaUsuario,
         TipoDoacao: "Financeira",
-        Quantidade: financeira.quantidade,
-        Meta: financeira.meta,
-        Gastos: financeira.gastos,
-        Fonte: financeira.fonte,
+        Quantidade: Number(financialData.quantidade),
+        Meta: Number(financialData.meta) || 0,
+        Gastos: Number(financialData.gastos) || 0,
+        Fonte: financialData.fonte.trim(),
       };
 
       const res = await fetch(apiUrl, {
@@ -100,13 +78,14 @@ export default function Donations() {
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.error || "Erro ao enviar a contribuição");
+        throw new Error(
+          err.error || "Erro ao enviar a contribuição financeira."
+        );
       }
 
-      alert("Contribuição financeira enviada com sucesso!");
+      alert("Contribuição financeira cadastrada com sucesso!");
 
-      setFinanceira({
-        tipoDoacao: "Financeira",
+      setFinancialData({
         fonte: "",
         meta: 0,
         gastos: 0,
@@ -114,44 +93,46 @@ export default function Donations() {
         comprovante: null,
       });
     } catch (err: any) {
-      alert(err?.message || "Erro ao enviar a contribuição");
+      console.error(err);
+      alert("Erro ao cadastrar contribuição financeira.");
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  function handleAlimentoChange(alimentoAtual: {
-    id: number;
-    quantidade: number;
-    pesoUnidade: number;
-  }) {
-    setAlimentosFromChild([alimentoAtual]); // mantém apenas um alimento por vez
-  }
+  const handleFoodSubmit = async () => {
+    if (loading || !RaUsuario) return;
 
-  async function handleFoodSubmit() {
-    if (loading) return;
+    if (!foodData.idAlimento || foodData.idAlimento <= 0) {
+      alert("Selecione um alimento válido.");
+      return;
+    }
+
+    if (
+      !foodData.fonte.trim() ||
+      !foodData.quantidade ||
+      foodData.quantidade <= 0 ||
+      !foodData.pesoUnidade ||
+      foodData.pesoUnidade <= 0
+    ) {
+      alert(
+        "Preencha todos os campos obrigatórios da contribuição alimentícia."
+      );
+      return;
+    }
+
     setLoading(true);
 
     try {
-      if (!raUsuario) throw new Error("RaUsuario inválido.");
-
-      const alimentosParaEnviar = alimentosFromChild.filter(
-        (a) => a.quantidade > 0 && a.id >= 0
-      );
-
-      if (alimentosParaEnviar.length === 0) {
-        throw new Error("Adicione pelo menos um alimento com quantidade.");
-      }
-
       const body = {
-        RaUsuario: raUsuario,
+        RaUsuario: Number(RaUsuario),
         TipoDoacao: "Alimenticia",
-        Quantidade: alimenticia.quantidade,
-        PesoUnidade: alimenticia.pesoUnidade,
-        Gastos: alimenticia.gastos ?? 0,
-        Meta: alimenticia.meta,
-        Fonte: alimenticia.fonte,
-        alimentos: alimentosParaEnviar,
+        Quantidade: Number(foodData.quantidade),
+        PesoUnidade: Number(foodData.pesoUnidade),
+        Gastos: Number(foodData.gastos) || 0,
+        Meta: Number(foodData.meta) || 0,
+        Fonte: foodData.fonte.trim(),
+        IdAlimento: Number(foodData.idAlimento),
       };
 
       const res = await fetch(apiUrl, {
@@ -160,31 +141,31 @@ export default function Donations() {
         body: JSON.stringify(body),
       });
 
-      if (!res.ok)
-        throw new Error(`Erro ao enviar (${res.status}): ${await res.text()}`);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || `Erro ${res.status}`);
+      }
 
-      alert("Contribuição alimentícia enviada com sucesso!");
+      const data = await res.json();
 
-      setAlimenticia({
-        tipoDoacao: "Alimenticia",
+      alert("Contribuição alimentícia cadastrada com sucesso!");
+
+      setFoodData({
         fonte: "",
         meta: 0,
+        gastos: 0,
+        idAlimento: 0,
         quantidade: 0,
         pesoUnidade: 0,
-        gastos: 0,
         comprovante: null,
       });
-      setAlimentosFromChild([]);
+      setTotaisPontos(0);
     } catch (err: any) {
-      alert(err?.message || "Erro ao enviar a contribuição");
+      alert(`Erro ao cadastrar contribuição alimentícia: ${err.message}`);
     } finally {
       setLoading(false);
     }
-  }
-
-  // =========================
-  // RENDER
-  // =========================
+  };
 
   return (
     <div className="container w-full">
@@ -220,9 +201,7 @@ export default function Donations() {
                 type="button"
                 onClick={() => setActiveTab("food")}
                 className={`rounded-full py-3 text-sm font-medium ${
-                  activeTab === "food"
-                    ? "bg-primary text-white"
-                    : "text-black"
+                  activeTab === "food" ? "bg-primary text-white" : "text-black"
                 }`}
               >
                 Alimentos
@@ -238,11 +217,7 @@ export default function Donations() {
 
         <main className="flex justify-center items-stretch min-h-screen w-full px-9 mt-10">
           <div className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-x-1">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleFinancialSubmit();
-              }}
+            <div
               className={`${
                 activeTab === "finance" ? "block" : "hidden"
               } md:block bg-secondary/20 border border-gray-100 p-6 rounded-xl shadow-md w-full h-[600px]`}
@@ -250,51 +225,47 @@ export default function Donations() {
               <h2 className="text-2xl font-semibold mb-4">Financeiras</h2>
 
               <DonationsForm
-                raUsuario={raUsuario}
-                setRaUsuario={setRaUsuario}
-                tipoDoacao={financeira.tipoDoacao}
-                setTipoDoacao={() => {}}
-                fonte={financeira.fonte}
+                fonte={financialData.fonte}
                 setFonte={(v) =>
-                  setFinanceira({ ...financeira, fonte: v as string })
+                  setFinancialData({ ...financialData, fonte: v })
                 }
-                meta={financeira.meta ?? 0}
+                meta={financialData.meta}
                 setMeta={(v) =>
-                  setFinanceira({ ...financeira, meta: Number(v) })
+                  setFinancialData({ ...financialData, meta: Number(v) })
                 }
-                gastos={financeira.gastos ?? 0}
+                gastos={financialData.gastos}
                 setGastos={(v) =>
-                  setFinanceira({ ...financeira, gastos: Number(v) })
+                  setFinancialData({ ...financialData, gastos: Number(v) })
                 }
-                quantidade={financeira.quantidade ?? 0}
+                quantidade={financialData.quantidade}
                 setQuantidade={(v) =>
-                  setFinanceira({ ...financeira, quantidade: Number(v) })
+                  setFinancialData({ ...financialData, quantidade: Number(v) })
                 }
-                comprovante={financeira.comprovante}
+                comprovante={financialData.comprovante}
                 setComprovante={(v) =>
-                  setFinanceira({
-                    ...financeira,
-                    comprovante: v as File | null,
-                  })
+                  setFinancialData({ ...financialData, comprovante: v })
                 }
+                tipoDoacao={"Financeira"}
+                setTipoDoacao={() => {}}
+                RaUsuario={0}
+                setRaUsuario={function (value: SetStateAction<number>): void {
+                  throw new Error("Function not implemented.");
+                }}
               />
 
               <div className="mt-13 flex justify-end">
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={handleFinancialSubmit}
                   disabled={loading}
-                  className="w-fit px-4 py-2 rounded-[8px] bg-primary hover:bg-opacity/10 text-white hover:opacity-90 disabled:opacity-50"
+                  className="w-fit px-4 py-2 rounded-[8px] bg-primary text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? "Enviando..." : "Cadastrar"}
                 </button>
               </div>
-            </form>
+            </div>
 
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleFoodSubmit();
-              }}
+            <div
               className={`${
                 activeTab === "food" ? "block" : "hidden"
               } md:flex md:flex-col bg-secondary/20 border border-gray-100 p-6 rounded-xl shadow-md w-full h-[600px] overflow-y-scroll`}
@@ -303,58 +274,49 @@ export default function Donations() {
 
               <div className="min-h-0 flex-1 overflow-y-auto rounded-lg">
                 <FoodDonations
-                  raUsuario={raUsuario}
-                  setRaUsuario={setRaUsuario}
-                  tipoDoacao={alimenticia.tipoDoacao}
-                  setTipoDoacao={() => {}}
-                  pesoUnidade={alimenticia.pesoUnidade}
-                  setPesoUnidade={(v) =>
-                    setAlimenticia({ ...alimenticia, pesoUnidade: Number(v) })
-                  }
-                  quantidade={alimenticia.quantidade}
-                  setQuantidade={(v) =>
-                    setAlimenticia({ ...alimenticia, quantidade: Number(v) })
-                  }
-                  meta={alimenticia.meta}
-                  setMeta={(v) =>
-                    setAlimenticia({ ...alimenticia, meta: Number(v) })
-                  }
-                  fonte={alimenticia.fonte}
-                  setFonte={(v) =>
-                    setAlimenticia({ ...alimenticia, fonte: v as string })
-                  }
-                  comprovante={alimenticia.comprovante}
-                  setComprovante={(v) =>
-                    setAlimenticia({
-                      ...alimenticia,
-                      comprovante: v as File | null,
-                    })
-                  }
-                  onTotaisChange={setTotaisFromChild}
-                  idAlimento={idAlimento}
-                  setIdAlimento={setIdAlimento}
-                  onAlimentoChange={handleAlimentoChange}
-                  gastos={alimenticia.gastos ?? 0}
+                  fonte={foodData.fonte}
+                  setFonte={(v) => setFoodData({ ...foodData, fonte: v })}
+                  meta={foodData.meta}
+                  setMeta={(v) => setFoodData({ ...foodData, meta: Number(v) })}
+                  gastos={foodData.gastos}
                   setGastos={(v) =>
-                    setAlimenticia({ ...alimenticia, gastos: Number(v) })
+                    setFoodData({ ...foodData, gastos: Number(v) })
                   }
+                  quantidade={foodData.quantidade}
+                  setQuantidade={(v) =>
+                    setFoodData({ ...foodData, quantidade: Number(v) })
+                  }
+                  pesoUnidade={foodData.pesoUnidade}
+                  setPesoUnidade={(v) =>
+                    setFoodData({ ...foodData, pesoUnidade: Number(v) })
+                  }
+                  idAlimento={foodData.idAlimento}
+                  setIdAlimento={(v) =>
+                    setFoodData({ ...foodData, idAlimento: Number(v) })
+                  }
+                  comprovante={foodData.comprovante}
+                  setComprovante={(v) =>
+                    setFoodData({ ...foodData, comprovante: v })
+                  }
+                  onTotaisChange={(totais) => setTotaisPontos(totais.pontos)}
                 />
               </div>
 
               <div className="mt-4 flex flex-none items-center gap-3 justify-end">
                 <div className="bg-secondary/50 text-sm rounded-lg py-2 px-16 whitespace-nowrap w-[300px] overflow-hidden text-ellipsis">
-                  Pontuação: <span>{fmt(totaisFromChild?.pontos ?? 0)}</span>
+                  Pontuação: <span>{totaisPontos.toLocaleString("pt-BR")}</span>
                 </div>
 
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={handleFoodSubmit}
                   disabled={loading}
                   className="w-fit px-4 py-2 rounded-lg bg-primary text-white hover:bg-[#195b41] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? "Enviando..." : "Cadastrar"}
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         </main>
       </div>

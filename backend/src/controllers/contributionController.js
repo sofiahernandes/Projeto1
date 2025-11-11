@@ -233,6 +233,7 @@ const contributionController = {
       Gastos,
       Fonte,
       PesoUnidade,
+      IdAlimento,
       alimentos,
       uuid,
       Imagem,
@@ -295,53 +296,19 @@ const contributionController = {
           data: { ...resultado, TipoDoacao: "Financeira" },
         });
       } else if (TipoDoacao === "Alimenticia") {
-        if (!PesoUnidade || !alimentos || alimentos.length === 0) {
+        if (!PesoUnidade || !Quantidade || !IdAlimento) {
           return res.status(400).json({
-            error:
-              "PesoUnidade e alimentos são obrigatórios para doação alimentícia.",
+            error: "IdAlimento, Quantidade e PesoUnidade são obrigatórios.",
           });
         }
 
-        const alimentosValidos = alimentos.filter(
-          (a) => Number(a.quantidade) > 0 && Number(a.IdAlimento) > 0
-        );
-
-        if (alimentosValidos.length === 0) {
-          return res.status(400).json({
-            error:
-              "É necessário adicionar pelo menos um alimento com quantidade.",
-          });
-        }
-
-        const quantidadeTotal = alimentosValidos.reduce(
-          (acc, a) => acc + (Number(a.quantidade) || 0),
-          0
-        );
-
-        const alimentoIds = alimentosValidos.map((a) => Number(a.IdAlimento));
-
-        const invalidIds = alimentoIds.filter((id) => !id || isNaN(id));
-        if (invalidIds.length > 0) {
-          return res.status(400).json({
-            error: "IDs de alimentos inválidos detectados.",
-          });
-        }
-
-        const existingAlimentos = await prisma.alimento.findMany({
-          where: { IdAlimento: { in: alimentoIds } },
-          select: { IdAlimento: true },
+        const alimentoExiste = await prisma.alimento.findUnique({
+          where: { IdAlimento: Number(IdAlimento) },
         });
 
-        const existingIds = existingAlimentos.map((a) => a.IdAlimento);
-        const missingIds = alimentoIds.filter(
-          (id) => !existingIds.includes(id)
-        );
-
-        if (missingIds.length > 0) {
+        if (!alimentoExiste) {
           return res.status(400).json({
-            error: `Alimentos não encontrados no sistema: ${missingIds.join(
-              ", "
-            )}.`,
+            error: `Alimento com ID ${IdAlimento} não encontrado.`,
           });
         }
 
@@ -351,25 +318,17 @@ const contributionController = {
               uuid: uuidv4(),
               RaUsuario: Number(RaUsuario),
               TipoDoacao,
-              Quantidade: quantidadeTotal,
+              Quantidade: Number(Quantidade),
               PesoUnidade: Number(PesoUnidade),
               Gastos: Gastos ? Number(Gastos) : 0,
               Meta: Meta ? Number(Meta) : null,
               Fonte: Fonte || null,
-              IdAlimento: alimentosValidos.length === 1 ? alimentoIds[0] : null,
+              IdAlimento: Number(IdAlimento),
             },
-          });
-
-          await tx.contribuicao_Alimento.createMany({
-            data: alimentosValidos.map((alimento) => ({
-              IdContribuicaoAlimenticia: contribuicao.IdContribuicaoAlimenticia,
-              IdAlimento: Number(alimento.IdAlimento),
-            })),
           });
 
           return contribuicao;
         });
-
         const contribuicaoCompleta =
           await prisma.contribuicao_Alimenticia.findUnique({
             where: {
@@ -384,7 +343,6 @@ const contributionController = {
                 },
               },
               alimento: true,
-              contribuicoes_alimento: { include: { alimento: true } },
             },
           });
 
@@ -392,15 +350,15 @@ const contributionController = {
           message: "Contribuição alimentícia criada com sucesso!",
           data: contribuicaoCompleta,
         });
-      } else {
-        return res.status(400).json({
-          error: "Tipo de doação inválido. Use 'Financeira' ou 'Alimenticia'.",
-        });
       }
+      return res.status(400).json({
+        error: "TipoDoacao inválido. Use 'Financeira' ou 'Alimenticia'.",
+      });
     } catch (err) {
       return res.status(500).json({
         error: "Erro ao criar contribuição.",
         details: err.message,
+        code: err.code,
       });
     }
   },
