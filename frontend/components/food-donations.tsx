@@ -60,21 +60,21 @@ export default function FoodDonations({
   const ALIMENTOS = [
     { id: 1, nome: "Arroz Polido" },
     { id: 2, nome: "Feijão Preto" },
-    { id: 3, nome: "Macarrão" },
-    { id: 4, nome: "Fubá" },
-    { id: 5, nome: "Leite em Pó" },
-    { id: 6, nome: "Açúcar Refinado" },
-    { id: 7, nome: "Óleo de Soja" },
+    { id: 3, nome: "Leite em Pó" },
+    { id: 4, nome: "Óleo de Soja" },
+    { id: 5, nome: "Açúcar Refinado" },
+    { id: 6, nome: "Fubá" },
+    { id: 7, nome: "Macarrão" },
     { id: 8, nome: "Outros" },
   ];
 
   const PONTOS_POR_KG: Record<string, number> = {
-    "Arroz Polido": 5,
-    "Feijão Preto": 5,
+    "Arroz Polido": 4,
+    "Feijão Preto": 5.5,
     "Açúcar Refinado": 4,
-    "Leite em Pó": 37.5,
-    Fubá: 5,
-    Macarrão: 5,
+    "Leite em Pó": 15,
+    Fubá: 2.5,
+    Macarrão: 2.5,
     "Óleo de Soja": 7,
     Outros: 0,
   };
