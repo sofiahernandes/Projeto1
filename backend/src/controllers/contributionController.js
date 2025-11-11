@@ -352,6 +352,15 @@ const contributionController = {
         }
 
         const resultado = await prisma.$transaction(async (tx) => {
+          let comprovanteId = null;
+          if (Imagem) {
+            const comprovante = await tx.comprovante.create({
+              data: {
+                Imagem: Imagem,
+              },
+            });
+            comprovanteId = comprovante.IdComprovante;
+          }
           const contribuicao = await tx.contribuicao_Alimenticia.create({
             data: {
               uuid: uuidv4(),
@@ -363,6 +372,10 @@ const contributionController = {
               Meta: Meta ? Number(Meta) : null,
               Fonte: Fonte || null,
               IdAlimento: Number(IdAlimento),
+              IdComprovante: comprovanteId,
+            },
+            include: {
+              comprovante: true,
             },
           });
 

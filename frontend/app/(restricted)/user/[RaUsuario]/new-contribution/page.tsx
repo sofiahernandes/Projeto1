@@ -76,16 +76,20 @@ export default function Donations() {
         body: JSON.stringify(body),
       });
 
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || `Erro ${res.status}`);
+      }
+
       const data = await res.json();
+      const IdContribuicaoFinanceira = data.data?.IdContribuicaoFinanceira;
 
-      const idContribuicao = data.data?.IdContribuicaoFinanceira;
-
-      if (financialData.comprovante && idContribuicao) {
+      if (financialData.comprovante && IdContribuicaoFinanceira) {
         const formData = new FormData();
         formData.append("file", financialData.comprovante);
 
         const resComprovante = await fetch(
-          `${backend_url}/api/comprovante/${idContribuicao}`,
+          `${backend_url}/api/comprovante/financeira/${IdContribuicaoFinanceira}`,
           {
             method: "POST",
             body: formData,
@@ -93,15 +97,9 @@ export default function Donations() {
         );
 
         if (!resComprovante.ok) {
-          console.warn("Erro ao enviar comprovante");
+          const errorData = await resComprovante.json();
+          console.warn("Erro ao enviar comprovante:", errorData);
         }
-      }
-
-      if (!data.ok) {
-        const err = await data.json();
-        throw new Error(
-          err.error || "Erro ao enviar a contribuição financeira."
-        );
       }
 
       alert("Contribuição financeira cadastrada com sucesso!");
@@ -114,7 +112,7 @@ export default function Donations() {
         comprovante: null,
       });
     } catch (err: any) {
-      alert("Erro ao cadastrar contribuição financeira.");
+      alert(`Erro ao cadastrar contribuição financeira: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -166,8 +164,34 @@ export default function Donations() {
         throw new Error(errorData.error || `Erro ${res.status}`);
       }
 
-      const data = await res.json();
-      
+      const comprovante = await res.json();
+      const IdContribuicaoAlimenticia =
+        comprovante.data?.IdContribuicaoAlimenticia;
+
+      console.log("Resposta completa:", comprovante);
+      console.log("ID da contribuição:", IdContribuicaoAlimenticia);
+
+      if (foodData.comprovante && IdContribuicaoAlimenticia) {
+        const formData = new FormData();
+        formData.append("file", foodData.comprovante);
+
+        const url = `${backend_url}/api/comprovante/alimenticia/${IdContribuicaoAlimenticia}`;
+        console.log("URL do comprovante:", url); 
+
+        const resComprovante = await fetch(url, {
+          method: "POST",
+          body: formData,
+        });
+
+        console.log("Status do comprovante:", resComprovante.status);
+
+        if (!resComprovante.ok) {
+          const errorData = await resComprovante.json();
+          console.error("Erro ao enviar comprovante:", errorData);
+        } else {
+          console.log("Comprovante enviado com sucesso!");
+        }
+      }
 
       alert("Contribuição alimentícia cadastrada com sucesso!");
 

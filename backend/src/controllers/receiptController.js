@@ -1,8 +1,6 @@
 import { cloudinary } from "../configs/uploadconfig.js";
 import { prisma } from "../../prisma/lib/prisma.js";
-import {
-  deleteImageFromUrl,
-} from "../configs/cloudinaryHelper.js";
+import { deleteImageFromUrl } from "../configs/cloudinaryHelper.js";
 
 const receiptController = {
   // POST /api/comprovante/:IdContribuicaoFinanciera (adiciona imagem pela contribuição financeira)
@@ -80,7 +78,80 @@ const receiptController = {
       });
     }
   },
+  addFoodReceipt: async (req, res) => {
+    try {
+      const { IdContribuicaoAlimenticia } = req.params;
+      const contributionId = parseInt(IdContribuicaoAlimenticia, 10);
 
+      if (isNaN(contributionId)) {
+        return res.status(400).json({ error: "ID de contribuição inválido." });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ error: "Nenhum arquivo enviado." });
+      }
+      const imagemUrl = req.file.path;
+
+      const contribuicaoExiste =
+        await prisma.Contribuicao_Alimenticia.findUnique({
+          where: { IdContribuicaoAlimenticia: contributionId },
+          include: { comprovante: true },
+        });
+
+      if (!contribuicaoExiste) {
+        return res.status(404).json({ error: "Contribuição não encontrada" });
+      }
+
+      let comprovanteAtualizado;
+
+      if (contribuicaoExiste.IdComprovante) {
+        const comprovanteAntigo = contribuicaoExiste.comprovante;
+
+        if (comprovanteAntigo.Imagem) {
+          await deleteImageFromUrl(cloudinary, comprovanteAntigo.Imagem);
+        }
+
+        comprovanteAtualizado = await prisma.comprovante.update({
+          where: { IdComprovante: contribuicaoExiste.IdComprovante },
+          data: { Imagem: imagemUrl },
+        });
+      } else {
+        comprovanteAtualizado = await prisma.comprovante.create({
+          data: { Imagem: imagemUrl },
+        });
+
+        await prisma.Contribuicao_Alimenticia.update({
+          where: { IdContribuicaoAlimenticia: contributionId },
+          data: { IdComprovante: comprovanteAtualizado.IdComprovante },
+        });
+      }
+
+      const contribuicaoFinalizada =
+        await prisma.contribuicao_Alimenticia.findUnique({
+          where: { IdContribuicaoAlimenticia: contributionId },
+          include: {
+            comprovante: true,
+            usuario: {
+              select: {
+                RaUsuario: true,
+                NomeUsuario: true,
+                EmailUsuario: true,
+              },
+            },
+          },
+        });
+
+      res.status(200).json({
+        message: "Comprovante atualizado com sucesso!",
+        data: { ...contribuicaoFinalizada, TipoDoacao: "Financeira" },
+      });
+    } catch (error) {
+      res.status(500).json({
+        error: "Erro ao adicionar comprovante",
+        details: error.message,
+      });
+    }
+  },
   // GET /api/comprovante/usuario/:raUsuario
   receiptByRA: async (req, res) => {
     try {

@@ -25,8 +25,14 @@ r.get("/db/health", async (_, res) => {
 r.post("/createContribution", contributionController.createContribution);
 r.get("/contributions", contributionController.allContributions);
 r.get("/contributions/:RaUsuario", contributionController.getContributionsByRa);
-r.get("/contributions/edition/:editionNumber", contributionController.getContributionsByEdition);
-r.delete("/contribution/:TipoDoacao/:IdContribuicao", contributionController.deleteContribution);
+r.get(
+  "/contributions/edition/:editionNumber",
+  contributionController.getContributionsByEdition
+);
+r.delete(
+  "/contribution/:TipoDoacao/:IdContribuicao",
+  contributionController.deleteContribution
+);
 
 /* ------------------------- MENTORES ------------------------- */
 r.post("/createMentor/:RaUsuario", mentorController.createMentor);
@@ -55,9 +61,14 @@ r.delete("/deleteUser/:RaUsuario", userController.deleteUser);
 
 /* ------------------------- COMPROVANTES ------------------------- */
 r.post(
-  "/comprovante/:IdContribuicaoFinanceira",
+  "/comprovante/financeira/:IdContribuicaoFinanceira",
   upload.single("file"),
   receiptController.addReceiptAtContribution
+);
+r.post(
+  "/comprovante/alimenticia/:IdContribuicaoAlimenticia",
+  upload.single("file"),
+  receiptController.addFoodReceipt
 );
 r.get("/comprovante/:RaUsuario", receiptController.receiptByRA);
 r.get("/comprovante/:IdComprovante ", receiptController.receiptById);
