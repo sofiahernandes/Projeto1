@@ -30,7 +30,7 @@ export default function Donations() {
     quantidade: 0,
     pesoUnidade: 0,
     comprovante: null as File | null,
-    idAlimento: 1, 
+    idAlimento: 1,
   });
 
   const [totaisPontos, setTotaisPontos] = useState(0);
@@ -76,8 +76,29 @@ export default function Donations() {
         body: JSON.stringify(body),
       });
 
-      if (!res.ok) {
-        const err = await res.json();
+      const data = await res.json();
+
+      const idContribuicao = data.data?.IdContribuicaoFinanceira;
+
+      if (financialData.comprovante && idContribuicao) {
+        const formData = new FormData();
+        formData.append("file", financialData.comprovante);
+
+        const resComprovante = await fetch(
+          `${backend_url}/api/comprovante/${idContribuicao}`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        if (!resComprovante.ok) {
+          console.warn("Erro ao enviar comprovante");
+        }
+      }
+
+      if (!data.ok) {
+        const err = await data.json();
         throw new Error(
           err.error || "Erro ao enviar a contribuição financeira."
         );
@@ -93,7 +114,6 @@ export default function Donations() {
         comprovante: null,
       });
     } catch (err: any) {
-      console.error(err);
       alert("Erro ao cadastrar contribuição financeira.");
     } finally {
       setLoading(false);
@@ -147,6 +167,7 @@ export default function Donations() {
       }
 
       const data = await res.json();
+      
 
       alert("Contribuição alimentícia cadastrada com sucesso!");
 
