@@ -28,7 +28,7 @@ export type Contribution = {
   };
   DataContribuicao: string;
   NomeAlimento?: string;
-  PontuacaoAlimento: number;
+  PontuacaoAlimento?: number;
   NomeTime: string;
   PesoUnidade: number;
   PesoTotal?: number,
@@ -150,13 +150,6 @@ export const makeContributionColumns = (
 
   {
     id: "PontuacaoTotal",
-    accessorFn: (row) => {
-      if (row.TipoDoacao !== "Alimenticia") return null;
-      const quant = Number(row.Quantidade);
-      const pont = Number(row.PontuacaoAlimento);
-      const PontuacaoTotal = quant * pont;
-      return Number.isFinite(PontuacaoTotal) ? PontuacaoTotal : null;
-    },
     header: ({ column }) => (
       <Button
         variant="prettyHeader"
@@ -166,13 +159,13 @@ export const makeContributionColumns = (
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ getValue, row }) => {
-      const v = getValue<number | null>();
-      return row.original.TipoDoacao === "Alimenticia" && v != null ? (
+    cell: ({ row }) => {
+      const v = row.original.PontuacaoTotal;
+      return row.original.TipoDoacao === "Alimenticia" && Number.isFinite(v) ?
         <span className="w-[60px] block truncate">
-          {new Intl.NumberFormat("pt-BR").format(v)}
+          {new Intl.NumberFormat("pt-BR").format(v!)} 
         </span>
-      ) : (
+       : (
         <span> - </span>
       );
     },

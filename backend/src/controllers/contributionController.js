@@ -119,9 +119,10 @@ const contributionController = {
         include: {
           usuario: true,
           comprovante: true,
-          contribuicoes_alimento: {
-            include: {
-              alimento: true,
+          alimento: {
+            select: {
+              NomeAlimento: true,
+              Pontuacao: true,
             },
           },
         },
@@ -129,12 +130,50 @@ const contributionController = {
 
       const allContribs = [
         ...financeContribs.map((contrib) => ({
-          ...contrib,
+          IdContribuicao: contrib.IdContribuicaoFinanceira,
+          RaUsuario: contrib.RaUsuario,
           TipoDoacao: "Financeira",
+          Quantidade: Number(contrib.Quantidade),
+          Meta: contrib.Meta ? Number(contrib.Meta) : null,
+          Gastos: contrib.Gastos ? Number(contrib.Gastos) : null,
+          Fonte: contrib.Fonte,
+          DataContribuicao: contrib.DataContribuicao,
+          comprovante: contrib.comprovante
+            ? {
+                IdComprovante: contrib.comprovante.IdComprovante,
+                Imagem: contrib.comprovante.Imagem,
+              }
+            : null,
+          alimentos: [], // Financeira não tem alimentos
+          PesoUnidade: 0,
+          uuid: contrib.uuid,
         })),
         ...foodContribs.map((contrib) => ({
-          ...contrib,
+          IdContribuicao: contrib.IdContribuicaoAlimenticia,
+          RaUsuario: contrib.RaUsuario,
           TipoDoacao: "Alimenticia",
+          Quantidade: Number(contrib.Quantidade),
+          Meta: contrib.Meta ? Number(contrib.Meta) : null,
+          Gastos: contrib.Gastos ? Number(contrib.Gastos) : null,
+          Fonte: contrib.Fonte,
+          DataContribuicao: contrib.DataContribuicao,
+          comprovante: contrib.comprovante
+            ? {
+                IdComprovante: contrib.comprovante.IdComprovante,
+                Imagem: contrib.comprovante.Imagem,
+              }
+            : null,
+          alimentos: contrib.alimento
+            ? [
+                {
+                  NomeAlimento: contrib.alimento.NomeAlimento,
+                  Pontuacao: contrib.alimento.Pontuacao,
+                  Quantidade: contrib.Quantidade,
+                },
+              ]
+            : [],
+          PesoUnidade: contrib.PesoUnidade ? Number(contrib.PesoUnidade) : 0,
+          uuid: contrib.uuid,
         })),
       ];
 

@@ -24,15 +24,7 @@ interface RenderContributionProps {
   refreshKey?: number;
 }
 
-type ItemAlimento = {
-  Quantidade: number;
-  PesoUnidade: number;
-  PontuacaoAlimento: number;
-  NomeAlimento: string;
-};
-
 type ContributionAdmin = Contribution & {
-  Itens?: ItemAlimento[];
   PesoTotal?: number;
   PontuacaoTotal?: number;
   alimentos?: {
@@ -87,37 +79,17 @@ export default function RenderContributionTableAdmin({
                       String(r.PesoUnidade).replace(/\./g, "").replace(",", ".")
                     )
                   : 0;
-
-              const itens: ItemAlimento[] = Array.isArray(
-                r.contribuicoes_alimento
-              )
-                ? r.contribuicoes_alimento.map(
-                    (it: any): ItemAlimento => ({
-                      Quantidade: quantidade,
-                      PesoUnidade: pesoUnidade,
-                      PontuacaoAlimento: Number(it?.alimento?.Pontuacao ?? 0),
-                      NomeAlimento: String(it?.alimento?.NomeAlimento ?? ""),
-                    })
-                  )
-                : [];
-
               const pesoTotal =
                 Number.isFinite(quantidade) && Number.isFinite(pesoUnidade)
                   ? quantidade * pesoUnidade
                   : undefined;
 
-              const pontTotal = itens.reduce<number>((sum, it) => {
-                const parc = it.Quantidade * it.PontuacaoAlimento;
-                return sum + (Number.isFinite(parc) ? parc : 0);
-              }, 0);
-
-              console.log("Calculado:", {
-                quantidade,
-                pesoUnidade,
-                pesoTotal,
-                pontTotal,
-                itens,
-              });
+              const pontTotal = Array.isArray(r.alimentos)
+                ? r.alimentos.reduce((sum: number, a: any) => {
+                    const pontuacao = Number(a.Pontuacao ?? 0);
+                    return sum + pontuacao * quantidade;
+                  }, 0)
+                : 0;
 
               const IdContribuicao = Number(
                 r.IdContribuicao ??
@@ -179,22 +151,16 @@ export default function RenderContributionTableAdmin({
                 DataContribuicao: String(r.DataContribuicao ?? ""),
                 NomeAlimento: r.NomeAlimento ?? undefined,
                 NomeTime: r.NomeTime ?? undefined,
-                Itens: itens,
-                PesoTotal: pesoTotal,
-                PontuacaoTotal: itens.length ? pontTotal : undefined,
-                PontuacaoAlimento: r.PontuacaoAlimento ?? undefined,
+                PesoTotal: pesoTotal ?? 0,
+                PontuacaoTotal: pontTotal ?? 0,
                 PesoUnidade: pesoUnidade,
-                uuid: uuidv4(),
+                uuid: r.uuid ?? uuidv4(),
 
-                alimentos: Array.isArray(r.contribuicoes_alimento)
-                  ? r.contribuicoes_alimento
-                      .filter(
-                        (a: any) => a.alimento?.NomeAlimento?.trim() !== ""
-                      )
-                      .map((a: any) => ({
-                        NomeAlimento: String(a.alimento?.NomeAlimento ?? ""),
-                        Pontuacao: a.alimento?.Pontuacao ?? "",
-                      }))
+                alimentos: Array.isArray(r.alimentos)
+                  ? r.alimentos.map((a: any) => ({
+                      NomeAlimento: a.NomeAlimento ?? "",
+                      Pontuacao: Number(a.Pontuacao ?? 0),
+                    }))
                   : [],
               } satisfies ContributionAdmin;
             })

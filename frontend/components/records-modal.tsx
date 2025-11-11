@@ -18,10 +18,10 @@ interface ContributionData {
   DataContribuicao: string;
   alimentos?: {
     NomeAlimento: string;
-    Pontuacao?: number | string;
+    Pontuacao: number ;
     Quantidade?: number;
   }[];
-  PontuacaoAlimento: number;
+  PontuacaoAlimento?: number;
   PesoUnidade: number;
   uuid: string;
 }
@@ -115,10 +115,10 @@ const RecordsModal: React.FC<RecordsModalProps> = ({
                         ))}
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600"> Pontuação item</p>
+                        <p className="text-sm text-gray-600"> Pontuação</p>
                         {data.alimentos.map((a, i) => (
                           <li key={i} className="font-semibold">
-                            {a.Pontuacao}
+                            <p> {a.Pontuacao ? a.Pontuacao * data.Quantidade : 0} ponto(s) </p>
                           </li>
                         ))}
                       </div>
