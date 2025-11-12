@@ -8,7 +8,6 @@ const contributionController = {
       const financeContribs = await prisma.contribuicao_Financeira.findMany({
         orderBy: { DataContribuicao: "desc" },
         include: {
-          comprovante: { select: { IdComprovante: true, Imagem: true } },
           usuario: {
             include: {
               time_usuarios: {
@@ -22,13 +21,13 @@ const contributionController = {
               },
             },
           },
+          comprovante: true,
         },
       });
 
       const foodContribs = await prisma.contribuicao_Alimenticia.findMany({
         orderBy: { DataContribuicao: "desc" },
         include: {
-          comprovante: { select: { IdComprovante: true, Imagem: true } },
           usuario: {
             include: {
               time_usuarios: {
@@ -42,47 +41,66 @@ const contributionController = {
               },
             },
           },
-          contribuicoes_alimento: {
-            include: {
-              alimento: true,
+          comprovante: true,
+          alimento: {
+            select: {
+              NomeAlimento: true,
+              Pontuacao: true,
             },
           },
         },
       });
 
       const allContribs = [
-        ...financeContribs.map((c) => ({
-          Gastos: c.Gastos,
-          IdContribuicao: c.IdContribuicaoFinanceira,
+        ...financeContribs.map((contrib) => ({
+          IdContribuicao: contrib.IdContribuicaoFinanceira,
+          RaUsuario: contrib.RaUsuario,
           TipoDoacao: "Financeira",
-          Meta: c.Meta,
-          DataContribuicao: c.DataContribuicao,
-          Quantidade: c.Quantidade,
-          Fonte: c.Fonte,
-          RaUsuario: c.RaUsuario || null,
-          Comprovante: c.comprovante?.Imagem || null,
-          NomeTime: c.usuario?.time_usuarios?.[0]?.time?.NomeTime || "Sem time",
+          Quantidade: Number(contrib.Quantidade),
+          Meta: contrib.Meta ? Number(contrib.Meta) : null,
+          Gastos: contrib.Gastos ? Number(contrib.Gastos) : null,
+          Fonte: contrib.Fonte,
+          DataContribuicao: contrib.DataContribuicao,
+          comprovante: contrib.comprovante
+            ? {
+                IdComprovante: contrib.comprovante.IdComprovante,
+                Imagem: contrib.comprovante.Imagem,
+              }
+            : null,
+          alimentos: [], // Financeira não tem alimentos
+          PesoUnidade: 0,
+          uuid: contrib.uuid,
+          NomeTime:
+            contrib.usuario?.time_usuarios?.[0]?.time?.NomeTime || "Sem time",
         })),
-        ...foodContribs.map((c) => ({
-          IdContribuicao: c.IdContribuicaoAlimenticia,
-          Gastos: c.Gastos,
+        ...foodContribs.map((contrib) => ({
+          IdContribuicao: contrib.IdContribuicaoAlimenticia,
+          RaUsuario: contrib.RaUsuario,
           TipoDoacao: "Alimenticia",
-          Meta: c.Meta,
-          DataContribuicao: c.DataContribuicao,
-          Quantidade: c.Quantidade,
-          Fonte: c.Fonte,
-          RaUsuario: c.RaUsuario || null,
-          Comprovante: c.Comprovante || null,
-          NomeTime: c.usuario?.time_usuarios?.[0]?.time?.NomeTime || "Sem time",
-
-          contribuicoes_alimento:
-            c.contribuicoes_alimento?.map((a) => ({
-              IdAlimento: a.IdAlimento,
-              alimento: {
-                NomeAlimento: a.alimento?.NomeAlimento,
-                Pontuacao: a.alimento?.Pontuacao,
-              },
-            })) || [],
+          Quantidade: Number(contrib.Quantidade),
+          Meta: contrib.Meta ? Number(contrib.Meta) : null,
+          Gastos: contrib.Gastos ? Number(contrib.Gastos) : null,
+          Fonte: contrib.Fonte,
+          DataContribuicao: contrib.DataContribuicao,
+          comprovante: contrib.comprovante
+            ? {
+                IdComprovante: contrib.comprovante.IdComprovante,
+                Imagem: contrib.comprovante.Imagem,
+              }
+            : null,
+          alimentos: contrib.alimento
+            ? [
+                {
+                  NomeAlimento: contrib.alimento.NomeAlimento,
+                  Pontuacao: contrib.alimento.Pontuacao,
+                  Quantidade: contrib.Quantidade,
+                },
+              ]
+            : [],
+          PesoUnidade: contrib.PesoUnidade ? Number(contrib.PesoUnidade) : 0,
+          uuid: contrib.uuid,
+          NomeTime:
+            contrib.usuario?.time_usuarios?.[0]?.time?.NomeTime || "Sem time",
         })),
       ];
 

@@ -6,7 +6,7 @@ const teamsController = {
     try {
       const times = await prisma.time.findMany({
         orderBy: {
-          time: "desc",
+          NomeTime: "asc",
         },
       });
       res.json(times);
