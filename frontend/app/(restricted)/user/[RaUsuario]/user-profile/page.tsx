@@ -42,9 +42,6 @@ export default function UserProfile() {
         }
 
         const contributions = await res.json();
-
-        console.log("Contribuições recebidas:", contributions);
-
         setContributions(contributions);
       } catch (err) {
         console.error(err);

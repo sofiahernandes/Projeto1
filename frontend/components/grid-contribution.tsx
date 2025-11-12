@@ -169,7 +169,6 @@ export default function RenderContributionCard({
               } satisfies ContributionAdmin;
             })
           : [];
-        console.log(raw);
         setContributions(data);
       } catch (err: any) {
         if (err?.name === "AbortError") {

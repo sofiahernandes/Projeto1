@@ -58,7 +58,6 @@ export default function MentorVision() {
 
         if (!active) return;
 
-        console.log("Time do mentor recebido:", oneTeam);
         setTeam(oneTeam);
       } catch (err: any) {
         if (err?.name === "AbortError") return;
@@ -99,8 +98,6 @@ export default function MentorVision() {
         if (!res.ok) throw new Error(`Falha ao buscar usuário (${res.status})`);
         const userData = await res.json();
         if (!active) return;
-
-        console.log("Usuário líder recebido:", userData);
 
         setUser(userData);
       } catch (err: any) {

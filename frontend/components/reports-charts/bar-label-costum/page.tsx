@@ -122,8 +122,6 @@ export function TeamsRankingChart() {
               };
             })
           : [];
-
-        console.log("Teams carregados:", data);
         setTeams(data);
       } catch (err: any) {
         if (err?.name === "AbortError") return;

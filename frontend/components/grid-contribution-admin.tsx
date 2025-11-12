@@ -153,7 +153,6 @@ export default function RenderContributionCardAdmin({
               };
             })
           : [];
-        console.log(raw);
         setContributions(data);
       } catch (err: any) {
         if (err?.name === "AbortError") {

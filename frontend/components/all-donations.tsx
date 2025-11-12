@@ -35,8 +35,6 @@ export default function AllDonations({
 
       const data = await res.json();
       alert("Contribuição registrada com sucesso!");
-      console.log("Contribuição criada:", data);
-
       //setMetaEnvento(0);
     } catch (error) {
       console.error("Erro ao enviar contribuição:", error);

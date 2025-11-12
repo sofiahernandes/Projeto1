@@ -37,8 +37,6 @@ const RecordsMentor: React.FC<RecordsMentorProps> = ({
   setIsOpen,
 }) => {
   if (!data) return null;
-  console.log("Dados recebidos no modal:", data);
-
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };

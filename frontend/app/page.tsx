@@ -117,7 +117,6 @@ export default function PublicDashboard() {
               };
             })
           : [];
-        console.log(raw);
         setContributions(data);
 
         contributions.map((contribution) => {

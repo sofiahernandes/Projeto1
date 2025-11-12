@@ -48,8 +48,6 @@ export async function fetchData(
     }
     const team = await res.json();
     const user = await userRes.json();
-    console.log("Time:", team);
-    console.log("Aluno Mentor:", user);
 
     return { team, user };
   } catch (error) {

@@ -168,22 +168,16 @@ export default function Donations() {
       const IdContribuicaoAlimenticia =
         comprovante.data?.IdContribuicaoAlimenticia;
 
-      console.log("Resposta completa:", comprovante);
-      console.log("ID da contribuição:", IdContribuicaoAlimenticia);
-
       if (foodData.comprovante && IdContribuicaoAlimenticia) {
         const formData = new FormData();
         formData.append("file", foodData.comprovante);
 
         const url = `${backend_url}/api/comprovante/alimenticia/${IdContribuicaoAlimenticia}`;
-        console.log("URL do comprovante:", url); 
 
         const resComprovante = await fetch(url, {
           method: "POST",
           body: formData,
         });
-
-        console.log("Status do comprovante:", resComprovante.status);
 
         if (!resComprovante.ok) {
           const errorData = await resComprovante.json();
