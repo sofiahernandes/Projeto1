@@ -238,7 +238,7 @@ export default function PublicDashboard() {
                           <p className="text-gray-900">
                             {item.Fonte ?? "Fonte desconhecida"}
                           </p>
-                          <span className="text-secondary text-md"> {Number(item.Quantidade) * Number(item.PesoUnidade)} kg
+                          <span className="text-secondary text-md"> {item.Quantidade ? item.Quantidade : "1"}X{item.PesoUnidade ? item.PesoUnidade : "5"} kg
                           </span>
                         </div>
                       ))
