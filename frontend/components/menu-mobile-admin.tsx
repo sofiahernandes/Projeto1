@@ -59,7 +59,7 @@ export default function MenuMobileAdmin() {
           "
         >
           <Link
-            href={profileHref}
+            href={`/admin/${IdMentor}/admin-profile`}
             aria-label="Início"
             className={`${basePill} ${
               isActive(profileHref) ? activePill : neutralPill
@@ -81,7 +81,7 @@ export default function MenuMobileAdmin() {
             </svg>
           </Link>
           <Link
-            href={historyHref}
+            href={`/admin/${IdMentor}/admin-history`}
             aria-label="Histórico"
             className={`${basePill} ${
               isActive(historyHref) ? activePill : neutralPill
